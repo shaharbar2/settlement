@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: TilemapBase
+    uniqueID: 140111863
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: UnderCover
+    uniqueID: 116339377
+    locked: 0
+  - name: TilemapCover
+    uniqueID: 3979953961
+    locked: 0
+  - name: OverCover
+    uniqueID: 2101983051
+    locked: 0
+  - name: ObjectShadows
+    uniqueID: 1071002873
+    locked: 0
+  - name: TilemapOverlay
+    uniqueID: 2484147891
+    locked: 0
+  - name: Objects
+    uniqueID: 144421555
+    locked: 0
+  - name: TilemapObjects
+    uniqueID: 2774519639
+    locked: 0
+  - name: TilemapWalls
+    uniqueID: 4086991171
+    locked: 0
