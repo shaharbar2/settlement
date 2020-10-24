@@ -6,7 +6,7 @@ public class Player : MonoBehaviour {
 
     private Animator animator;
     private float movementSpeed = 1f;
-    private Vector2 direction = Vector2.zero;
+    private Vector3 direction = Vector2.zero;
 
     private PathfindController pathfindController;
     private TilemapController tilemapController;
@@ -21,19 +21,22 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetMouseButton(0)) {
-            Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
-            Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
+        // // Point n click movement
+        // if (Input.GetMouseButton(0)) {
+        //     Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
+        //     Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //     currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
 
-            // remove point of current position from the path
-            if (currentPath != null && currentPath.Count > 0) {
-                currentPath.RemoveAt(0);
-            }
-        }
+        //     // remove point of current position from the path
+        //     if (currentPath != null && currentPath.Count > 0) {
+        //         currentPath.RemoveAt(0);
+        //     }
+        // }
 
         if (currentPath != null) {
-            updateMovement();
+            updatePathMovement();
+        } else {
+            updateManualMovement();
         }
 
         updateAnimation();
@@ -84,7 +87,18 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private void updateMovement() {
+    private void updateManualMovement() {
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        direction = new Vector3(h, v, 0);
+        direction = direction.normalized * movementSpeed * Time.deltaTime;
+        if (tilemapController.isWalkable(transform.position + direction)){
+            transform.position += direction;
+        }
+    }
+
+    private void updatePathMovement() {
         Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
         direction = Vector2.zero;
         while(currentPath.Count > 0) {
@@ -99,6 +113,9 @@ public class Player : MonoBehaviour {
                 transform.position = newPos;
                 break;
             }
+        }
+        if (currentPath.Count == 0) {
+            currentPath = null;
         }
     }
 }
