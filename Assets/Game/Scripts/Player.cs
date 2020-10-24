@@ -21,17 +21,7 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        // // Point n click movement
-        // if (Input.GetMouseButton(0)) {
-        //     Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
-        //     Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //     currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
-
-        //     // remove point of current position from the path
-        //     if (currentPath != null && currentPath.Count > 0) {
-        //         currentPath.RemoveAt(0);
-        //     }
-        // }
+        // handlePointAndClickMovement();
 
         if (currentPath != null) {
             updatePathMovement();
@@ -84,6 +74,19 @@ public class Player : MonoBehaviour {
             transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y);
         } else if (direction.x < 0) {
             transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        }
+    }
+
+    private void handlePointAndClickMovement() {
+        if (Input.GetMouseButton(0)) {
+            Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
+            Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
+
+            // remove point of current position from the path
+            if (currentPath != null && currentPath.Count > 0) {
+                currentPath.RemoveAt(0);
+            }
         }
     }
 
