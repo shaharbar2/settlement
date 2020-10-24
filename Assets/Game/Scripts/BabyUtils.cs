@@ -61,6 +61,11 @@ public static class BabyUtils {
 		return new Color(r, g, b, alpha);
 	}
 
+	public static Color setAlpha(this Color color, float newAlpha) {
+			color.a = newAlpha;
+			return color;
+	}
+
 	/// Camera 
 
 	public static Vector2 sizeToFit(Texture2D texture, float pixelsPerUnit) {
