@@ -38,14 +38,14 @@ public class GameUI : MonoBehaviour {
     /// Private -- 
     
     private void handleRadialMenuInput() {
-        KeyCode keyCode = Constants.instance.BUILD_MENU_KEY_CODE;
+        KeyCode keyCode = Constants.instance.BM_KEY_CODE;
         if (Input.GetKeyDown(keyCode)) {
             radialMenuHoldElapsed = 0;
         } 
 
         if (Input.GetKey(keyCode)) {
             radialMenuHoldElapsed += Time.deltaTime;
-            if (radialMenuHoldElapsed >= Constants.instance.BUILD_MENU_KEY_HOLD) {
+            if (radialMenuHoldElapsed >= Constants.instance.BM_KEY_HOLD) {
                 showRadialMenu();
             }
         }

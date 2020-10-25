@@ -57,13 +57,14 @@ public class RadialMenu : MonoBehaviour {
     private float lerp = 0;
 
     public delegate void RadialMenuEvent(RadialMenuSegmentData data);
-    public event RadialMenuEvent onSelected;
+    public event RadialMenuEvent onClicked;
     public event RadialMenuEvent onHighlighted;
 
     private RadialMenuSegment selectedRootSegment;
     private RadialMenuSegment selectedChildSegment;
+    private RadialMenuSegment clickedSegment;
 
-    public RadialMenuSegmentData currentSelection { get { return selectedChildSegment?.data; }}
+    public RadialMenuSegmentData currentSelection { get { return selectedChildSegment?.data; } }
 
     void Awake() {
         segmentReference.gameObject.SetActive(false);
@@ -73,21 +74,28 @@ public class RadialMenu : MonoBehaviour {
     void Update() {
         selectedRootSegment = updateMouseSelection(segments);
         if (Input.GetMouseButtonDown(0) && selectedChildSegment != null) {
-            onSelected?.Invoke(selectedChildSegment.data);
+            onClicked?.Invoke(selectedChildSegment.data);
+            clickedSegment = selectedChildSegment;
             hideAnimated();
+            GameObject go = selectedChildSegment.image.gameObject;
+            LeanTween.scale(go, Vector3.one * 1.8f, 1f).setOnComplete(() => {
+                go.transform.localScale = Vector3.one;
+            }).setEase(LeanTweenType.easeOutQuad);
         }
     }
 
     /// Public -- 
 
     public void showAnimated() {
+        clickedSegment = null;
+
         if (hideTween != null) {
             LeanTween.cancel(hideTween.id);
             hideTween = null;
         }
         if (showTween == null) {
-            float time = Constants.instance.BUILD_MENU_TIME_SHOW * (1f - lerp);
-            LeanTweenType ease = Constants.instance.BUILD_MENU_SHOW_EASE;
+            float time = Constants.instance.BM_TIME_SHOW * (1f - lerp);
+            LeanTweenType ease = Constants.instance.BM_SHOW_EASE;
             showTween = LeanTween.value(gameObject, lerp, 1f, time).setEase(ease).setOnUpdate((float value) => {
                 this.lerp = value;
                 updateRootSegments(lerp: value);
@@ -103,8 +111,8 @@ public class RadialMenu : MonoBehaviour {
             showTween = null;
         }
         if (hideTween == null) {
-            float time = Constants.instance.BUILD_MENU_TIME_HIDE * lerp;
-            LeanTweenType ease = Constants.instance.BUILD_MENU_HIDE_EASE;
+            float time = Constants.instance.BM_TIME_HIDE * lerp;
+            LeanTweenType ease = Constants.instance.BM_HIDE_EASE;
             hideTween = LeanTween.value(gameObject, lerp, 0, time).setEase(ease).setOnUpdate((float value) => {
                 this.lerp = value;
                 updateRootSegments(lerp: value);
@@ -112,16 +120,16 @@ public class RadialMenu : MonoBehaviour {
                 hideTween = null;
             });
         }
-        onSelected?.Invoke(null);
+        onClicked?.Invoke(null);
     }
 
     /// Private -- 
 
     private RadialMenuSegment updateMouseSelection(List<RadialMenuSegment> segments) {
-        if (lerp > 0) {
+        if (lerp > 0.8f) {
             mouseAngle = BabyUtils.InvertAngle(BabyUtils.VectorAngle(Input.mousePosition, BabyUtils.screenBoundsPixels.center));
             mouseDistance = Vector2.Distance(BabyUtils.screenBoundsPixels.center, Input.mousePosition);
-        } else if (lerp == 0) {
+        } else if (lerp <= 0.8f) {
             // deselect all when hidden
             mouseAngle = -1000;
             mouseDistance = 1000;
@@ -169,7 +177,20 @@ public class RadialMenu : MonoBehaviour {
         }
         float from = segment.selectionLerp;
         float to = segment.isSelected ? 1f : 0f;
-        float time = segment.isSelected ? Constants.instance.BUILD_MENU_TIME_CHILD_SHOW : Constants.instance.BUILD_MENU_TIME_CHILD_HIDE;
+        float time = 0;
+        LeanTweenType easing;
+        if (segment.isSelected) {
+            time = Constants.instance.BM_TIME_CHILD_SHOW;
+            easing = Constants.instance.BM_SHOW_EASE;
+        } else {
+            if (clickedSegment == null) {
+                time = Constants.instance.BM_TIME_CHILD_HIDE;
+                easing = Constants.instance.BM_SHOW_EASE;
+            } else {
+                time = Constants.instance.BM_TIME_CLICKED_CHILD_HIDE;
+                easing = Constants.instance.BM_CLICKED_CHILD_HIDE_EASE;
+            }
+        }
         segment.selectionTween = LeanTween.value(segment.image.gameObject, from, to, time).setOnUpdate((float lerp) => {
             segment.selectionLerp = lerp;
             for (int i = 0; i < segment.children.Count; i++) {
@@ -177,7 +198,7 @@ public class RadialMenu : MonoBehaviour {
             }
         }).setOnComplete(() => {
             segment.selectionTween = null;
-        }).setEase(Constants.instance.BUILD_MENU_SHOW_EASE);
+        }).setEase(easing);
     }
 
     private void animateSegmentHighlight(RadialMenuSegment segment) {
@@ -187,10 +208,10 @@ public class RadialMenu : MonoBehaviour {
         }
         float from = segment.highlightLerp;
         float to = segment.isHighlighted ? 1f : 0f;
-        float time = Constants.instance.BUILD_MENU_TIME_HIGHLIGHT;
+        float time = Constants.instance.BM_TIME_HIGHLIGHT;
         segment.highlightTween = LeanTween.value(segment.image.gameObject, from, to, time).setOnUpdate((float lerp) => {
             segment.highlightLerp = lerp;
-            Color color = Color.Lerp(Constants.instance.BUILD_MENU_BASE_COLOR, Constants.instance.BUILD_MENU_SELECTED_COLOR, lerp);
+            Color color = Color.Lerp(Constants.instance.BM_BASE_COLOR, Constants.instance.BM_SELECTED_COLOR, lerp);
             segment.image.material.SetColor("_FillColor", color);
             segment.contentIcon.transform.localScale = Vector3.one * (1f + 0.5f * lerp);
         }).setOnComplete(() => {
@@ -267,7 +288,7 @@ public class RadialMenu : MonoBehaviour {
         material.SetFloat("_ArcAngle", (-180 + segment.angle) * lerp);
         material.SetFloat("_ArcRange", (range * segmentSpace) * lerp);
         if (!segment.isHighlighted) {
-            material.SetColor("_FillColor", Constants.instance.BUILD_MENU_BASE_COLOR);
+            material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
         }
         material.SetFloat("_Frac", 1.0f);
         segmentImage.material = new Material(material);
@@ -296,7 +317,7 @@ public class RadialMenu : MonoBehaviour {
         material.SetFloat("_ArcAngle", (-180 + segment.angle));
         material.SetFloat("_ArcRange", (range * segmentSpace));
         if (!segment.isHighlighted) {
-            material.SetColor("_FillColor", Constants.instance.BUILD_MENU_BASE_COLOR);
+            material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
         }
         material.SetFloat("_Frac", 1.0f);
         segmentImage.material = new Material(material);

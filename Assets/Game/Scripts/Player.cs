@@ -20,7 +20,7 @@ public class Player : MonoBehaviour {
         ui = FindObjectOfType<GameUI>();
         pathfindController = FindObjectOfType<PathfindController>();
         tilemapController = FindObjectOfType<TilemapController>();
-        ui.radialMenu.onSelected += onBuildingSelected;
+        ui.radialMenu.onClicked += onBuildingSelected;
         ui.radialMenu.onHighlighted += onBuildingHighlighted;
     }
 

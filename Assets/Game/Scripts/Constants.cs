@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Constants : MonoBehaviour {
-    [SerializeField] public KeyCode BUILD_MENU_KEY_CODE;
-    [SerializeField] public float BUILD_MENU_KEY_HOLD;
-    [SerializeField] public float BUILD_MENU_TIME_SHOW;
-    [SerializeField] public float BUILD_MENU_TIME_HIDE;
-    [SerializeField] public float BUILD_MENU_TIME_CHILD_SHOW;
-    [SerializeField] public float BUILD_MENU_TIME_CHILD_HIDE;
-    [SerializeField] public float BUILD_MENU_TIME_HIGHLIGHT;
-    [SerializeField] public LeanTweenType BUILD_MENU_SHOW_EASE;
-    [SerializeField] public LeanTweenType BUILD_MENU_HIDE_EASE;
-    [SerializeField] public Color BUILD_MENU_BASE_COLOR;
-    [SerializeField] public Color BUILD_MENU_SELECTED_COLOR;
+    [Header("Build Menu")]
+    [SerializeField] public KeyCode BM_KEY_CODE;
+    [SerializeField] public float BM_KEY_HOLD;
+    [SerializeField] public float BM_TIME_SHOW;
+    [SerializeField] public float BM_TIME_HIDE;
+    [SerializeField] public float BM_TIME_CHILD_SHOW;
+    [SerializeField] public float BM_TIME_CHILD_HIDE;
+    [SerializeField] public float BM_TIME_HIGHLIGHT;
+    [SerializeField] public LeanTweenType BM_SHOW_EASE;
+    [SerializeField] public LeanTweenType BM_HIDE_EASE;
+    [SerializeField] public float BM_TIME_CLICKED_CHILD_HIDE;
+    [SerializeField] public LeanTweenType BM_CLICKED_CHILD_HIDE_EASE;
+    [SerializeField] public Color BM_BASE_COLOR;
+    [SerializeField] public Color BM_SELECTED_COLOR;
 
     public static Constants instance;
     
