@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-
     [SerializeField] private BuildingSprite buildingPrefab;
 
     private Animator animator;
@@ -14,6 +13,8 @@ public class Player : MonoBehaviour {
     private TilemapController tilemapController;
     private List<Vector2> currentPath;
     private GameUI ui;
+
+    private RadialMenuSegmentData highlightedBuildingData;
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -36,9 +37,8 @@ public class Player : MonoBehaviour {
         updateAnimation();
 
         if (direction != Vector3.zero) {
-            RadialMenuSegmentData selection = ui.radialMenu.currentSelection;
-            if (selection) {
-                tilemapController.highlightForBuild(transform.position, selection.areaType);
+            if (highlightedBuildingData != null) {
+                tilemapController.highlightForBuild(transform.position, highlightedBuildingData.areaType);
             }
         }
     }
@@ -46,14 +46,14 @@ public class Player : MonoBehaviour {
     /// Private -- 
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
-        Debug.Log("Highlighted: " + data?.name);
         tilemapController.highlightForBuild(transform.position, data.areaType);
+        highlightedBuildingData = data;
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
         tilemapController.removeHighlightForBuild();
-        Debug.Log("Selected: " + data?.name);
         if (data != null) {
+            highlightedBuildingData = null;
             BuildingSprite building = Instantiate(buildingPrefab);
             building.transform.position = transform.position;
             building.build();

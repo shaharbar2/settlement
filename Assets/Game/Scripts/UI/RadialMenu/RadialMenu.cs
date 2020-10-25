@@ -34,9 +34,22 @@ internal class RadialMenuSegment {
         this.maxAngle = maxAngle;
         children = new List<RadialMenuSegment>();
     }
+
+    public void configure(RadialMenuSegmentData data, bool isRoot) {
+        this.data = data;
+        this.isRoot = isRoot;
+        this.contentText.text = data.name;
+        this.contentIcon.texture = data.iconTexture;
+    }
 }
 
 public class RadialMenu : MonoBehaviour {
+    [HideInInspector] public delegate void RadialMenuEvent(RadialMenuSegmentData data);
+    [HideInInspector] public event RadialMenuEvent onClicked;
+    [HideInInspector] public event RadialMenuEvent onHighlighted;
+
+    /// Private -- 
+
     [SerializeField] private RadialMenuSegmentData[] data;
     [SerializeField] private float segmentRadius;
     [SerializeField] private float segmentSpace;
@@ -54,19 +67,13 @@ public class RadialMenu : MonoBehaviour {
     private float angle = 360;
     private float lerp = 0;
 
-    public delegate void RadialMenuEvent(RadialMenuSegmentData data);
-    public event RadialMenuEvent onClicked;
-    public event RadialMenuEvent onHighlighted;
-
     private RadialMenuSegment selectedRootSegment;
     private RadialMenuSegment selectedChildSegment;
     private RadialMenuSegment clickedSegment;
 
-    public RadialMenuSegmentData currentSelection { get { return selectedChildSegment?.data; } }
-
     void Awake() {
-        segmentReference.gameObject.SetActive(false);
         createSegments();
+        segmentReference.gameObject.SetActive(false);
     }
 
     void Update() {
@@ -74,11 +81,11 @@ public class RadialMenu : MonoBehaviour {
         if (Input.GetMouseButtonDown(0) && selectedChildSegment != null) {
             onClicked?.Invoke(selectedChildSegment.data);
             clickedSegment = selectedChildSegment;
-            hideAnimated();
             GameObject go = selectedChildSegment.image.gameObject;
             LeanTween.scale(go, Vector3.one * 1.8f, 1f).setOnComplete(() => {
                 go.transform.localScale = Vector3.one;
             }).setEase(LeanTweenType.easeOutQuad);
+            hideAnimated();
         }
     }
 
@@ -109,6 +116,8 @@ public class RadialMenu : MonoBehaviour {
             showTween = null;
         }
         if (hideTween == null) {
+            selectedRootSegment = null;
+            selectedChildSegment = null;
             float time = Constants.instance.BM_TIME_HIDE * lerp;
             LeanTweenType ease = Constants.instance.BM_HIDE_EASE;
             hideTween = LeanTween.value(gameObject, lerp, 0, time).setEase(ease).setOnUpdate((float value) => {
@@ -175,12 +184,9 @@ public class RadialMenu : MonoBehaviour {
         }
         float from = segment.selectionLerp;
         float to = segment.isSelected ? 1f : 0f;
-        float time = 0;
-        LeanTweenType easing;
-        if (segment.isSelected) {
-            time = Constants.instance.BM_TIME_CHILD_SHOW;
-            easing = Constants.instance.BM_SHOW_EASE;
-        } else {
+        float time = Constants.instance.BM_TIME_CHILD_SHOW;
+        LeanTweenType easing = Constants.instance.BM_SHOW_EASE;
+        if (!segment.isSelected) {
             if (clickedSegment == null) {
                 time = Constants.instance.BM_TIME_CHILD_HIDE;
                 easing = Constants.instance.BM_SHOW_EASE;
@@ -224,29 +230,19 @@ public class RadialMenu : MonoBehaviour {
         }
     }
 
-    private void redrawArcs() {
-        clearSegments();
-        createSegments();
-    }
-
     private void createSegments() {
         for (int i = 0; i < data.Length; i++) {
             Image image = Instantiate(segmentReference, Vector3.zero, Quaternion.identity, transform);
-            image.gameObject.SetActive(true);
-            image.transform.localScale = Vector3.one;
+            image.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+            image.material = new Material(image.material);
 
             float stepAngle = angle / data.Length;
             float minAngle = i * stepAngle;
             float segAngle = minAngle + stepAngle / 2f;
             float textRadius = image.rectTransform.rect.width * rootCenterRadius;
-            Vector3 center = Vector3.zero;
-            center.x = textRadius * Mathf.Sin(Mathf.Deg2Rad * segAngle) * -1;
-            center.y = textRadius * Mathf.Cos(Mathf.Deg2Rad * segAngle);
+
             var segment = new RadialMenuSegment(image, segAngle, minAngle, minAngle + stepAngle);
-            segment.data = data[i];
-            segment.isRoot = true;
-            segment.contentText.text = data[i].name;
-            segment.contentIcon.texture = data[i].iconTexture;
+            segment.configure(data[i], isRoot : false);
             segments.Add(segment);
             createChildSegments(segment, data[i].children);
             for (int j = 0; j < data[i].children.Length; j++) {
@@ -259,42 +255,38 @@ public class RadialMenu : MonoBehaviour {
     private void createChildSegments(RadialMenuSegment segment, RadialMenuSegmentData[] data) {
         for (int i = 0; i < data.Length; i++) {
             Image image = Instantiate(segmentReference, Vector3.zero, Quaternion.identity, transform);
-            image.gameObject.SetActive(true);
-            image.transform.localScale = Vector3.one;
+            image.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+            image.material = new Material(image.material);
 
             float stepAngle = (angle / this.data.Length) / (float)data.Length;
             float minAngle = segment.angle - (angle / this.data.Length) / 2f + i * stepAngle;
             float textRadius = image.rectTransform.rect.width * childCenterRadius;
             float segmentAngle = minAngle + stepAngle / 2f;
+
             var child = new RadialMenuSegment(image, segmentAngle, minAngle, minAngle + stepAngle);
-            child.data = data[i];
-            child.isRoot = false;
-            child.contentText.text = data[i].name;
-            child.contentIcon.texture = data[i].iconTexture;
+            child.configure(data[i], isRoot : false);
             segment.children.Add(child);
         }
     }
 
     private void updateRootSegment(RadialMenuSegment segment, int idx, float lerp) {
-        Image segmentImage = segment.image;
-        segmentImage.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        Material material = new Material(segmentImage.material);
+        Image image = segment.image;
         float range = this.angle / (float)data.Length / 360f;
 
-        material.SetFloat("_OuterRadius", 0.7f * lerp);
-        material.SetFloat("_InnerRadius", (0.7f - segmentRadius) * lerp);
-        material.SetFloat("_ArcAngle", (-180 + segment.angle) * lerp);
-        material.SetFloat("_ArcRange", (range * segmentSpace) * lerp);
-        if (!segment.isHighlighted) {
-            material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
-        }
-        material.SetFloat("_Frac", 1.0f);
-        segmentImage.material = new Material(material);
+        image.material.SetFloat("_OuterRadius", 0.7f * lerp);
+        image.material.SetFloat("_InnerRadius", (0.7f - segmentRadius) * lerp);
+        image.material.SetFloat("_ArcAngle", (-180 + segment.angle) * lerp);
+        image.material.SetFloat("_ArcRange", (range * segmentSpace) * lerp);
+        image.material.SetFloat("_Frac", 1.0f);
 
-        float textRadius = segmentImage.rectTransform.rect.width * rootCenterRadius;
-        Vector3 center = Vector3.zero;
+        if (!segment.isHighlighted) {
+            image.material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
+        }
+
         // TODO: this works incorrectly but looks okay
         float centerAngle = segment.angle < 180f ? segment.angle + 180 - 180 * (lerp) : segment.angle - 180 + 180 * (lerp);
+        float textRadius = image.rectTransform.rect.width * rootCenterRadius;
+        Vector3 center = Vector3.zero;
 
         center.x = textRadius * Mathf.Sin(Mathf.Deg2Rad * (centerAngle)) * -1;
         center.y = textRadius * Mathf.Cos(Mathf.Deg2Rad * (centerAngle));
@@ -305,26 +297,24 @@ public class RadialMenu : MonoBehaviour {
     }
 
     private void updateChildSegment(RadialMenuSegment segment, int idx, float lerp, float angle, int neighborsCount) {
-        Image segmentImage = segment.image;
-        segmentImage.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        TMP_Text text = segmentImage.GetComponentInChildren<TMP_Text>();
-        Material material = new Material(segmentImage.material);
+        Image image = segment.image;
+        TMP_Text text = image.GetComponentInChildren<TMP_Text>();
         float range = ((this.angle / (float)data.Length) / (float)neighborsCount) / 360f;
-        material.SetFloat("_OuterRadius", 1f * lerp);
-        material.SetFloat("_InnerRadius", (1f - 0.28f) * lerp);
-        material.SetFloat("_ArcAngle", (-180 + segment.angle));
-        material.SetFloat("_ArcRange", (range * segmentSpace));
-        if (!segment.isHighlighted) {
-            material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
-        }
-        material.SetFloat("_Frac", 1.0f);
-        segmentImage.material = new Material(material);
 
-        float textRadius = segmentImage.rectTransform.rect.width * childCenterRadius;
+        image.material.SetFloat("_OuterRadius", 1f * lerp);
+        image.material.SetFloat("_InnerRadius", (1f - 0.28f) * lerp);
+        image.material.SetFloat("_ArcAngle", (-180 + segment.angle));
+        image.material.SetFloat("_ArcRange", (range * segmentSpace));
+        image.material.SetFloat("_Frac", 1.0f);
+
+        if (!segment.isHighlighted) {
+            image.material.SetColor("_FillColor", Constants.instance.BM_BASE_COLOR);
+        }
+
+        float textRadius = image.rectTransform.rect.width * childCenterRadius;
         Vector3 center = Vector3.zero;
-        float centerAngle = segment.angle;
-        center.x = textRadius * Mathf.Sin(Mathf.Deg2Rad * (centerAngle)) * -1;
-        center.y = textRadius * Mathf.Cos(Mathf.Deg2Rad * (centerAngle));
+        center.x = textRadius * Mathf.Sin(Mathf.Deg2Rad * (segment.angle)) * -1;
+        center.y = textRadius * Mathf.Cos(Mathf.Deg2Rad * (segment.angle));
 
         segment.contentGameObject.GetComponent<RectTransform>().anchoredPosition = center;
         segment.contentText.color = segment.contentText.color.setAlpha(lerp);
@@ -342,12 +332,4 @@ public class RadialMenu : MonoBehaviour {
         segments.Clear();
     }
 
-    private RadialMenuSegment getSegmentAtAngle(float angle) {
-        foreach (RadialMenuSegment arc in segments) {
-            if (angle <= arc.maxAngle && angle >= arc.minAngle) {
-                return arc;
-            }
-        }
-        return null;
-    }
 }
