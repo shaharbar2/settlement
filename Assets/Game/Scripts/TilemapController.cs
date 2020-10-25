@@ -89,7 +89,6 @@ public class TilemapController : MonoBehaviour {
     /// Private --
 
     private void fillAreaWithTile(TilemapAreaData areaData, TileBase tile) {
-        Debug.Log("fill tile: " + tile);
         for (int x = 0; x < areaData.bounds.size.x; x++) {
             for (int y = 0; y < areaData.bounds.size.y; y++) {
                 Vector3Int pos = new Vector3Int(areaData.bounds.xMin + x, areaData.bounds.yMin + y, 0);
