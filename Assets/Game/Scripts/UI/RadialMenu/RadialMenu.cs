@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -126,10 +124,10 @@ public class RadialMenu : MonoBehaviour {
     /// Private -- 
 
     private RadialMenuSegment updateMouseSelection(List<RadialMenuSegment> segments) {
-        if (lerp > 0.8f) {
+        if (lerp >= 0.8f) {
             mouseAngle = BabyUtils.InvertAngle(BabyUtils.VectorAngle(Input.mousePosition, BabyUtils.screenBoundsPixels.center));
             mouseDistance = Vector2.Distance(BabyUtils.screenBoundsPixels.center, Input.mousePosition);
-        } else if (lerp <= 0.8f) {
+        } else if (lerp < 0.8f) {
             // deselect all when hidden
             mouseAngle = -1000;
             mouseDistance = 1000;
@@ -140,7 +138,7 @@ public class RadialMenu : MonoBehaviour {
         foreach (RadialMenuSegment segment in segments) {
             bool mouseOver = segment.minAngle < mouseAngle && segment.maxAngle > mouseAngle;
             if (mouseOver) {
-                if (!segment.isHighlighted) {
+                if (!segment.isHighlighted && hideTween == null) {
                     segment.isHighlighted = true;
                     animateSegmentHighlight(segment);
                     if (!segment.isRoot) {

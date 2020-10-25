@@ -46,12 +46,13 @@ public class Player : MonoBehaviour {
     /// Private -- 
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
+        Debug.Log("Highlighted: " + data?.name);
         tilemapController.highlightForBuild(transform.position, data.areaType);
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
         tilemapController.removeHighlightForBuild();
-
+        Debug.Log("Selected: " + data?.name);
         if (data != null) {
             BuildingSprite building = Instantiate(buildingPrefab);
             building.transform.position = transform.position;
