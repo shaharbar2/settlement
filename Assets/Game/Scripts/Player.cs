@@ -52,8 +52,8 @@ public class Player : MonoBehaviour {
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
         tilemapController.removeHighlightForBuild();
+        highlightedBuildingData = null;
         if (data != null) {
-            highlightedBuildingData = null;
             BuildingSprite building = Instantiate(buildingPrefab);
             building.transform.position = transform.position;
             building.build();
