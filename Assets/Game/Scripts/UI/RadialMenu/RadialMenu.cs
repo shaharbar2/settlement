@@ -13,6 +13,7 @@ internal class RadialMenuSegment {
     public bool isRoot;
     public List<RadialMenuSegment> children;
 
+    public RadialMenuSegmentData data;
     // highlight animation data    
     public bool isHighlighted;
     public float highlightLerp;
@@ -55,7 +56,14 @@ public class RadialMenu : MonoBehaviour {
     private float angle = 360;
     private float lerp = 0;
 
+    public delegate void RadialMenuEvent(RadialMenuSegmentData data);
+    public event RadialMenuEvent onSelected;
+    public event RadialMenuEvent onHighlighted;
+
     private RadialMenuSegment selectedRootSegment;
+    private RadialMenuSegment selectedChildSegment;
+
+    public RadialMenuSegmentData currentSelection { get { return selectedChildSegment?.data; }}
 
     void Awake() {
         segmentReference.gameObject.SetActive(false);
@@ -63,7 +71,11 @@ public class RadialMenu : MonoBehaviour {
     }
 
     void Update() {
-        updateMouseSelection(segments);
+        selectedRootSegment = updateMouseSelection(segments);
+        if (Input.GetMouseButtonDown(0) && selectedChildSegment != null) {
+            onSelected?.Invoke(selectedChildSegment.data);
+            hideAnimated();
+        }
     }
 
     /// Public -- 
@@ -100,11 +112,12 @@ public class RadialMenu : MonoBehaviour {
                 hideTween = null;
             });
         }
+        onSelected?.Invoke(null);
     }
 
     /// Private -- 
 
-    private void updateMouseSelection(List<RadialMenuSegment> segments) {
+    private RadialMenuSegment updateMouseSelection(List<RadialMenuSegment> segments) {
         if (lerp > 0) {
             mouseAngle = BabyUtils.InvertAngle(BabyUtils.VectorAngle(Input.mousePosition, BabyUtils.screenBoundsPixels.center));
             mouseDistance = Vector2.Distance(BabyUtils.screenBoundsPixels.center, Input.mousePosition);
@@ -113,25 +126,28 @@ public class RadialMenu : MonoBehaviour {
             mouseAngle = -1000;
             mouseDistance = 1000;
             selectedRootSegment = null;
+            selectedChildSegment = null;
         }
+        RadialMenuSegment selectedSegment = null;
         foreach (RadialMenuSegment segment in segments) {
             bool mouseOver = segment.minAngle < mouseAngle && segment.maxAngle > mouseAngle;
             if (mouseOver) {
                 if (!segment.isHighlighted) {
                     segment.isHighlighted = true;
                     animateSegmentHighlight(segment);
+                    if (!segment.isRoot) {
+                        onHighlighted?.Invoke(segment.data);
+                    }
                 }
-                if (Input.GetMouseButtonDown(0) && segment.isRoot) {
-                    selectedRootSegment = segment;
-                }
+                selectedSegment = segment;
             } else {
                 if (segment.isHighlighted) {
                     segment.isHighlighted = false;
                     animateSegmentHighlight(segment);
                 }
             }
-            if (segment == selectedRootSegment) {
-                updateMouseSelection(segment.children);
+            if (segment == selectedSegment) {
+                selectedChildSegment = updateMouseSelection(segment.children);
                 if (!segment.isSelected) {
                     segment.isSelected = true;
                     animateSegmentSelected(segment);
@@ -143,6 +159,7 @@ public class RadialMenu : MonoBehaviour {
                 }
             }
         }
+        return selectedSegment;
     }
 
     private void animateSegmentSelected(RadialMenuSegment segment) {
@@ -160,7 +177,7 @@ public class RadialMenu : MonoBehaviour {
             }
         }).setOnComplete(() => {
             segment.selectionTween = null;
-        });
+        }).setEase(Constants.instance.BUILD_MENU_SHOW_EASE);
     }
 
     private void animateSegmentHighlight(RadialMenuSegment segment) {
@@ -207,6 +224,7 @@ public class RadialMenu : MonoBehaviour {
             center.x = textRadius * Mathf.Sin(Mathf.Deg2Rad * segAngle) * -1;
             center.y = textRadius * Mathf.Cos(Mathf.Deg2Rad * segAngle);
             var segment = new RadialMenuSegment(image, segAngle, minAngle, minAngle + stepAngle);
+            segment.data = data[i];
             segment.isRoot = true;
             segment.contentText.text = data[i].name;
             segment.contentIcon.texture = data[i].iconTexture;
@@ -230,6 +248,7 @@ public class RadialMenu : MonoBehaviour {
             float textRadius = image.rectTransform.rect.width * childCenterRadius;
             float segmentAngle = minAngle + stepAngle / 2f;
             var child = new RadialMenuSegment(image, segmentAngle, minAngle, minAngle + stepAngle);
+            child.data = data[i];
             child.isRoot = false;
             child.contentText.text = data[i].name;
             child.contentIcon.texture = data[i].iconTexture;

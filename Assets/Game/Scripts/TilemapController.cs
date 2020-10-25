@@ -5,7 +5,10 @@ using UnityEngine.Tilemaps;
 
 public enum TilemapAreaType {
     S_2x2,
-    S_3x3
+    S_3x3,
+    S_4x3,
+    S_3x4,
+    S_4x4,
 }
 
 public class TilemapController : MonoBehaviour {
@@ -30,6 +33,12 @@ public class TilemapController : MonoBehaviour {
                         return new RectInt(centerTile.x - 1, centerTile.y - 1, 2, 2);
                     case TilemapAreaType.S_3x3:
                         return new RectInt(centerTile.x - 1, centerTile.y - 1, 3, 3);
+                    case TilemapAreaType.S_3x4:
+                        return new RectInt(centerTile.x - 1, centerTile.y - 2, 3, 4);
+                    case TilemapAreaType.S_4x3:
+                        return new RectInt(centerTile.x - 2, centerTile.y - 1, 4, 3);
+                    case TilemapAreaType.S_4x4:
+                        return new RectInt(centerTile.x - 2, centerTile.y - 2, 4, 4);
                 }
                 throw (new System.Exception("Unknown area type"));
             }

@@ -6,7 +6,7 @@ using TMPro;
 public class GameUI : MonoBehaviour {
 
     [SerializeField] TMP_Text hintText;
-    [SerializeField] RadialMenu radialMenu;
+    [SerializeField] public RadialMenu radialMenu;
     
     private bool isRadialMenuVisible = false;
     private float radialMenuHoldElapsed = 0f;
@@ -42,7 +42,7 @@ public class GameUI : MonoBehaviour {
         if (Input.GetKeyDown(keyCode)) {
             radialMenuHoldElapsed = 0;
         } 
-        
+
         if (Input.GetKey(keyCode)) {
             radialMenuHoldElapsed += Time.deltaTime;
             if (radialMenuHoldElapsed >= Constants.instance.BUILD_MENU_KEY_HOLD) {

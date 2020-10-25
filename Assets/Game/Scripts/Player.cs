@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    [SerializeField] private BuildingSprite buildingPrefab;
+
     private Animator animator;
     private float movementSpeed = 1f;
     private Vector3 direction = Vector2.zero;
@@ -18,6 +20,8 @@ public class Player : MonoBehaviour {
         ui = FindObjectOfType<GameUI>();
         pathfindController = FindObjectOfType<PathfindController>();
         tilemapController = FindObjectOfType<TilemapController>();
+        ui.radialMenu.onSelected += onBuildingSelected;
+        ui.radialMenu.onHighlighted += onBuildingHighlighted;
     }
 
     void Update() {
@@ -30,34 +34,38 @@ public class Player : MonoBehaviour {
         }
 
         updateAnimation();
-        checkBuildProximity();
+
+        if (direction != Vector3.zero) {
+            RadialMenuSegmentData selection = ui.radialMenu.currentSelection;
+            if (selection) {
+                tilemapController.highlightForBuild(transform.position, selection.areaType);
+            }
+        }
     }
 
     /// Private -- 
-    
-    private void checkBuildProximity() {
-        BuildingSprite building = FindObjectOfType<BuildingSprite>();
-        if (!building.isBuilt) {
-            if (tilemapController.tileDistance(transform.position, building.transform.position).magnitude < 2f) {
-                tilemapController.highlightForBuild(building.transform.position, TilemapAreaType.S_3x3);
-                ui.setHintVisible(true);
-                if (Input.GetKeyDown(KeyCode.Space)) {
-                    building.build();
-                    tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
-                    tilemapController.removeHighlightForBuild();
-                    ui.setHintVisible(false);
-                    leaveBuildArea();
-                }
-            } else {
-                tilemapController.removeHighlightForBuild();
-                ui.setHintVisible(false);
-            }
+
+    private void onBuildingHighlighted(RadialMenuSegmentData data) {
+        tilemapController.highlightForBuild(transform.position, data.areaType);
+    }
+
+    private void onBuildingSelected(RadialMenuSegmentData data) {
+        tilemapController.removeHighlightForBuild();
+
+        if (data != null) {
+            BuildingSprite building = Instantiate(buildingPrefab);
+            building.transform.position = transform.position;
+            building.build();
+            tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
+            tilemapController.removeHighlightForBuild();
+            ui.setHintVisible(false);
+            leaveBuildArea();
         }
     }
 
     // TODO: proper path for leaving area to nearest free tile ignoring walls?
     private void leaveBuildArea() {
-        currentPath = new List<Vector2>(){new Vector2(transform.position.x - 0.5f, transform.position.y - 0.5f)};
+        currentPath = new List<Vector2>() { new Vector2(transform.position.x - 0.5f, transform.position.y - 0.5f) };
     }
 
     private void updateAnimation() {
@@ -96,7 +104,7 @@ public class Player : MonoBehaviour {
 
         direction = new Vector3(h, v, 0);
         direction = direction.normalized * movementSpeed * Time.deltaTime;
-        if (tilemapController.isWalkable(transform.position + direction)){
+        if (tilemapController.isWalkable(transform.position + direction)) {
             transform.position += direction;
         }
     }
@@ -104,7 +112,7 @@ public class Player : MonoBehaviour {
     private void updatePathMovement() {
         Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
         direction = Vector2.zero;
-        while(currentPath.Count > 0) {
+        while (currentPath.Count > 0) {
             Vector2 point = currentPath[0];
             if (Vector2.Distance(point, worldPosition) < movementSpeed * Time.deltaTime) {
                 currentPath.RemoveAt(0);
