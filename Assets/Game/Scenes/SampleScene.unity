@@ -7295,7 +7295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PLAYER_CONTROL_STYLE: 0
-  PLAYER_SPEED: 0
+  PLAYER_SPEED: 1.1
   BM_KEY_CODE: 32
   BM_KEY_HOLD: 0.2
   BM_TIME_SHOW: 0.4
