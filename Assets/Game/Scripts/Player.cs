@@ -26,12 +26,18 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        // handlePointAndClickMovement();
+        movementSpeed = Constants.instance.PLAYER_SPEED;
+        if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK ||
+            Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK_FREECAMERA) {
+            handlePointAndClickMovement();
+        }
 
         if (currentPath != null) {
             updatePathMovement();
         } else {
-            updateManualMovement();
+            if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.WASD) {
+                updateManualMovement();
+            }
         }
 
         updateAnimation();
@@ -55,9 +61,11 @@ public class Player : MonoBehaviour {
         highlightedBuildingData = null;
         if (data != null) {
             BuildingSprite building = Instantiate(buildingPrefab);
-            building.transform.position = transform.position;
+            building.transform.position = tilemapController.snap(transform.position);
+
             building.build();
             tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
+            Debug.Log("marked unwalkable");
             tilemapController.removeHighlightForBuild();
             ui.setHintVisible(false);
             leaveBuildArea();
@@ -87,7 +95,7 @@ public class Player : MonoBehaviour {
     }
 
     private void handlePointAndClickMovement() {
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButtonDown(0)) {
             Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
             Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
