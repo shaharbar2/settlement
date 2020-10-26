@@ -2,7 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerControlStyle {
+    WASD,
+    POINTCLICK,
+    POINTCLICK_FREECAMERA
+}
+
 public class Constants : MonoBehaviour {
+    [Header("Player Settings")]
+    [SerializeField] public PlayerControlStyle PLAYER_CONTROL_STYLE;
+    [SerializeField] public float PLAYER_SPEED;
+
     [Header("Build Menu")]
     [SerializeField] public KeyCode BM_KEY_CODE;
     [SerializeField] public float BM_KEY_HOLD;

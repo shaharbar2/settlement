@@ -86,6 +86,10 @@ public class TilemapController : MonoBehaviour {
         return new Vector2Int(tileA.x - tileB.x, tileA.y - tileB.y);
     }
 
+    public Vector3 snap(Vector3 worldPosition) {
+        return baseTilemap.GetCellCenterWorld(baseTilemap.WorldToCell(worldPosition));
+    }
+
     /// Private --
 
     private void fillAreaWithTile(TilemapAreaData areaData, TileBase tile) {

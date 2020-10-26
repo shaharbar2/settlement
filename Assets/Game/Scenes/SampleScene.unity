@@ -7294,6 +7294,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dfb575121c510641bc7393e9684798e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PLAYER_CONTROL_STYLE: 0
+  PLAYER_SPEED: 0
   BM_KEY_CODE: 32
   BM_KEY_HOLD: 0.2
   BM_TIME_SHOW: 0.4
