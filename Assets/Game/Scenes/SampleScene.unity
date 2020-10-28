@@ -6433,7 +6433,7 @@ TilemapRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323004108}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -7294,8 +7294,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dfb575121c510641bc7393e9684798e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PLAYER_CONTROL_STYLE: 0
-  PLAYER_SPEED: 1.1
+  PLAYER_CONTROL_STYLE: 1
+  CAMERA_CONTROL_STYLE: 1
+  PLAYER_SPEED: 1
+  CAMERA_SPEED: 1
   BM_KEY_CODE: 32
   BM_KEY_HOLD: 0.2
   BM_TIME_SHOW: 0.4

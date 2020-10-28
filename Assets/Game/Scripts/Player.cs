@@ -29,8 +29,7 @@ public class Player : MonoBehaviour {
 
     void Update() {
         movementSpeed = Constants.instance.PLAYER_SPEED;
-        if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK ||
-            Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK_FREECAMERA) {
+        if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK) {
             handlePointAndClickMovement();
         }
 
@@ -64,11 +63,9 @@ public class Player : MonoBehaviour {
         if (data != null) {
             BuildingSprite building = Instantiate(buildingPrefab);
             building.transform.position = tilemapController.snap(transform.position);
-
             building.build();
             tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
             tilemapController.removeHighlightForBuild();
-            ui.setHintVisible(false);
             leaveBuildArea();
         }
     }
