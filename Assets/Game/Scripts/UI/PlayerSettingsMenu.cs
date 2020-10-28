@@ -20,7 +20,7 @@ public class PlayerSettingsMenu : MonoBehaviour {
         dropdownCamera.onValueChanged.AddListener(onDropdownCameraValueChanged);
         dropdownCamera.value = (int)Constants.instance.CAMERA_CONTROL_STYLE;
         dropdownBuild.onValueChanged.AddListener(onDropdownBuildValueChanged);
-        dropdownBuild.value = (int)Constants.instance.CAMERA_CONTROL_STYLE;
+        dropdownBuild.value = (int)Constants.instance.BUILDING_STYLE;
         closeButton.onClick.AddListener(onCloseButtonClick);
     }
 
