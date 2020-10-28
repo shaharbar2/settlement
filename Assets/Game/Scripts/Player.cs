@@ -67,7 +67,6 @@ public class Player : MonoBehaviour {
 
             building.build();
             tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
-            Debug.Log("marked unwalkable");
             tilemapController.removeHighlightForBuild();
             ui.setHintVisible(false);
             leaveBuildArea();
