@@ -15,6 +15,8 @@ public class Player : MonoBehaviour {
     private GameUI ui;
 
     private RadialMenuSegmentData highlightedBuildingData;
+    private float pathfindMouseInterval = 1.2f;
+    private float pathfindMouseElapsed = 1.2f;
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -27,8 +29,7 @@ public class Player : MonoBehaviour {
 
     void Update() {
         movementSpeed = Constants.instance.PLAYER_SPEED;
-        if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK ||
-            Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK_FREECAMERA) {
+        if (Constants.instance.PLAYER_CONTROL_STYLE == PlayerControlStyle.POINTCLICK) {
             handlePointAndClickMovement();
         }
 
@@ -62,12 +63,9 @@ public class Player : MonoBehaviour {
         if (data != null) {
             BuildingSprite building = Instantiate(buildingPrefab);
             building.transform.position = tilemapController.snap(transform.position);
-
             building.build();
             tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
-            Debug.Log("marked unwalkable");
             tilemapController.removeHighlightForBuild();
-            ui.setHintVisible(false);
             leaveBuildArea();
         }
     }
@@ -95,15 +93,21 @@ public class Player : MonoBehaviour {
     }
 
     private void handlePointAndClickMovement() {
-        if (Input.GetMouseButtonDown(0)) {
-            Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
-            Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
+        if (Input.GetMouseButton(0)) {
+            pathfindMouseElapsed += Time.deltaTime;
+            if (pathfindMouseElapsed >= pathfindMouseInterval) { 
+                pathfindMouseElapsed = 0;
+                Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
+                Vector2 worldDestination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                currentPath = pathfindController.findPathWorld(worldPosition, worldDestination);
 
-            // remove point of current position from the path
-            if (currentPath != null && currentPath.Count > 0) {
-                currentPath.RemoveAt(0);
+                // remove point of current position from the path
+                if (currentPath != null && currentPath.Count > 0) {
+                    currentPath.RemoveAt(0);
+                }
             }
+        } else {
+            pathfindMouseElapsed = pathfindMouseInterval;
         }
     }
 

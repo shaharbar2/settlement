@@ -4,14 +4,20 @@ using UnityEngine;
 
 public enum PlayerControlStyle {
     WASD,
-    POINTCLICK,
-    POINTCLICK_FREECAMERA
+    POINTCLICK
+}
+public enum CameraControlStyle {
+    PAN_MOUSE,
+    PAN_WASD,
+    FOLLOW    
 }
 
 public class Constants : MonoBehaviour {
     [Header("Player Settings")]
     [SerializeField] public PlayerControlStyle PLAYER_CONTROL_STYLE;
+    [SerializeField] public CameraControlStyle CAMERA_CONTROL_STYLE;
     [SerializeField] public float PLAYER_SPEED;
+    [SerializeField] public float CAMERA_SPEED;
 
     [Header("Build Menu")]
     [SerializeField] public KeyCode BM_KEY_CODE;
