@@ -127,7 +127,6 @@ public class RadialMenu : MonoBehaviour {
                 hideTween = null;
             });
         }
-        onClicked?.Invoke(null);
     }
 
     /// Private -- 

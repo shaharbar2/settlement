@@ -56,7 +56,6 @@ public class TilemapController : MonoBehaviour {
     /// Public --
 
     public void highlightForBuild(Vector2 worldPosition, TilemapAreaType type) {
-       
         if (highlightedArea != null) {
             removeHighlightForBuild();
         }
@@ -80,6 +79,28 @@ public class TilemapController : MonoBehaviour {
         fillAreaWithTile(area, buildHighlightTile);
     }
 
+    public Vector3 nearestWalkablePosition(Vector3 worldPosition) {
+        Vector3Int tilePos = baseTilemap.WorldToCell(worldPosition);
+        if (isWalkable(worldPosition)) {
+            return worldPosition;
+        } else {
+            const int MAX_RANGE = 10;
+            Vector3Int pos = new Vector3Int();
+            for (int i = 1; i < MAX_RANGE; i++) {
+                for (int x = -i; x < i; x++) {
+                    for (int y = -i; y < i; y++) {
+                        pos.x = tilePos.x + x;
+                        pos.y = tilePos.y + y;
+                        if (!wallsTilemap.HasTile(pos)) {
+                            return baseTilemap.GetCellCenterWorld(pos);
+                        }
+                    }
+                }
+            }
+        }
+        return Vector3.zero;
+    }
+
     public Vector2Int tileDistance(Vector2 posA, Vector2 posB) {
         Vector3Int tileA = baseTilemap.WorldToCell(posA);
         Vector3Int tileB = baseTilemap.WorldToCell(posB);
@@ -100,5 +121,4 @@ public class TilemapController : MonoBehaviour {
             }
         }
     }
-
 }

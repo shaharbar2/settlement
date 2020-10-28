@@ -9,12 +9,7 @@ public class GameUI : MonoBehaviour {
     [SerializeField] public RadialMenu radialMenu;
     
     private bool isRadialMenuVisible = false;
-    private float radialMenuHoldElapsed = 0f;
     
-    void Update() {
-        handleRadialMenuInput();
-    }
-
     /// Public -- 
 
     public void setHintVisible(bool visible) {
@@ -32,25 +27,6 @@ public class GameUI : MonoBehaviour {
         if (isRadialMenuVisible) {
             radialMenu.hideAnimated();
             isRadialMenuVisible = false;
-        }
-    }
-
-    /// Private -- 
-    
-    private void handleRadialMenuInput() {
-        KeyCode keyCode = Constants.instance.BM_KEY_CODE;
-        if (Input.GetKeyDown(keyCode)) {
-            radialMenuHoldElapsed = 0;
-        } 
-
-        if (Input.GetKey(keyCode)) {
-            radialMenuHoldElapsed += Time.deltaTime;
-            if (radialMenuHoldElapsed >= Constants.instance.BM_KEY_HOLD) {
-                showRadialMenu();
-            }
-        }
-        if (Input.GetKeyUp(keyCode)) {
-            hideRadialMenu();
         }
     }
 }

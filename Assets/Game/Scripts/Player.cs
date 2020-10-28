@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    [SerializeField] private BuildingSprite buildingPrefab;
-
     private Animator animator;
     private float movementSpeed = 1f;
     private Vector3 direction = Vector2.zero;
@@ -14,7 +12,6 @@ public class Player : MonoBehaviour {
     private List<Vector2> currentPath;
     private GameUI ui;
 
-    private RadialMenuSegmentData highlightedBuildingData;
     private float pathfindMouseInterval = 1.2f;
     private float pathfindMouseElapsed = 1.2f;
 
@@ -23,8 +20,6 @@ public class Player : MonoBehaviour {
         ui = FindObjectOfType<GameUI>();
         pathfindController = FindObjectOfType<PathfindController>();
         tilemapController = FindObjectOfType<TilemapController>();
-        ui.radialMenu.onClicked += onBuildingSelected;
-        ui.radialMenu.onHighlighted += onBuildingHighlighted;
     }
 
     void Update() {
@@ -42,38 +37,17 @@ public class Player : MonoBehaviour {
         }
 
         updateAnimation();
+    }
 
-        if (direction != Vector3.zero) {
-            if (highlightedBuildingData != null) {
-                tilemapController.highlightForBuild(transform.position, highlightedBuildingData.areaType);
-            }
+    // TODO: proper path for leaving area to nearest free tile ignoring walls?
+    public void leaveBuildArea() {
+        if (!tilemapController.isWalkable(transform.position)) {
+            Vector2 dest = tilemapController.nearestWalkablePosition(transform.position);
+            currentPath = new List<Vector2>() { new Vector2(dest.x, dest.y) };    
         }
     }
 
     /// Private -- 
-
-    private void onBuildingHighlighted(RadialMenuSegmentData data) {
-        tilemapController.highlightForBuild(transform.position, data.areaType);
-        highlightedBuildingData = data;
-    }
-
-    private void onBuildingSelected(RadialMenuSegmentData data) {
-        tilemapController.removeHighlightForBuild();
-        highlightedBuildingData = null;
-        if (data != null) {
-            BuildingSprite building = Instantiate(buildingPrefab);
-            building.transform.position = tilemapController.snap(transform.position);
-            building.build();
-            tilemapController.markUnwalkable(building.transform.position, TilemapAreaType.S_3x3);
-            tilemapController.removeHighlightForBuild();
-            leaveBuildArea();
-        }
-    }
-
-    // TODO: proper path for leaving area to nearest free tile ignoring walls?
-    private void leaveBuildArea() {
-        currentPath = new List<Vector2>() { new Vector2(transform.position.x - 0.5f, transform.position.y - 0.5f) };
-    }
 
     private void updateAnimation() {
         if (direction.y < 0) {
