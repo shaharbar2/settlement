@@ -85,7 +85,7 @@ public class RadialMenu : MonoBehaviour {
             LeanTween.scale(go, Vector3.one * 1.8f, 1f).setOnComplete(() => {
                 go.transform.localScale = Vector3.one;
             }).setEase(LeanTweenType.easeOutQuad);
-            hideAnimated();
+            _hideAnimated();
         }
     }
 
@@ -111,6 +111,13 @@ public class RadialMenu : MonoBehaviour {
     }
 
     public void hideAnimated() {
+        if (hideTween == null && lerp > 0) {
+            onClicked?.Invoke(null);
+            _hideAnimated();
+        }
+    }         
+
+    public void _hideAnimated() {
         if (showTween != null) {
             LeanTween.cancel(showTween.id);
             showTween = null;
@@ -127,7 +134,6 @@ public class RadialMenu : MonoBehaviour {
                 hideTween = null;
             });
         }
-        onClicked?.Invoke(null);
     }
 
     /// Private -- 
@@ -152,8 +158,9 @@ public class RadialMenu : MonoBehaviour {
                     animateSegmentHighlight(segment);
                     if (!segment.isRoot) {
                         onHighlighted?.Invoke(segment.data);
-                    }
+                    } 
                 }
+                
                 selectedSegment = segment;
             } else {
                 if (segment.isHighlighted) {
@@ -162,17 +169,23 @@ public class RadialMenu : MonoBehaviour {
                 }
             }
             if (segment == selectedSegment) {
-                selectedChildSegment = updateMouseSelection(segment.children);
+                if (segment.isRoot) {
+                    selectedChildSegment = updateMouseSelection(segment.children);
+                }
                 if (!segment.isSelected) {
                     segment.isSelected = true;
                     animateSegmentSelected(segment);
                 }
             } else {
+                if (segment.isRoot) {
+                    updateMouseSelection(segment.children);
+                }
                 if (segment.isSelected) {
                     segment.isSelected = false;
                     animateSegmentSelected(segment);
                 }
             }
+            
         }
         return selectedSegment;
     }
@@ -242,7 +255,7 @@ public class RadialMenu : MonoBehaviour {
             float textRadius = image.rectTransform.rect.width * rootCenterRadius;
 
             var segment = new RadialMenuSegment(image, segAngle, minAngle, minAngle + stepAngle);
-            segment.configure(data[i], isRoot : false);
+            segment.configure(data[i], isRoot : true);
             segments.Add(segment);
             createChildSegments(segment, data[i].children);
             for (int j = 0; j < data[i].children.Length; j++) {

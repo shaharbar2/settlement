@@ -11,11 +11,15 @@ public enum CameraControlStyle {
     PAN_WASD,
     FOLLOW    
 }
-
+public enum BuildingStyle {
+    MOUSE_SELECTION,
+    AUTOMATIC
+}
 public class Constants : MonoBehaviour {
     [Header("Player Settings")]
     [SerializeField] public PlayerControlStyle PLAYER_CONTROL_STYLE;
     [SerializeField] public CameraControlStyle CAMERA_CONTROL_STYLE;
+    [SerializeField] public BuildingStyle BUILDING_STYLE;
     [SerializeField] public float PLAYER_SPEED;
     [SerializeField] public float CAMERA_SPEED;
 
