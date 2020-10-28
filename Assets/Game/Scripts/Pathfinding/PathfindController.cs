@@ -1,23 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Roy_T.AStar.Paths;
+using Roy_T.AStar.Primitives;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class PathfindController : MonoBehaviour {
     public Tilemap baseTilemap;
     public Tilemap wallsTilemap;
-    
-    public Vector3Int[, ] spots;
 
-    Astar astar;
-    List<Spot> roadPath = new List<Spot>();
     BoundsInt bounds;
 
+    private Roy_T.AStar.Grids.Grid grid;
+    private Roy_T.AStar.Paths.PathFinder pathFinder;
     void Awake() {
         updateBounds();
-        astar = new Astar(spots, bounds.size.x, bounds.size.y);
+        updateGrid();
     }
-
 
     /// Public -- 
 
@@ -25,19 +23,20 @@ public class PathfindController : MonoBehaviour {
         updateBounds();
         updateGrid();
 
-        Vector3Int gridFrom = baseTilemap.WorldToCell(from);
-        Vector3Int gridTo = baseTilemap.WorldToCell(to);
-        List<Spot> spotsPath = astar.createPath(spots, (Vector2Int)gridFrom, (Vector2Int)gridTo, 1000);
-        if (spotsPath != null) {
-            List<Vector2> path = new List<Vector2>();
-            foreach(Spot spot in spotsPath) {
-                path.Add(baseTilemap.GetCellCenterWorld(new Vector3Int(spot.x, spot.y, 0)));
+        Vector3Int tilemapFrom = baseTilemap.WorldToCell(from);
+        Vector3Int tilemapTo = baseTilemap.WorldToCell(to);
+        Path path = pathFinder.FindPath(tilemapToGrid(tilemapFrom), tilemapToGrid(tilemapTo), grid);
+
+        List<Vector2> worldPath = new List<Vector2>();
+
+        for (int i = 0; i < path.Edges.Count; i++) {
+            var edge = path.Edges[i];
+            worldPath.Add(baseTilemap.GetCellCenterWorld(gridToTilemap(edge.Start.Position)));
+            if (i == path.Edges.Count - 1) {
+                worldPath.Add(baseTilemap.GetCellCenterWorld(gridToTilemap(edge.End.Position)));
             }
-            path.Reverse();
-            return path;
-        } else {
-            return null;
         }
+        return worldPath;
     }
 
     /// Private --
@@ -49,17 +48,57 @@ public class PathfindController : MonoBehaviour {
     }
 
     private void updateGrid() {
-        spots = new Vector3Int[bounds.size.x, bounds.size.y];
+        var gridSize = new GridSize(columns: bounds.size.x, rows: bounds.size.y);
+        var cellSize = new Size(Distance.FromMeters(1), Distance.FromMeters(1));
+        Velocity traversalVelocity = Velocity.FromKilometersPerHour(100);
+        grid = Roy_T.AStar.Grids.Grid.CreateGridWithLateralAndDiagonalConnections(gridSize, cellSize, traversalVelocity);
+        pathFinder = new PathFinder();
+
         for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++) {
             for (int y = bounds.yMin, j = 0; j < (bounds.size.y); y++, j++) {
-                if (wallsTilemap.HasTile(new Vector3Int(x, y, 0))) {
-                    spots[i, j] = new Vector3Int(x, y, 1);    
+                var tilemapPos = new Vector3Int(x, y, 0);
+                var gridPos = tilemapToGrid(tilemapPos);
+                if (wallsTilemap.HasTile(tilemapPos)) {
+                    grid.DisconnectNode(gridPos);
+                    grid.RemoveDiagonalConnectionsIntersectingWithNode(gridPos);
                 } else if (baseTilemap.HasTile(new Vector3Int(x, y, 0))) {
-                    spots[i, j] = new Vector3Int(x, y, 0);
                 } else {
-                    spots[i, j] = new Vector3Int(x, y, 1);
+                    grid.DisconnectNode(gridPos);
+                    grid.RemoveDiagonalConnectionsIntersectingWithNode(gridPos);
                 }
             }
         }
+    }
+
+    private GridPosition tilemapToGrid(Vector3Int pos) {
+        int x = pos.x;
+        int y = pos.y;
+        if (baseTilemap.cellBounds.xMin < 0) {
+            x += Mathf.Abs(baseTilemap.cellBounds.xMin);
+        } else if (baseTilemap.cellBounds.xMin > 0) {
+            x -= Mathf.Abs(baseTilemap.cellBounds.xMin);
+        }
+        if (baseTilemap.cellBounds.yMin < 0) {
+            y += Mathf.Abs(baseTilemap.cellBounds.yMin);
+        } else if (baseTilemap.cellBounds.yMin > 0) {
+            y -= Mathf.Abs(baseTilemap.cellBounds.yMin);
+        }
+        return new GridPosition(x, y);
+    }
+
+    private Vector3Int gridToTilemap(Position pos) {
+        int x = (int)pos.X;
+        int y = (int)pos.Y;
+        if (baseTilemap.cellBounds.xMin < 0) {
+            x -= Mathf.Abs(baseTilemap.cellBounds.xMin);
+        } else if (baseTilemap.cellBounds.xMin > 0) {
+            x += Mathf.Abs(baseTilemap.cellBounds.xMin);
+        }
+        if (baseTilemap.cellBounds.yMin < 0) {
+            y -= Mathf.Abs(baseTilemap.cellBounds.yMin);
+        } else if (baseTilemap.cellBounds.yMin > 0) {
+            y += Mathf.Abs(baseTilemap.cellBounds.yMin);
+        }
+        return new Vector3Int(x, y, 0);
     }
 }
