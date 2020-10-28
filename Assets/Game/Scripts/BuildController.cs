@@ -35,7 +35,7 @@ public class BuildController : MonoBehaviour {
         handleRadialMenuInput();
         handleBuildingHighlight();
 
-         if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0)) {
             if (state == BuildControllerState.SELECTING_SPOT) {
                 buildAtSelectedSpot();
             }
@@ -89,16 +89,23 @@ public class BuildController : MonoBehaviour {
     }
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
+        Debug.Log("highlight: " + data.name);
         highlightedBuildingData = data;
         state = BuildControllerState.SELECTING_BUILDING;
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
+        Debug.Log("select: " + (data == null ?null : data.name));
         highlightedBuildingData = data;
         if (data != null) {
-            LeanTween.delayedCall(0.1f, () => {
-                state = BuildControllerState.SELECTING_SPOT;
-            });
+            if (Constants.instance.BUILDING_STYLE == BuildingStyle.AUTOMATIC) {
+                buildAtSelectedSpot();
+                state = BuildControllerState.IDLE;
+            } else {
+                LeanTween.delayedCall(0.1f, () => {
+                    state = BuildControllerState.SELECTING_SPOT;
+                });
+            }
         } else {
             state = BuildControllerState.IDLE;
         }
