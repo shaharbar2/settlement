@@ -30,6 +30,8 @@ public class PlayerSettingsMenu : MonoBehaviour {
 
     }
 
+    /// Private -- 
+    
     private void onDropdownMovementValueChanged(int value) {
         Constants.instance.PLAYER_CONTROL_STYLE = (PlayerControlStyle)value;
     }

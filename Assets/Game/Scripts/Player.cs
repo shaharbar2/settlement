@@ -10,14 +10,12 @@ public class Player : MonoBehaviour {
     private PathfindController pathfindController;
     private TilemapController tilemapController;
     private List<Vector2> currentPath;
-    private GameUI ui;
 
     private float pathfindMouseInterval = 1.2f;
     private float pathfindMouseElapsed = 1.2f;
 
     void Start() {
         animator = GetComponent<Animator>();
-        ui = FindObjectOfType<GameUI>();
         pathfindController = FindObjectOfType<PathfindController>();
         tilemapController = FindObjectOfType<TilemapController>();
     }
@@ -39,7 +37,6 @@ public class Player : MonoBehaviour {
         updateAnimation();
     }
 
-    // TODO: proper path for leaving area to nearest free tile ignoring walls?
     public void leaveBuildArea() {
         if (!tilemapController.isWalkable(transform.position)) {
             Vector2 dest = tilemapController.nearestWalkablePosition(transform.position);
