@@ -9,8 +9,8 @@
   - [#5](/../../pull/5) Make it possible to move player by holding mouse in pointnclick movement mode.
   - [#5](/../../pull/5) Improve astar pathfinding to support diagonal movement and make it less clunky overall.
   - [#5](/../../pull/5) Wasd camera movement option
-  - [#5](/../../pull/5) Add option to select building spot with mouse after building is selected in Build Menu 
-  - [#5](/../../pull/5) Ingame menu for player settings
+  - [#7](/../../pull/7) Add option to select building spot with mouse after building is selected in Build Menu 
+  - [#8](/../../pull/8) Ingame menu for player settings
 
   ### build 0.0.1:
   - [#1](/../../pull/1) Tilemap engine, pathfinding
