@@ -82,7 +82,7 @@ public class BuildController : MonoBehaviour {
         building.build();
         tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
         tilemapController.removeHighlightForBuild();
-        player.leaveBuildArea();
+        player.GetComponent<CharacterMovement>().leaveBuildArea();
 
         state = BuildControllerState.IDLE;
         highlightedBuildingData = null;
