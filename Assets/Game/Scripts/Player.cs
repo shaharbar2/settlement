@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
     private float movementSpeed = 1f;
     private Vector3 direction = Vector2.zero;
 
+    private CoinController coinController;
     private PathfindController pathfindController;
     private TilemapController tilemapController;
     private List<Vector2> currentPath;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour {
 
     void Start() {
         animator = GetComponent<Animator>();
+        coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
         tilemapController = FindObjectOfType<TilemapController>();
     }
@@ -35,6 +37,10 @@ public class Player : MonoBehaviour {
         }
 
         updateAnimation();
+
+        if (Input.GetKeyDown(KeyCode.F)) {
+            coinController.dropCoin(transform.position, transform.localScale.x);
+        }
     }
 
     public void leaveBuildArea() {
