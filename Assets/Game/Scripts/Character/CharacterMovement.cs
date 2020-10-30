@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour {
     /// Public -- 
-    public Vector3 direction = Vector2.zero;
-    public List<Vector2> currentPath;
     public float movementSpeed;
+
+    [HideInInspector] public Vector3 direction = Vector2.zero;
+    [HideInInspector] public List<Vector2> currentPath;
 
     /// Private -- 
     
