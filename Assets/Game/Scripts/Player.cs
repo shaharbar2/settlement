@@ -15,6 +15,11 @@ public class Player : MonoBehaviour {
     private float pathfindMouseInterval = 1.2f;
     private float pathfindMouseElapsed = 1.2f;
 
+    [SerializeField] private BoxCollider2D feetCollider;
+
+    private ContactFilter2D feetContactFilter = new ContactFilter2D();
+    private Collider2D[] feetCollisions = new Collider2D[15];
+
     void Start() {
         animator = GetComponent<Animator>();
         coinController = FindObjectOfType<CoinController>();
@@ -41,6 +46,8 @@ public class Player : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F)) {
             coinController.dropCoin(transform.position, transform.localScale.x);
         }
+
+        detectFeetCollisions();
     }
 
     public void leaveBuildArea() {
@@ -66,6 +73,19 @@ public class Player : MonoBehaviour {
             transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y);
         } else if (direction.x < 0) {
             transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        }
+    }
+
+    private void detectFeetCollisions() {
+        feetContactFilter.useTriggers = true;
+        float count = feetCollider.OverlapCollider(feetContactFilter, feetCollisions);
+        Coin coin = null;
+        
+        for (int i = 0; i < count; i++) {
+            coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
+            if (coin != null) {
+                coinController.pickup(coin, transform.position);
+            }   
         }
     }
 

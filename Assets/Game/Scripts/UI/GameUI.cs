@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour {
 
-    [SerializeField] Button playerSettingsButton;
-    [SerializeField] TMP_Text hintText;
+    [SerializeField] private Button playerSettingsButton;
+    [SerializeField] private TMP_Text hintText;
+    [SerializeField] private TMP_Text coinsText;
     [SerializeField] public RadialMenu radialMenu;
     [SerializeField] private PlayerSettingsMenu playerSettingsMenu;
 
@@ -36,6 +37,10 @@ public class GameUI : MonoBehaviour {
             radialMenu.hideAnimated();
             isRadialMenuVisible = false;
         }
+    }
+
+    public void setCoinsAmount(int amount) {
+        coinsText.text = amount + "";
     }
 
     /// Private -- 

@@ -89,13 +89,11 @@ public class BuildController : MonoBehaviour {
     }
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
-        Debug.Log("highlight: " + data.name);
         highlightedBuildingData = data;
         state = BuildControllerState.SELECTING_BUILDING;
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
-        Debug.Log("select: " + (data == null ?null : data.name));
         highlightedBuildingData = data;
         if (data != null) {
             if (Constants.instance.BUILDING_STYLE == BuildingStyle.AUTOMATIC) {

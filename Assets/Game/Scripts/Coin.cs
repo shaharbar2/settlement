@@ -23,15 +23,14 @@ public class Coin : MonoBehaviour {
 
     private Vector3 dropStartPos;
 
-    void Start() { }
+    private ContactFilter2D contactFilter = new ContactFilter2D();
+    private Collider2D[] coinCollisions = new Collider2D[15];
 
     void Update() {
-        Collider2D[] coinCollisions = new Collider2D[15];
-        ContactFilter2D contactFilter = new ContactFilter2D();
         contactFilter.useTriggers = true;
         float count = boxCollider.OverlapCollider(contactFilter, coinCollisions);
         if (count > 0) {
-            shadow.color = shadow.color.setAlpha(0.32f / ((count +1) * 0.4f));
+            shadow.color = shadow.color.setAlpha(0.32f / ((count + 1) * 0.4f));
         }
     }
 
@@ -48,33 +47,38 @@ public class Coin : MonoBehaviour {
     }
 
     public void drop(float distance, float height = 0.5f, System.Action onComplete = null) {
-        dropStartPos = new Vector3(-distance, height);
-        
-        stopBounce();
-        coin.transform.localScale = Vector3.zero;
-        shadow.transform.localScale = Vector3.zero;
-        coin.transform.localPosition = dropStartPos;
-        shadow.transform.localPosition = new Vector3(dropStartPos.x, 0);
+        if (dropTween == null) {
+            stopBounce();
+            dropStartPos = new Vector3(-distance, height);
 
-        dropTween = LeanTween.value(gameObject, 0f, 1f, dropTime);
-        dropTween.setEase(dropCurve);
-        dropTween.setOnUpdate(updateDropLerp);
-        dropTween.setOnComplete(() => {
-            dropTween = null;
-            bounce();
-            onComplete?.Invoke();
-        });
+            coin.transform.localScale = Vector3.zero;
+            shadow.transform.localScale = Vector3.zero;
+            coin.transform.localPosition = dropStartPos;
+            shadow.transform.localPosition = new Vector3(dropStartPos.x, 0);
+
+            dropTween = LeanTween.value(gameObject, 0f, 1f, dropTime);
+            dropTween.setEase(dropCurve);
+            dropTween.setOnUpdate(updateDropLerp);
+            dropTween.setOnComplete(() => {
+                dropTween = null;
+                bounce();
+                onComplete?.Invoke();
+            });
+        }
     }
 
-    public void pickup(System.Action onComplete = null) {
+    public void pickup(Vector3 worldPosition, System.Action onComplete = null) {
         stopBounce();
-        dropTween = LeanTween.value(gameObject, 1f, 0f, pickupTime);
-        dropTween.setEase(LeanTweenType.animationCurve);
-        dropTween.setOnUpdate(updateDropLerp);
-        dropTween.setOnComplete(() => {
-            dropTween = null;
-            onComplete?.Invoke();
-        });
+        dropStartPos = worldPosition - transform.position;
+        if (dropTween == null) {
+            dropTween = LeanTween.value(gameObject, 1f, 0f, pickupTime);
+            dropTween.setEase(LeanTweenType.animationCurve);
+            dropTween.setOnUpdate(updateDropLerp);
+            dropTween.setOnComplete(() => {
+                dropTween = null;
+                onComplete?.Invoke();
+            });
+        }
     }
 
     /// Private -- 
