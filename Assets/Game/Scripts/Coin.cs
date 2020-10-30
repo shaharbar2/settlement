@@ -78,6 +78,7 @@ public class Coin : MonoBehaviour {
                 dropTween = null;
                 onComplete?.Invoke();
             });
+            coin.GetComponent<SpriteRenderer>().sortingOrder = 1;
         }
     }
 
