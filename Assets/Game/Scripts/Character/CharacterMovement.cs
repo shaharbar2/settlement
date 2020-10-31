@@ -7,12 +7,15 @@ public class CharacterMovement : MonoBehaviour {
     public float movementSpeed;
 
     [HideInInspector] public Vector3 direction = Vector2.zero;
-    [HideInInspector] public List<Vector2> currentPath;
 
     /// Private -- 
     
     private Animator animator;
     private TilemapController tilemapController;
+
+    private List<Vector2> currentPath;
+    // true - finished, false - interrupted
+    private System.Action<bool> onPathComplete;
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -33,8 +36,16 @@ public class CharacterMovement : MonoBehaviour {
     public void leaveBuildArea() {
         if (!tilemapController.isWalkable(transform.position)) {
             Vector2 dest = tilemapController.nearestWalkablePosition(transform.position);
-            currentPath = new List<Vector2>() { new Vector2(dest.x, dest.y) };
+            movePath(new List<Vector2>() { new Vector2(dest.x, dest.y) });
         }
+    }
+
+    public void movePath(List<Vector2> path, System.Action<bool> onComplete = null) {
+        if (currentPath != null) {
+            onPathComplete?.Invoke(false);
+        }
+        currentPath = path;
+        onPathComplete = onComplete;
     }
 
     /// Private -- 
@@ -81,6 +92,9 @@ public class CharacterMovement : MonoBehaviour {
         }
         if (currentPath.Count == 0) {
             currentPath = null;
+            direction = Vector3.zero;
+            onPathComplete?.Invoke(true);
+            onPathComplete = null;
         }
     }
 }
