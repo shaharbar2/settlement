@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour {
     /// Public -- 
-    public float movementSpeed;
-
+    [HideInInspector] public float movementSpeed;
     [HideInInspector] public Vector3 direction = Vector2.zero;
 
     /// Private -- 
@@ -18,7 +17,7 @@ public class CharacterMovement : MonoBehaviour {
     private System.Action<bool> onPathComplete;
 
     void Start() {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         tilemapController = FindObjectOfType<TilemapController>();
     }
 

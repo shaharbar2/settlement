@@ -3,33 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingSprite : MonoBehaviour {
+    [SerializeField] private Sprite spriteSite;
+    [SerializeField] private Sprite spriteBuilding;
+    [SerializeField] private Sprite spriteShadow;
+    [SerializeField] private GameObject collisionZone;
+    [SerializeField] private GameObject dustVFXPrefab;
+    [SerializeField] private GameObject bowPrefab;
+    [SerializeField] private Transform coinsAnchor;
+    [SerializeField] private Transform dropAnchor;
 
-    [SerializeField] Texture2D textureSite;
-    [SerializeField] Texture2D textureBulding;
-    [SerializeField] GameObject dustVFXPrefab;
-
-    [HideInInspector] public bool isBuilt;
-
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
     void Awake() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        shadowSpriteRenderer.sprite = null;
+        collisionZone.SetActive(false);
     }
 
     /// Public --
 
     public void build() {
-        BabyUtils.ExecuteAfterTime(this, 1.5f, () => {
-            setTexture(textureBulding);
+        LeanTween.delayedCall(1.5f, () => {
+            spriteRenderer.sprite = spriteBuilding;
+            shadowSpriteRenderer.sprite = spriteShadow;
+            collisionZone.SetActive(true);
+            spriteRenderer.sortingLayerName = "Objects";
         });
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             float rMin = 0.1f;
             float rMax = 0.3f;
             float t = Random.Range(0f, 1.5f);
-            BabyUtils.ExecuteAfterTime(this, t, () => {
+            LeanTween.delayedCall(t, () => {
                 GameObject vfx = Instantiate(dustVFXPrefab);
 
-                float yOffset = Random.Range(-rMin, rMin);
+                float yOffset = Random.Range(-rMin * 4f, rMin * 2f);
                 float xOffset = rMin + Random.Range(0f, rMax);
                 if (BabyUtils.randomBool()) {
                     vfx.transform.localScale = new Vector3(-1 * vfx.transform.localScale.x, vfx.transform.localScale.y, 1);
@@ -38,18 +45,35 @@ public class BuildingSprite : MonoBehaviour {
                     vfx.transform.position = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset);
                 }
                 vfx.transform.localScale *= Random.Range(0.5f, 1f);
-                BabyUtils.ExecuteAfterTime(this, 0.9f, () => {
+                LeanTween.delayedCall(1.3f, () => {
                     Destroy(vfx);
                 });
             });
         }
-        spriteRenderer.sortingLayerName = "Objects";
-        isBuilt = true;
+        
     }
 
+    public Vector3 getCoinsAnchor() {
+        return coinsAnchor.transform.position;
+    }
+
+    public void dropBow() {
+        GameObject bow = Instantiate(bowPrefab);
+        SpriteRenderer spriteRenderer = bow.GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer.sortingOrder = 1;
+        spriteRenderer.color = Color.white.setAlpha(0);
+        float dropDistance = 0.6f;
+        bow.transform.position = dropAnchor.transform.position + new Vector3(0, dropDistance);
+        LeanTween.value(bow, 0f, 1f, 1.2f).setOnUpdate((float lerp) => {
+            spriteRenderer.color = spriteRenderer.color.setAlpha(lerp);
+            Vector3 pos = bow.transform.position;
+            pos.y = dropAnchor.transform.position.y + dropDistance * (1f -lerp);
+            bow.transform.position = pos;
+        }).setOnComplete(() => {
+            spriteRenderer.sortingOrder = 0;
+        }
+        ).setEaseOutBounce();
+    }
     /// Private --
 
-    private void setTexture(Texture2D tex) {
-        spriteRenderer.sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
-    }
 }

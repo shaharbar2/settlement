@@ -21,10 +21,18 @@ public class Coin : MonoBehaviour {
     private LTDescr dropTween;
     private float dropLerp;
 
+    private LTDescr fadeTween;
+    private float fadeLerp;
+
     private Vector3 dropStartPos;
 
+    private SpriteRenderer coinRenderer;
     private ContactFilter2D contactFilter = new ContactFilter2D();
     private Collider2D[] coinCollisions = new Collider2D[15];
+
+    void Awake() {
+        coinRenderer = coin.GetComponent<SpriteRenderer>();
+    }
 
     void Update() {
         contactFilter.useTriggers = true;
@@ -67,6 +75,36 @@ public class Coin : MonoBehaviour {
         }
     }
 
+    public void spend(float distance, float height = 0.5f, System.Action onComplete = null) {
+        if (dropTween == null) {
+            shadow.gameObject.SetActive(false);
+            boxCollider.gameObject.SetActive(false);
+            coinRenderer.sortingOrder = 1;
+            stopBounce();
+            dropStartPos = new Vector3(-distance, height);
+
+            coin.transform.localScale = Vector3.zero;
+            shadow.transform.localScale = Vector3.zero;
+            coin.transform.localPosition = dropStartPos;
+            shadow.transform.localPosition = new Vector3(dropStartPos.x, 0);
+
+            dropTween = LeanTween.value(gameObject, 0f, 1f, dropTime);
+            dropTween.setEase(dropCurve);
+            dropTween.setOnUpdate(updateDropLerp);
+            dropTween.setOnComplete(() => {
+                LeanTween.delayedCall(0.7f, () => {
+                    fadeTween = LeanTween.value(gameObject, 0f, 1f, 0.4f);
+                    fadeTween.setEaseInExpo();
+                    fadeTween.setOnUpdate(updateFadeLerp);
+                    dropTween.setOnComplete(() => {
+                        onComplete?.Invoke();
+                        Destroy(gameObject);
+                    });
+                });
+            });
+        }
+    }
+
     public void pickup(Vector3 worldPosition, System.Action onComplete = null) {
         stopBounce();
         dropStartPos = worldPosition - transform.position;
@@ -78,7 +116,7 @@ public class Coin : MonoBehaviour {
                 dropTween = null;
                 onComplete?.Invoke();
             });
-            coin.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            coinRenderer.sortingOrder = 1;
         }
     }
 
@@ -101,6 +139,14 @@ public class Coin : MonoBehaviour {
         animatorPos.y = bounceLerp * bounceHeight;
         coin.transform.localPosition = animatorPos;
         shadow.transform.localScale = Vector3.one * (1f - bounceLerp * bounceHeight * 2);
+    }
+
+    private void updateFadeLerp(float fadeLerp) {
+        this.fadeLerp = fadeLerp;
+        Vector3 animatorPos = coin.transform.localPosition;
+        animatorPos.y = fadeLerp * 2f;
+        coin.transform.localPosition = animatorPos;
+        coinRenderer.color = coinRenderer.color.setAlpha(1f - bounceLerp);
     }
 
     private void stopBounce() {

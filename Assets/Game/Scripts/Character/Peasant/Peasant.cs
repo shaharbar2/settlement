@@ -23,7 +23,7 @@ public class Peasant : MonoBehaviour {
     }
 
     void Update() {
-
+        movement.movementSpeed = Constants.instance.PEASANT_SPEED;
     }
 
     /// Public -- 

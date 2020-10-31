@@ -40,9 +40,31 @@ public class CoinController : MonoBehaviour {
                 amountBank++;
             }
             updateUI();
-            Destroy(coin);
+            Destroy(coin.gameObject);
             worldCoins.Remove(coin);
         });
+    }
+
+    public void spend(int amount, Vector3 playerPos, Vector3 destPos, System.Action onComplete) {
+        if (amountBank >= amount) {
+            amountBank -= amount;
+            updateUI();
+            for (int i = 0; i < amount; i++) {
+                float idx = i;
+                LeanTween.delayedCall(i * 0.2f, () => {
+                    Coin coin = Instantiate(coinPrefab);
+                    Vector3 distance = randomCoinDistance();
+                    float spacing = 0.3f;
+                    Vector3 dest = destPos;
+                    dest.x -= (spacing * (float)(amount -1 ))/2f;
+                    dest.x +=  spacing * (float)idx;
+                    coin.gameObject.transform.position = dest;
+                    // call complete after last coin only
+                    System.Action callback = idx == amount - 1 ? onComplete : null; 
+                    coin.spend(dest.x - playerPos.x, playerPos.y - dest.y + 0.5f, callback);
+                });
+            }
+        }
     }
 
     public Coin lookForCoin(Vector3 pos, float distance) {
@@ -66,7 +88,7 @@ public class CoinController : MonoBehaviour {
                 // reserved by someone else
                 return false;
             }
-        } 
+        }
         reservedCoins.Add(coin, reserver);
         return true;
     }
