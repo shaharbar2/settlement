@@ -18,7 +18,7 @@ public class CharacterMovement : MonoBehaviour {
     private System.Action<bool> onPathComplete;
 
     void Start() {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         tilemapController = FindObjectOfType<TilemapController>();
     }
 

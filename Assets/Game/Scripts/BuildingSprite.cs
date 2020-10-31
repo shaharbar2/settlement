@@ -4,23 +4,31 @@ using UnityEngine;
 
 public class BuildingSprite : MonoBehaviour {
 
-    [SerializeField] Texture2D textureSite;
-    [SerializeField] Texture2D textureBulding;
+    [SerializeField] Sprite spriteSite;
+    [SerializeField] Sprite spriteBuilding;
+    [SerializeField] Sprite spriteShadow;
     [SerializeField] GameObject dustVFXPrefab;
+    
 
     [HideInInspector] public bool isBuilt;
 
-    private SpriteRenderer spriteRenderer;
+    
+
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer shadowSpriteRenderer;
+
 
     void Awake() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        // spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        shadowSpriteRenderer.sprite = null;
     }
 
     /// Public --
 
     public void build() {
         BabyUtils.ExecuteAfterTime(this, 1.5f, () => {
-            setTexture(textureBulding);
+            spriteRenderer.sprite = spriteBuilding;
+            shadowSpriteRenderer.sprite = spriteShadow;
         });
         for (int i = 0; i < 15; i++) {
             float rMin = 0.1f;
@@ -49,7 +57,4 @@ public class BuildingSprite : MonoBehaviour {
 
     /// Private --
 
-    private void setTexture(Texture2D tex) {
-        spriteRenderer.sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
-    }
 }
