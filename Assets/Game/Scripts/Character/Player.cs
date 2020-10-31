@@ -51,7 +51,7 @@ public class Player : MonoBehaviour {
         for (int i = 0; i < count; i++) {
             coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
             if (coin != null) {
-                coinController.pickup(coin, transform.position);
+                coinController.pickup(coin, transform.position, byPlayer: true);
             }
         }
     }
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour {
                 if (path != null && path.Count > 0) {
                     path.RemoveAt(0);
                 }
-                movement.currentPath = path;
+                movement.movePath(path);
             }
         } else {
             pathfindMouseElapsed = pathfindMouseInterval;

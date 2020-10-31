@@ -34,9 +34,11 @@ public class CoinController : MonoBehaviour {
         }
     }
 
-    public void pickup(Coin coin, Vector3 playerPos) {
-        coin.pickup(playerPos + new Vector3(0, 0.5f), () => {
-            amountBank++;
+    public void pickup(Coin coin, Vector3 pos, bool byPlayer) {
+        coin.pickup(pos + new Vector3(0, 0.5f), () => {
+            if (byPlayer) {
+                amountBank++;
+            }
             updateUI();
             Destroy(coin);
             worldCoins.Remove(coin);
@@ -45,7 +47,7 @@ public class CoinController : MonoBehaviour {
 
     public Coin lookForCoin(Vector3 pos, float distance) {
         foreach (Coin coin in worldCoins) {
-            if (Vector2.Distance(pos, coin.transform.position) > distance) {
+            if (Vector2.Distance(pos, coin.transform.position) < distance) {
                 GameObject reserver = null;
                 if (!reservedCoins.TryGetValue(coin, out reserver))
                     return coin;
