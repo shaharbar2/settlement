@@ -13,6 +13,10 @@ public class PeasantTitle : MonoBehaviour {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    void Update() {
+        float x = Mathf.Abs(transform.localScale.x) * Mathf.Sign(transform.parent.localScale.x);
+        transform.localScale = new Vector3(x, transform.localScale.y, 1);
+    }
     /// Public -- 
     
     public void setTitle(string type) {

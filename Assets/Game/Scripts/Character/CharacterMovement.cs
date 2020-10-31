@@ -81,6 +81,7 @@ public class CharacterMovement : MonoBehaviour {
         }
         if (currentPath.Count == 0) {
             currentPath = null;
+            direction = Vector3.zero;
         }
     }
 }

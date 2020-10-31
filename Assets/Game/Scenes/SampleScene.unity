@@ -425,9 +425,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d46640ad2a25bc418a32d2fe4757b2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  amountBank: 0
   coinPrefab: {fileID: 1210500023144566629, guid: 11cfa5590b040be4ba589bc66a711a4b,
     type: 3}
-  amount: 10
 --- !u!4 &60097920
 Transform:
   m_ObjectHideFlags: 0
@@ -959,9 +959,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1feb35f74773b6a43b06d7494815cfac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 0
   direction: {x: 0, y: 0, z: 0}
   currentPath: []
-  movementSpeed: 0
 --- !u!1 &226152361
 GameObject:
   m_ObjectHideFlags: 0
@@ -9187,9 +9187,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1feb35f74773b6a43b06d7494815cfac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 1
   direction: {x: 0, y: 0, z: 0}
   currentPath: []
-  movementSpeed: 0
 --- !u!1 &1260401133
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,8 +17,11 @@ public class Player : MonoBehaviour {
 
     private CharacterMovement movement;
 
-    void Start() {
+    void Awake() {
         movement = GetComponent<CharacterMovement>();
+    }
+    
+    void Start() {
         coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
     }

@@ -25,7 +25,17 @@ public class PathfindController : MonoBehaviour {
 
         Vector3Int tilemapFrom = baseTilemap.WorldToCell(from);
         Vector3Int tilemapTo = baseTilemap.WorldToCell(to);
-        Path path = pathFinder.FindPath(tilemapToGrid(tilemapFrom), tilemapToGrid(tilemapTo), grid);
+        Path path = null;
+        try {
+            path = pathFinder.FindPath(tilemapToGrid(tilemapFrom), tilemapToGrid(tilemapTo), grid);
+        } catch(System.Exception e) {
+            if (e is System.IndexOutOfRangeException) {
+                Debug.Log("Destination is out of grid bounds: " + to);
+                return null;
+            } else {
+                throw(e);
+            }
+        }
 
         List<Vector2> worldPath = new List<Vector2>();
 
