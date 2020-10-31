@@ -20,11 +20,18 @@ public class Constants : MonoBehaviour {
     [SerializeField] public PlayerControlStyle PLAYER_CONTROL_STYLE;
     [SerializeField] public CameraControlStyle CAMERA_CONTROL_STYLE;
     [SerializeField] public BuildingStyle BUILDING_STYLE;
-    [SerializeField] public float PLAYER_SPEED;
     [SerializeField] public float CAMERA_SPEED;
+    [SerializeField] public float PLAYER_SPEED;
+    [SerializeField] public float PEASANT_SPEED;
+    
+    [Header("Keybinds")]
+    [SerializeField] public KeyCode BM_KEY_CODE;
+    [SerializeField] public KeyCode COIN_KEY_CODE;
+
+    [Header("Real Estate prices (in coins)")]
+    [SerializeField] public int COST_BOW_SHOP; 
 
     [Header("Build Menu")]
-    [SerializeField] public KeyCode BM_KEY_CODE;
     [SerializeField] public float BM_KEY_HOLD;
     [SerializeField] public float BM_TIME_SHOW;
     [SerializeField] public float BM_TIME_HIDE;

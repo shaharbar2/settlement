@@ -6,6 +6,7 @@ public class Player : MonoBehaviour {
 
     private CoinController coinController;
     private PathfindController pathfindController;
+    private GameUI ui;
 
     private float pathfindMouseInterval = 1.2f;
     private float pathfindMouseElapsed = 1.2f;
@@ -15,6 +16,7 @@ public class Player : MonoBehaviour {
     private ContactFilter2D feetContactFilter = new ContactFilter2D();
     private Collider2D[] feetCollisions = new Collider2D[15];
 
+    private BuildingSprite collidedBuilding;
     private CharacterMovement movement;
 
     void Awake() {
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour {
     }
     
     void Start() {
+        ui = FindObjectOfType<GameUI>();
         coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
     }
@@ -34,11 +37,24 @@ public class Player : MonoBehaviour {
             updateWASDMovement();
         }
 
-        if (Input.GetKeyDown(KeyCode.F)) {
-            coinController.dropCoin(transform.position, transform.localScale.x);
+        detectFeetCollisions();
+        
+        if (collidedBuilding != null) {
+            ui.showHint($"Press {Constants.instance.COIN_KEY_CODE} to buy a bow");
+        } else {
+            ui.hideHint();
         }
 
-        detectFeetCollisions();
+        if (Input.GetKeyDown(Constants.instance.COIN_KEY_CODE)) {
+            if (collidedBuilding != null) {
+                int cost = Constants.instance.COST_BOW_SHOP;
+                Vector3 from = transform.position;
+                Vector3 to = collidedBuilding.getCoinsAnchor();
+                coinController.spend(cost, from, to, onComplete: collidedBuilding.dropBow);
+            } else {
+                coinController.dropCoin(transform.position, transform.localScale.x);
+            }
+        }
     }
 
     /// Private -- 
@@ -47,8 +63,9 @@ public class Player : MonoBehaviour {
         feetContactFilter.useTriggers = true;
         float count = feetCollider.OverlapCollider(feetContactFilter, feetCollisions);
         Coin coin = null;
-        BuildingSprite building = null; 
-
+        
+        collidedBuilding = null;
+        BuildingSprite building = null;
         for (int i = 0; i < count; i++) {
             coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
             building = feetCollisions[i].transform.parent.GetComponent<BuildingSprite>();
@@ -56,15 +73,12 @@ public class Player : MonoBehaviour {
                 coinController.pickup(coin, transform.position, byPlayer: true);
             }
             if (building != null) {
-                onBuildingCollision(building);
+                collidedBuilding = building;
             }
         }
     }
 
-    private void onBuildingCollision(BuildingSprite building) {
-        
-    }
-
+  
     private void updateWASDMovement() {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");

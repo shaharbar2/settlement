@@ -21,8 +21,13 @@ public class GameUI : MonoBehaviour {
 
     /// Public -- 
 
-    public void setHintVisible(bool visible) {
-        hintText.gameObject.SetActive(visible);
+    public void showHint(string text) {
+        hintText.gameObject.SetActive(true);
+        hintText.text = text;
+    }
+
+    public void hideHint() {
+        hintText.gameObject.SetActive(false);
     }
 
     public void showRadialMenu() {

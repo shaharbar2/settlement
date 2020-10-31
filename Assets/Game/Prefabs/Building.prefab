@@ -31,6 +31,8 @@ Transform:
   - {fileID: 7676678757638030256}
   - {fileID: 7517440974208131334}
   - {fileID: 3964628959287415741}
+  - {fileID: 1643420907415241335}
+  - {fileID: 8508379627585934995}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -49,11 +51,45 @@ MonoBehaviour:
   spriteSite: {fileID: 21300000, guid: f2ce3a03416dd304e890f5a7e5a41262, type: 3}
   spriteBuilding: {fileID: 21300000, guid: eb90acefd2cc9fd469d17c90f2e5f4c0, type: 3}
   spriteShadow: {fileID: 21300000, guid: 92d917d25f009ee4f99755fde7764f24, type: 3}
+  collisionZone: {fileID: 9111548146875154458}
   dustVFXPrefab: {fileID: 1425489062003835752, guid: f99d8f50cb569cc4382cb9d1c93b1cf5,
     type: 3}
-  isBuilt: 0
+  bowPrefab: {fileID: 318635145142688354, guid: e1fa6015a9e09684184ef3bc7463a87b,
+    type: 3}
+  coinsAnchor: {fileID: 1643420907415241335}
+  dropAnchor: {fileID: 8508379627585934995}
   spriteRenderer: {fileID: 6645057266062408214}
   shadowSpriteRenderer: {fileID: 5240819123502037663}
+--- !u!1 &4216335390297585067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1643420907415241335}
+  m_Layer: 0
+  m_Name: Coins Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1643420907415241335
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4216335390297585067}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.469, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3526949671308238164}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8148098520934870133
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,6 +171,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!1 &8197401924845518874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8508379627585934995}
+  m_Layer: 0
+  m_Name: Drop Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8508379627585934995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197401924845518874}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.494, y: -0.455, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3526949671308238164}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8477710286667565937
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour {
     /// Public -- 
-    public float movementSpeed;
-
+    [HideInInspector] public float movementSpeed;
     [HideInInspector] public Vector3 direction = Vector2.zero;
 
     /// Private -- 

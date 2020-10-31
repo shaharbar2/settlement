@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingSprite : MonoBehaviour {
-
-    [SerializeField] Sprite spriteSite;
-    [SerializeField] Sprite spriteBuilding;
-    [SerializeField] Sprite spriteShadow;
-    [SerializeField] GameObject dustVFXPrefab;
-    
-
-    [HideInInspector] public bool isBuilt;
-
-    
+    [SerializeField] private Sprite spriteSite;
+    [SerializeField] private Sprite spriteBuilding;
+    [SerializeField] private Sprite spriteShadow;
+    [SerializeField] private GameObject collisionZone;
+    [SerializeField] private GameObject dustVFXPrefab;
+    [SerializeField] private GameObject bowPrefab;
+    [SerializeField] private Transform coinsAnchor;
+    [SerializeField] private Transform dropAnchor;
 
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
-
     void Awake() {
-        // spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         shadowSpriteRenderer.sprite = null;
+        collisionZone.SetActive(false);
     }
 
     /// Public --
@@ -29,6 +26,7 @@ public class BuildingSprite : MonoBehaviour {
         BabyUtils.ExecuteAfterTime(this, 1.5f, () => {
             spriteRenderer.sprite = spriteBuilding;
             shadowSpriteRenderer.sprite = spriteShadow;
+            collisionZone.SetActive(true);
         });
         for (int i = 0; i < 15; i++) {
             float rMin = 0.1f;
@@ -52,9 +50,29 @@ public class BuildingSprite : MonoBehaviour {
             });
         }
         spriteRenderer.sortingLayerName = "Objects";
-        isBuilt = true;
     }
 
+    public Vector3 getCoinsAnchor() {
+        return coinsAnchor.transform.position;
+    }
+
+    public void dropBow() {
+        GameObject bow = Instantiate(bowPrefab);
+        SpriteRenderer spriteRenderer = bow.GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer.sortingOrder = 1;
+        spriteRenderer.color = Color.white.setAlpha(0);
+        float dropDistance = 0.6f;
+        bow.transform.position = dropAnchor.transform.position + new Vector3(0, dropDistance);
+        LeanTween.value(bow, 0f, 1f, 1.2f).setOnUpdate((float lerp) => {
+            spriteRenderer.color = spriteRenderer.color.setAlpha(lerp);
+            Vector3 pos = bow.transform.position;
+            pos.y = dropAnchor.transform.position.y + dropDistance * (1f -lerp);
+            bow.transform.position = pos;
+        }).setOnComplete(() => {
+            spriteRenderer.sortingOrder = 0;
+        }
+        ).setEaseOutBounce();
+    }
     /// Private --
 
 }
