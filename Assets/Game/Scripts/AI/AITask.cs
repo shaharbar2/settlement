@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum AITaskType {
     Move,
     Stop,
     DropCoin,
     PickupCoin,
-    Attack
+    Attack,
+    TypeUpdate
 }
 
 public enum AITaskState {
@@ -24,14 +26,21 @@ public class AITask {
     public string reason;
     public Vector3 position;
     public GameObject target;
+    public Action onComplete;
+    public bool success {get{ return state == AITaskState.Finished; }}
+    public bool failed {get{ return state == AITaskState.Failed; }}
 
     private static long idCounter = 0;
     
     private AITask(AITaskType type) {
         this.type = type;
         this.state = AITaskState.Issued;
+        
         this.id = idCounter++;
     }
+
+    /// Static initializers --
+
     public static AITask moveTask(Vector3 position) {
         AITask task = new AITask(AITaskType.Move);
         task.position = position;
@@ -42,8 +51,29 @@ public class AITask {
         task.target = coin.gameObject;
         return task;
     }
+    public static AITask typeUpdateTask() {
+        AITask task = new AITask(AITaskType.TypeUpdate);
+        return task;
+    }
+
+    /// Public -- 
+    
+    public void finish(string reason = null) {
+        this.state = AITaskState.Finished;
+        this.reason = reason;
+    }
+
+    public void fail(string reason = null) {
+        this.state = AITaskState.Failed;
+        this.reason = reason;
+    }
 
     override public string ToString() {
-        return $"Task #{id} Type: {type}, sate: {state}, reason: {reason}, position: {position}, target: {target}";
+        string s = $"Task #{id} Type: {type}, sate: {state}";
+        if (reason != null) s += $" reason: \"{reason}\"";
+        if (position != default(Vector3)) s += $" position: {position}";
+        if (target != null) s += $" target: {target}";
+
+        return s;
     }
 }

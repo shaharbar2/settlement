@@ -19,13 +19,17 @@ public class PeasantTitle : MonoBehaviour {
     }
     /// Public -- 
     
-    public void setTitle(string type) {
-        if (type.ToLower() == "peasant") {
-            spriteRenderer.sprite = peasantSprite;
-        } else if (type.ToLower() == "hunter") {
-            spriteRenderer.sprite = hunterSprite;
-        } else if (type.ToLower() == "homeless") {
-            spriteRenderer.sprite = homelessSprite;
+    public void updateTitle(PeasantType type) {
+        switch(type) {
+            case PeasantType.Peasant:
+                spriteRenderer.sprite = peasantSprite;
+                break;
+            case PeasantType.Homeless:
+                spriteRenderer.sprite = homelessSprite;
+                break;
+            case PeasantType.Hunter:
+                spriteRenderer.sprite = homelessSprite;
+                break;
         }
     }
 }

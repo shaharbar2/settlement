@@ -8,12 +8,14 @@ public class Peasant : MonoBehaviour {
 
     private CharacterMovement movement;
     private PeasantAI ai;
+    private PeasantTitle title;
 
     void Awake() {
         movement = GetComponent<CharacterMovement>();
         coinController = FindObjectOfType<CoinController>();
         ai = GetComponent<PeasantAI>();
         ai.onTaskIssued += onTaskReceived;
+        title = GetComponentInChildren<PeasantTitle>();
     }
 
     void Start() {
@@ -33,7 +35,8 @@ public class Peasant : MonoBehaviour {
             case AITaskType.Move:
                 task.state = AITaskState.InProgress;
                 moveTo(task.position, onComplete: (bool finished) => {
-                    task.state = finished ? AITaskState.Finished : AITaskState.Failed;
+                    if (finished)  task.finish(reason: "destination reached");
+                    else task.fail(reason: "movement was interrupted") ;
                 });
                 break;
             case AITaskType.PickupCoin:
@@ -41,16 +44,20 @@ public class Peasant : MonoBehaviour {
                 Coin coin = task.target.GetComponent<Coin>();
                 moveTo(coin.transform.position, onComplete: (bool finished) => {
                     if (!finished) {
-                        task.state = AITaskState.Failed;
+                        task.fail(reason: "movement to coin was interrupted");
                     } else {
                         if (coin != null) {
                             coinController.pickup(coin, transform.position, byPlayer: false);
-                            task.state = AITaskState.Finished;
+                            task.finish(reason: "coin picked up");
                         } else {
-                            task.state = AITaskState.Failed;
+                            task.fail(reason: "coin doesnt exist anymore");
                         }
                     }
                 });
+                break;
+            case AITaskType.TypeUpdate:
+                title.updateTitle(ai.type);
+                task.finish(reason: "type updated to " + ai.type);
                 break;
             default:
                 Debug.Log("Undefined behavior for command: " + task.type);
