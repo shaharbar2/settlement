@@ -47,13 +47,22 @@ public class Player : MonoBehaviour {
         feetContactFilter.useTriggers = true;
         float count = feetCollider.OverlapCollider(feetContactFilter, feetCollisions);
         Coin coin = null;
+        BuildingSprite building = null; 
 
         for (int i = 0; i < count; i++) {
             coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
+            building = feetCollisions[i].transform.parent.GetComponent<BuildingSprite>();
             if (coin != null) {
                 coinController.pickup(coin, transform.position, byPlayer: true);
             }
+            if (building != null) {
+                onBuildingCollision(building);
+            }
         }
+    }
+
+    private void onBuildingCollision(BuildingSprite building) {
+        
     }
 
     private void updateWASDMovement() {
