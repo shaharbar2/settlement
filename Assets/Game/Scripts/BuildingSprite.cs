@@ -23,19 +23,20 @@ public class BuildingSprite : MonoBehaviour {
     /// Public --
 
     public void build() {
-        BabyUtils.ExecuteAfterTime(this, 1.5f, () => {
+        LeanTween.delayedCall(1.5f, () => {
             spriteRenderer.sprite = spriteBuilding;
             shadowSpriteRenderer.sprite = spriteShadow;
             collisionZone.SetActive(true);
+            spriteRenderer.sortingLayerName = "Objects";
         });
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             float rMin = 0.1f;
             float rMax = 0.3f;
             float t = Random.Range(0f, 1.5f);
-            BabyUtils.ExecuteAfterTime(this, t, () => {
+            LeanTween.delayedCall(t, () => {
                 GameObject vfx = Instantiate(dustVFXPrefab);
 
-                float yOffset = Random.Range(-rMin, rMin);
+                float yOffset = Random.Range(-rMin * 4f, rMin * 2f);
                 float xOffset = rMin + Random.Range(0f, rMax);
                 if (BabyUtils.randomBool()) {
                     vfx.transform.localScale = new Vector3(-1 * vfx.transform.localScale.x, vfx.transform.localScale.y, 1);
@@ -44,12 +45,12 @@ public class BuildingSprite : MonoBehaviour {
                     vfx.transform.position = new Vector3(transform.position.x + xOffset, transform.position.y + yOffset);
                 }
                 vfx.transform.localScale *= Random.Range(0.5f, 1f);
-                BabyUtils.ExecuteAfterTime(this, 0.9f, () => {
+                LeanTween.delayedCall(1.3f, () => {
                     Destroy(vfx);
                 });
             });
         }
-        spriteRenderer.sortingLayerName = "Objects";
+        
     }
 
     public Vector3 getCoinsAnchor() {

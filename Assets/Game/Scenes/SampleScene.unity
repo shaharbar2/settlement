@@ -492,7 +492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: 1ea1421657a6f67408409cdbbd2d5cb7, type: 3}
   children: []
-  areaType: 1
+  areaType: 0
 --- !u!1 &105020639
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,7 +753,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: 24b130fc86801214c84d1df1d9052169, type: 3}
   children: []
-  areaType: 4
+  areaType: 0
 --- !u!1 &177071195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1866,7 +1866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: 1fd3e08478563a64c9976f5e48cad4f8, type: 3}
   children: []
-  areaType: 3
+  areaType: 0
 --- !u!1 &396897592
 GameObject:
   m_ObjectHideFlags: 0
@@ -9920,7 +9920,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: c7bd572a08fb4654090654cb3dde0066, type: 3}
   children: []
-  areaType: 1
+  areaType: 0
 --- !u!1 &1357506245
 GameObject:
   m_ObjectHideFlags: 0
@@ -10574,7 +10574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: 20eb007fd51af7946a7006c8eb51e79a, type: 3}
   children: []
-  areaType: 4
+  areaType: 0
 --- !u!1 &1554930004
 GameObject:
   m_ObjectHideFlags: 0
@@ -11037,7 +11037,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconTexture: {fileID: 2800000, guid: 5c90a38515002814e863ca3e143a2179, type: 3}
   children: []
-  areaType: 2
+  areaType: 0
 --- !u!1 &1683653267
 GameObject:
   m_ObjectHideFlags: 0
