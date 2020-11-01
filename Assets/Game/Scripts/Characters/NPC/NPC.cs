@@ -28,7 +28,7 @@ public abstract class NPC : MonoBehaviour {
     }
 
     virtual protected void Update() {
-        movement.movementSpeed = Constants.instance.ANIMAL_SPEED;
+        
     }
 
     protected abstract void onTaskReceived(AITask task);

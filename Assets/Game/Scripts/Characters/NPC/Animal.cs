@@ -17,6 +17,7 @@ public class Animal : NPC {
     }
 
     override protected void Update() {
+        movement.movementSpeed = Constants.instance.ANIMAL_SPEED;
         base.Update();
     }
 
