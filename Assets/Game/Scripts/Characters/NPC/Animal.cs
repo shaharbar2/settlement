@@ -89,7 +89,9 @@ public class Animal : NPC {
             }
         });
         LeanTween.delayedCall(1f, () => {
-            dropCoin();
+            if (gameObject) {
+                dropCoin();
+            }
         });
     }
 

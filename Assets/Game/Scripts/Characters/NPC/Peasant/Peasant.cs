@@ -107,7 +107,7 @@ public class Peasant : NPC {
         } else {
             targetPos = animal.getMissPosition();
         }
-
+        Debug.Log($"{gameObject.name} didHit: {didHit}, animalAlive: {animal.isAlive}" );
         movement.lookAt(targetPos);
 
         GameObject arrow = new GameObject();
@@ -126,7 +126,8 @@ public class Peasant : NPC {
         float angle = BabyUtils.VectorAngle(arrowPos, targetPos);
         arrow.transform.Rotate(new Vector3(0, 0, -angle - 180));
 
-        float flightTime = distance / 2f;
+        float flightSpeed = Constants.instance.PEASANT_ARROW_FLIGHT_SPEED;
+        float flightTime = distance / flightSpeed;
         float hitTime = flightTime * 0.7f;
         LTDescr flightTween = LeanTween.move(arrow, targetPos, flightTime);
         flightTween.setEaseInOutExpo();

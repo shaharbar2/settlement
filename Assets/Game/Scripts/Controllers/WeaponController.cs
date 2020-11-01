@@ -12,6 +12,8 @@ public class WeaponController : MonoBehaviour {
 
     public void drop(WeaponType type, Vector3 position) {
         Weapon weapon = Instantiate(prefabByType(type));
+        position.x += Random.Range(-0.1f, 0.1f);
+        position.y += Random.Range(-0.1f, 0.1f);
         weapon.drop(position);
         worldWeapons.Add(weapon);
     }
