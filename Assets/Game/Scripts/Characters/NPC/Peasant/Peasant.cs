@@ -6,13 +6,15 @@ public class Peasant : NPC {
 
     private PeasantTitle title;
 
+    [SerializeField] private Sprite arrowSprite;
+
     override protected void Awake() {
         title = GetComponentInChildren<PeasantTitle>();
         base.Awake();
     }
 
     override protected void Start() {
-       base.Start();
+        base.Start();
     }
 
     override protected void Update() {
@@ -72,9 +74,41 @@ public class Peasant : NPC {
                 title.updateTitle(task.peasantType);
                 task.finish(reason: "type updated to " + task.peasantType);
                 break;
+            case AITaskType.Attack:
+                task.begin();
+                performAttack(task.target, onComplete: (bool finished) => {
+                    if (finished)task.finish(reason: "attack performed");
+                    else task.fail(reason: "attack failed");
+                });
+                break;
             default:
                 Debug.Log("Undefined peasant behavior for command: " + task.peasantType);
                 break;
         }
+    }
+
+    private void performAttack(GameObject target, System.Action<bool> onComplete) {
+        GameObject arrow = new GameObject();
+        arrow.name = "Bow Arrow";
+
+        float characterHeight = 0.3f;
+        Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
+        arrow.transform.position = arrowPos;
+
+        SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
+        spriteRenderer.sortingLayerName = "Objects";
+        spriteRenderer.sprite = arrowSprite;
+        
+        float distance = Vector2.Distance(arrowPos, target.transform.position);
+        float angle = BabyUtils.VectorAngle(arrowPos, target.transform.position);
+        arrow.transform.Rotate(new Vector3(0,0,-angle - 180));
+
+        LTDescr tween = LeanTween.move(arrow, target.transform.position, distance/2f);
+        tween.setEaseInOutExpo();
+        tween.setOnComplete(() => {
+            Destroy(arrow);
+            onComplete?.Invoke(true);
+        });
+        
     }
 }

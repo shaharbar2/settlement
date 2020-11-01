@@ -66,7 +66,11 @@ public class AITask {
         task.peasantType = type;
         return task;
     }
-
+    public static AITask attackTask(GameObject target) {
+        AITask task = new AITask(AITaskType.Attack);
+        task.target = target;
+        return task;
+    }
     /// Public -- 
     
     public void begin(string reason = null) {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CoinController : MonoBehaviour {
 
-    public int amountBank;
+    [HideInInspector] public int amountBank;
 
     [SerializeField] private Coin coinPrefab;
     private GameUI ui;
@@ -12,6 +12,7 @@ public class CoinController : MonoBehaviour {
     private Dictionary<Coin, GameObject> reservedCoins = new Dictionary<Coin, GameObject>();
 
     void Start() {
+        amountBank = Constants.instance.INITIAL_COINS_AMOUNT;
         ui = FindObjectOfType<GameUI>();
         updateUI();
     }
