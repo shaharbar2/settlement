@@ -73,7 +73,7 @@ public class PeasantAI : AIBase {
 
     private void peasantStateMachine() {
         switch (state) {
-            case PeasantAIState.WaitingForCoin:
+            case PeasantAIState.WaitingForWeapon:
                 waitForWeaponUpdate();
                 break;
 
@@ -204,11 +204,13 @@ public class PeasantAI : AIBase {
 
     private void becomePeasant() {
         type = NPCType.Peasant;
+        state = PeasantAIState.WaitingForWeapon;
         issueTask(AITask.typeUpdateTask(type));
     }
 
     private void becomeHunter() {
         type = NPCType.Hunter;
+        state = PeasantAIState.LookingForAnimal;
         issueTask(AITask.typeUpdateTask(type));
     }
 
