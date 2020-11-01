@@ -7,6 +7,7 @@ public class Animal : NPC {
     public bool isAlive { get { return hp > 0; }}
 
     private int hp = 2;
+    private Vector3 lastAttackFrom;
 
     override protected void Start() {
         base.Start();
@@ -22,7 +23,8 @@ public class Animal : NPC {
         return transform.position + new Vector3(0, 0.1f);
     }
 
-    public void hit() {
+    public void hit(Vector3 from) {
+        lastAttackFrom = from;
         hp -= 1;
     }
 
@@ -79,6 +81,7 @@ public class Animal : NPC {
 
     private void dropCoin() {
         var coinController = FindObjectOfType<CoinController>();
-        coinController.dropCoin(transform.position, transform.localScale.x, byPlayer: false);
+        float direction = lastAttackFrom.x < transform.position.x ? 1 : -1;
+        coinController.dropCoin(transform.position, direction, CoinDropType.ByAnimal);
     }
 }

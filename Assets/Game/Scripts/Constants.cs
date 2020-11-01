@@ -32,6 +32,8 @@ public class Constants : MonoBehaviour {
     [SerializeField] public float PEASANT_COIN_LOOKUP_RADIUS;
     [SerializeField] public float PEASANT_WEAPON_LOOKUP_RADIUS;
     [SerializeField] public float PEASANT_ANIMAL_LOOKUP_RADIUS;
+    [Tooltip("If player is in this range, peasant will drop his trophy coins")]
+    [SerializeField] public float PEASANT_PLAYER_DELIVER_PROXIMITY;
     [Tooltip("Attack range for hunter")]
     [SerializeField] public float PEASANT_ANIMAL_ATTACK_RANGE;
     

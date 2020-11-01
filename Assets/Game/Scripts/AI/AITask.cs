@@ -6,10 +6,10 @@ using System;
 public enum AITaskType {
     Move,
     Stop,
-    DropCoin,
+    DropCoins,
     PickupCoin,
     PickupWeapon,
-    Attack,
+    Kill,
     TypeUpdate
 }
 
@@ -26,11 +26,13 @@ public class AITask {
     public AITaskState state;
     public string reason;
     public Action onComplete;   
+    public bool scheduled;
 
     // TODO: object for data
     public Vector3 position;
     public GameObject target;
     public NPCType peasantType;
+    public int amountToDrop;
     
     public bool success {get{ return state == AITaskState.Finished; }}
     public bool failed {get{ return state == AITaskState.Failed; }}
@@ -40,7 +42,7 @@ public class AITask {
     private AITask(AITaskType type) {
         this.type = type;
         this.state = AITaskState.Issued;
-        
+        this.scheduled = true;
         this.id = idCounter++;
     }
 
@@ -64,11 +66,18 @@ public class AITask {
     public static AITask typeUpdateTask(NPCType type) {
         AITask task = new AITask(AITaskType.TypeUpdate);
         task.peasantType = type;
+        task.scheduled = false;
         return task;
     }
-    public static AITask attackTask(GameObject target) {
-        AITask task = new AITask(AITaskType.Attack);
+    public static AITask killTask(GameObject target) {
+        AITask task = new AITask(AITaskType.Kill);
         task.target = target;
+        return task;
+    }
+    public static AITask dropCoinsTask(int amount) {
+        AITask task = new AITask(AITaskType.DropCoins);
+        task.amountToDrop = amount;
+        task.scheduled = false;
         return task;
     }
     /// Public -- 
@@ -81,11 +90,13 @@ public class AITask {
     public void finish(string reason = null) {
         this.state = AITaskState.Finished;
         this.reason = reason;
+        if (!scheduled) onComplete?.Invoke();
     }
 
     public void fail(string reason = null) {
         this.state = AITaskState.Failed;
         this.reason = reason;
+        if (!scheduled) onComplete?.Invoke();
     }
 
     override public string ToString() {

@@ -25,7 +25,7 @@ public class Peasant : NPC {
 
     /// Public -- 
 
-    /// Private -- 
+    /// Protected -- 
 
     override protected void onTaskReceived(AITask task) {
         switch (task.type) {
@@ -74,11 +74,18 @@ public class Peasant : NPC {
                 title.updateTitle(task.peasantType);
                 task.finish(reason: "type updated to " + task.peasantType);
                 break;
-            case AITaskType.Attack:
+            case AITaskType.Kill:
                 task.begin();
                 performAttack(task.target, onComplete: (bool finished) => {
-                    if (finished) task.finish(reason: "attack performed, animal killed");
+                    if (finished)task.finish(reason: "attack performed, animal killed");
                     else task.fail(reason: "animal survived attack");
+                });
+                break;
+            case AITaskType.DropCoins:
+                task.begin();
+                dropCoins(task.amountToDrop, onComplete: (bool finished) => {
+                    if (finished)task.finish(reason: $"dropped {task.amountToDrop} coins");
+                    else task.fail(reason: "could not drop coins");
                 });
                 break;
             default:
@@ -87,9 +94,11 @@ public class Peasant : NPC {
         }
     }
 
+    /// Private -- 
+
     private void performAttack(GameObject target, System.Action<bool> onComplete) {
         Animal animal = target.GetComponent<Animal>();
-        animal.hit();
+        animal.hit(transform.position);
         GameObject arrow = new GameObject();
         arrow.name = "Bow Arrow";
 
@@ -104,9 +113,9 @@ public class Peasant : NPC {
 
         float distance = Vector2.Distance(arrowPos, targetPos);
         float angle = BabyUtils.VectorAngle(arrowPos, targetPos);
-        arrow.transform.Rotate(new Vector3(0, 0,-angle - 180));
+        arrow.transform.Rotate(new Vector3(0, 0, -angle - 180));
 
-        float flightTime = distance/2f;
+        float flightTime = distance / 2f;
         float hitTime = flightTime * 0.7f;
         LTDescr flightTween = LeanTween.move(arrow, targetPos, flightTime);
         flightTween.setEaseInOutExpo();
@@ -115,5 +124,15 @@ public class Peasant : NPC {
             onComplete?.Invoke(!animal.isAlive);
         });
         LeanTween.delayedCall(hitTime, animal.animateHit);
+    }
+
+    private void dropCoins(int amount, System.Action<bool> onComplete) {
+        float direction = FindObjectOfType<Player>().transform.position.x < transform.position.x ? 1 : -1;
+        for (int i = 0; i < amount; i++) {
+            LeanTween.delayedCall(i * 0.2f, () => {
+                coinController.dropCoin(transform.position, direction, CoinDropType.ByPeasant);
+            });
+        }
+        onComplete?.Invoke(true);
     }
 }

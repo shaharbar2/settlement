@@ -19,21 +19,24 @@ public class CoinController : MonoBehaviour {
 
     /// Public -- 
 
-    public Coin dropCoin(Vector3 playerPos, float direction, bool byPlayer) {
-        if (byPlayer && amountBank <= 0) {
-            return null;
-        } else {
+    public Coin dropCoin(Vector3 pos, float direction, CoinDropType dropType) {
+        if (dropType == CoinDropType.ByPlayer) {
             amountBank--;
+            if (amountBank <= 0) {
+                return null;
+            }
         }
+
         updateUI();
         Coin coin = Instantiate(coinPrefab);
+        coin.dropType = dropType;
         Vector3 distance = randomCoinDistance();
         worldCoins.Add(coin);
 
         if (direction > 0) {
             distance.x *= -1;
         }
-        coin.gameObject.transform.position = playerPos + new Vector3(distance.x, distance.y);
+        coin.gameObject.transform.position = pos + new Vector3(distance.x, distance.y);
         coin.drop(distance.x, 0.5f - distance.y);
         return coin;
     }
@@ -72,8 +75,9 @@ public class CoinController : MonoBehaviour {
         }
     }
 
-    public Coin lookForCoin(Vector3 pos, float distance) {
+    public Coin lookForCoin(Vector3 pos, float distance, CoinDropType dropType) {
         foreach (Coin coin in worldCoins) {
+            if (coin.dropType != dropType)continue;
             if (Vector2.Distance(pos, coin.transform.position) < distance) {
                 GameObject reserver = null;
                 if (!reservedCoins.TryGetValue(coin, out reserver))
