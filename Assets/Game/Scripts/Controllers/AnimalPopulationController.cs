@@ -30,8 +30,9 @@ public class AnimalPopulationController : MonoBehaviour {
     
     private void controlPopulation() {
         if (worldAnimals.Count < Constants.instance.MAX_ANIMALS) {
-            if (spawnInterval < Constants.instance.ANIMALS_SPAWN_INTERVAL) {
+            if (spawnInterval > Constants.instance.ANIMALS_SPAWN_INTERVAL) {
                 spawnAnimal();  
+                spawnInterval = 0;
             }
         }
     }

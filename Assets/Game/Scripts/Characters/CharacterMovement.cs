@@ -15,6 +15,9 @@ public class CharacterMovement : MonoBehaviour {
     private List<Vector2> currentPath;
     // true - finished, false - interrupted
     private System.Action<bool> onPathComplete;
+    private bool isMoving { get {
+        return currentPath != null || direction.x != 0 || direction.y != 0;
+    }}
 
     void Start() {
         animator = GetComponentInChildren<Animator>();
@@ -47,6 +50,16 @@ public class CharacterMovement : MonoBehaviour {
         onPathComplete = onComplete;
     }
 
+    public void lookAt(Vector3 targetPos) {
+        
+        if (transform.position.x > targetPos.x) {
+            transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x) * 1, transform.localScale.y);
+        } else if (transform.position.x < targetPos.x) {
+            transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y);
+        }
+        GetComponentInChildren<Animator>().SetBool("isFront", transform.position.y > targetPos.y);
+            
+    }
     /// Private -- 
 
     private void updateAnimation() {

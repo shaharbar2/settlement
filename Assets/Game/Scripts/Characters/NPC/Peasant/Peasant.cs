@@ -99,14 +99,17 @@ public class Peasant : NPC {
     private void performAttack(GameObject target, System.Action<bool> onComplete) {
         Animal animal = target.GetComponent<Animal>();
         bool isHit = BabyUtils.chance(Constants.instance.PEASANT_HIT_CHANCE);
-
+        bool didHit = false;
         Vector3 targetPos = Vector3.zero;
         if (isHit) {
-            animal.hit(transform.position);
+            didHit = animal.hit(transform.position);
             targetPos = animal.getHitPosition();
         } else {
             targetPos = animal.getMissPosition();
         }
+
+        movement.lookAt(targetPos);
+
         GameObject arrow = new GameObject();
         arrow.name = "Bow Arrow";
 
@@ -129,9 +132,9 @@ public class Peasant : NPC {
         flightTween.setEaseInOutExpo();
         flightTween.setOnComplete(() => {
             Destroy(arrow);
-            onComplete?.Invoke(!animal.isAlive);
+            onComplete?.Invoke(!animal.isAlive && didHit);
         });
-        if (isHit) {
+        if (isHit && didHit) {
             LeanTween.delayedCall(hitTime, animal.animateHit);
         }
     }

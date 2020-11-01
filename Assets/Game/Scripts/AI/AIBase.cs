@@ -41,13 +41,13 @@ public abstract class AIBase : MonoBehaviour {
       /// Task handlers
 
     private void onTaskFailed(AITask task) {
-        Debug.Log($"Peasant failed: {task}");
+        Debug.Log($"{gameObject.name} failed: {task}");
         if (task.scheduled) currentTask = null;
         task.onComplete?.Invoke();
     }
 
     private void onTaskFinished(AITask task) {
-        Debug.Log($"Peasant finished: {task}");
+        Debug.Log($"{gameObject.name} finished: {task}");
         if (task.scheduled) currentTask = null;
         task.onComplete?.Invoke();
     }

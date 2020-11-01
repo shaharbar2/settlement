@@ -132,6 +132,7 @@ public class PeasantAI : AIBase {
             Weapon weapon = weaponController.lookForWeapon(transform.position, 1000f);
 
             if (weapon != null) {
+                weaponController.reserveWeaponForPickup(weapon, gameObject);
                 var task = AITask.pickupWeaponTask(weapon);
                 task.onComplete = () => {
                     if (task.success) {
@@ -170,6 +171,9 @@ public class PeasantAI : AIBase {
         float d = Vector2.Distance(animal.transform.position, transform.position);
         if (d > attackRange) {
             Vector3 approach = Vector3.MoveTowards(transform.position, animal.transform.position, d - attackRange + 1f);
+            float r = 1f;
+            approach.x += Random.Range(-r, r);
+            approach.y += Random.Range(-r/2, r/2);
             issueTask(AITask.moveTask(approach));
         } else {
             if (attackElapsed > attackInterval) {

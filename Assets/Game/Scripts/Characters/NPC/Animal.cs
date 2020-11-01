@@ -7,7 +7,7 @@ public class Animal : NPC {
     public delegate void AnimalEvent(Animal animal);
     public event AnimalEvent onDeath;
 
-    public bool isAlive { get { return hp > 0; }}
+    public bool isAlive { get { return hp > 0; } }
 
     private int hp = 2;
     private Vector3 lastAttackFrom;
@@ -30,9 +30,13 @@ public class Animal : NPC {
         return transform.position + new Vector3(xOffset, 0f);
     }
 
-    public void hit(Vector3 from) {
-        lastAttackFrom = from;
-        hp -= 1;
+    public bool hit(Vector3 from) {
+        if (hp > 0) {
+            lastAttackFrom = from;
+            hp -= 1;
+            return true;
+        }
+        return false;
     }
 
     public void animateHit() {
@@ -79,8 +83,10 @@ public class Animal : NPC {
     private void animateDeath() {
         GetComponentInChildren<Animator>().SetBool("isHit", true);
         LeanTween.delayedCall(1.5f, () => {
-            onDeath?.Invoke(this);
-            Destroy(gameObject);
+            if (gameObject) {
+                onDeath?.Invoke(this);
+                Destroy(gameObject);
+            }
         });
         LeanTween.delayedCall(1f, () => {
             dropCoin();
