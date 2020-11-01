@@ -27,13 +27,25 @@ public class Constants : MonoBehaviour {
     [Header("Peasant settings")]
     [Tooltip("Amount of coins at start")]
     [SerializeField] public float PEASANT_SPEED;
+    [Tooltip("Radius of coin visibility")]
     [SerializeField] public float PEASANT_COIN_LOOKUP_RADIUS;
+    [Tooltip("Radius of weapon visibility")]
     [SerializeField] public float PEASANT_WEAPON_LOOKUP_RADIUS;
+    [Tooltip("Radius of animals visibility")]
     [SerializeField] public float PEASANT_ANIMAL_LOOKUP_RADIUS;
     [Tooltip("If player is in this range, peasant will drop his trophy coins")]
     [SerializeField] public float PEASANT_PLAYER_DELIVER_PROXIMITY;
     [Tooltip("Attack range for hunter")]
     [SerializeField] public float PEASANT_ANIMAL_ATTACK_RANGE;
+    [Tooltip("Time interval between attacks")]
+    [SerializeField] public float PEASANT_ATTACK_INTERVAL;
+    [Tooltip("Arrow flight speed")]
+    [SerializeField] public float PEASANT_ARROW_FLIGHT_SPEED;
+    [Tooltip("Chance to hit animal when attack. 1 = 100%")]
+    [SerializeField] public float PEASANT_HIT_CHANCE;
+    [Tooltip("When peasant approaches animal he will randomly deviate to from optimal attack position")]
+    [SerializeField] public float PEASANT_APPROACH_DEVIATION;
+
 
     [Header("Animal settings")]
     [SerializeField] public int MAX_ANIMALS;

@@ -38,7 +38,7 @@ public class BuildingSprite : MonoBehaviour {
 
                 float yOffset = Random.Range(-rMin * 4f, rMin * 2f);
                 float xOffset = rMin + Random.Range(0f, rMax);
-                if (BabyUtils.randomBool()) {
+                if (BabyUtils.randomBool) {
                     vfx.transform.localScale = new Vector3(-1 * vfx.transform.localScale.x, vfx.transform.localScale.y, 1);
                     vfx.transform.position = new Vector3(transform.position.x - xOffset, transform.position.y + yOffset);
                 } else {

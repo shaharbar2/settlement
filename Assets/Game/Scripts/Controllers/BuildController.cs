@@ -38,11 +38,21 @@ public class BuildController : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             if (state == BuildControllerState.SELECTING_SPOT) {
                 buildAtSelectedSpot();
+                unblockPlayerInput();
             }
         }
     }
 
     /// Private -- 
+    private void blockPlayerInput() {
+        ui.blockPlayerMouseMovement = true;
+    }
+
+    private void unblockPlayerInput() {
+        LeanTween.delayedCall(0.5f, () => {
+            ui.blockPlayerMouseMovement = false;
+        });
+    }
 
     private void handleRadialMenuInput() {
         KeyCode keyCode = Constants.instance.BM_KEY_CODE;
@@ -53,11 +63,13 @@ public class BuildController : MonoBehaviour {
         if (Input.GetKey(keyCode)) {
             radialMenuHoldElapsed += Time.deltaTime;
             if (radialMenuHoldElapsed >= Constants.instance.BM_KEY_HOLD) {
+                blockPlayerInput();
                 ui.showRadialMenu();
             }
         }
 
         if (Input.GetKeyUp(keyCode)) {
+            unblockPlayerInput();
             ui.hideRadialMenu();
         }
     }
@@ -82,8 +94,8 @@ public class BuildController : MonoBehaviour {
         building.build();
         tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
         tilemapController.removeHighlightForBuild();
-        
-        foreach(var movement in FindObjectsOfType<CharacterMovement>()) {
+
+        foreach (var movement in FindObjectsOfType<CharacterMovement>()) {
             movement.leaveBuildArea();
         }
 

@@ -2,8 +2,13 @@
   ## Patchnotes:
 
   ### build 0.0.3
-  - [#16](/../../issues/16) Coins dropping and picking up.
-  - [#10](/../../issues/10) Add peasant. 
+  - [#10](/../../issues/10) Added peasant 
+  - [#11](/../../issues/11) Added peasant AI 
+  - [#12](/../../issues/12) Added animals
+  - [#13](/../../issues/13) Added bow shop (any building in the menu spawns bow shop) 
+  - [#16](/../../issues/16) Player can now drop and pick up coins (F key default)
+  - [#26](/../../issues/26) Peasant drops coins when player is around
+  - [#27](/../../issues/27) Infinite loop for spawning animals
 
   ### build 0.0.2:
   - [#5](/../../pull/5) Make it possible to move player by holding mouse in pointnclick movement mode.

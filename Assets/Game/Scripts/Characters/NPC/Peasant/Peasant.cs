@@ -98,13 +98,24 @@ public class Peasant : NPC {
 
     private void performAttack(GameObject target, System.Action<bool> onComplete) {
         Animal animal = target.GetComponent<Animal>();
-        animal.hit(transform.position);
+        bool isHit = BabyUtils.chance(Constants.instance.PEASANT_HIT_CHANCE);
+        bool didHit = false;
+        Vector3 targetPos = Vector3.zero;
+        if (isHit) {
+            didHit = animal.hit(transform.position);
+            targetPos = animal.getHitPosition();
+        } else {
+            targetPos = animal.getMissPosition();
+        }
+        Debug.Log($"{gameObject.name} didHit: {didHit}, animalAlive: {animal.isAlive}" );
+        movement.lookAt(targetPos);
+
         GameObject arrow = new GameObject();
         arrow.name = "Bow Arrow";
 
         float characterHeight = 0.3f;
         Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
-        Vector3 targetPos = animal.getHitPosition();
+        
         arrow.transform.position = arrowPos;
 
         SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
@@ -115,15 +126,18 @@ public class Peasant : NPC {
         float angle = BabyUtils.VectorAngle(arrowPos, targetPos);
         arrow.transform.Rotate(new Vector3(0, 0, -angle - 180));
 
-        float flightTime = distance / 2f;
+        float flightSpeed = Constants.instance.PEASANT_ARROW_FLIGHT_SPEED;
+        float flightTime = distance / flightSpeed;
         float hitTime = flightTime * 0.7f;
         LTDescr flightTween = LeanTween.move(arrow, targetPos, flightTime);
         flightTween.setEaseInOutExpo();
         flightTween.setOnComplete(() => {
             Destroy(arrow);
-            onComplete?.Invoke(!animal.isAlive);
+            onComplete?.Invoke(!animal.isAlive && didHit);
         });
-        LeanTween.delayedCall(hitTime, animal.animateHit);
+        if (isHit && didHit) {
+            LeanTween.delayedCall(hitTime, animal.animateHit);
+        }
     }
 
     private void dropCoins(int amount, System.Action<bool> onComplete) {

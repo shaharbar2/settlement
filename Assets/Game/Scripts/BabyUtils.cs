@@ -134,9 +134,9 @@ public static class BabyUtils {
 	}
 
 	/// Misc
-	public static bool randomBool() {
+	public static bool randomBool { get {
 		return Random.Range(0f, 1f) < 0.5f;
-	}
+	} }
 
 	public static bool chance(float rate) {
 		return Random.Range(0f, 1f) < rate;

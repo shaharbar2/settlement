@@ -109,7 +109,7 @@ public class CoinController : MonoBehaviour {
     /// Private -- 
 
     private Vector3 randomCoinDistance() {
-        return new Vector3(Random.Range(0.2f, 0.6f), Random.Range(-0.3f, 0.3f));
+        return new Vector3(Random.Range(0.4f, 0.6f), Random.Range(-0.2f, 0.2f));
     }
 
     private void updateUI() {
