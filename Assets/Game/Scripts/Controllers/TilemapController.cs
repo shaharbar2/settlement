@@ -101,6 +101,25 @@ public class TilemapController : MonoBehaviour {
         return Vector3.zero;
     }
 
+    public Vector3 randomPosition(bool walkable = false) {
+        bool tileExists = false;
+        bool tileIsWalkable = false;
+        Vector3Int tilePos = Vector3Int.zero;
+        int iterations = 0;
+        int maxIterations = 50;
+        while (!tileExists && !(!walkable || tileIsWalkable)) {
+            if (iterations++ > maxIterations) {
+                return default(Vector3);
+            }
+
+            tilePos = randomTilePos();
+            tileExists = baseTilemap.HasTile(tilePos);
+            tileIsWalkable = !wallsTilemap.HasTile(tilePos);
+        }
+        return baseTilemap.GetCellCenterWorld(tilePos);
+        // we never get here actually, so whatever
+    }
+
     public Vector2Int tileDistance(Vector2 posA, Vector2 posB) {
         Vector3Int tileA = baseTilemap.WorldToCell(posA);
         Vector3Int tileB = baseTilemap.WorldToCell(posB);
@@ -120,5 +139,13 @@ public class TilemapController : MonoBehaviour {
                 areaData.tilemap.SetTile(pos, tile);
             }
         }
+    }
+
+    private Vector3Int randomTilePos() {
+        Vector3Int pos = Vector3Int.zero;
+        BoundsInt bounds = baseTilemap.cellBounds;
+        pos.x = Random.Range(bounds.xMin, bounds.xMax);
+        pos.y = Random.Range(bounds.yMin, bounds.yMax);
+        return pos;
     }
 }

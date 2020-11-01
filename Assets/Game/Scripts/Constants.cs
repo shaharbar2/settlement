@@ -22,13 +22,11 @@ public class Constants : MonoBehaviour {
     [SerializeField] public BuildingStyle BUILDING_STYLE;
     [SerializeField] public float CAMERA_SPEED;
     [SerializeField] public float PLAYER_SPEED;
-    
-
-    [Header("Game variables")]
-    [SerializeField] public float PEASANT_SPEED;
-    [SerializeField] public float ANIMAL_SPEED;
-    [Tooltip("Amount of coins at start")]
     [SerializeField] public int INITIAL_COINS_AMOUNT;
+    
+    [Header("Peasant settings")]
+    [Tooltip("Amount of coins at start")]
+    [SerializeField] public float PEASANT_SPEED;
     [SerializeField] public float PEASANT_COIN_LOOKUP_RADIUS;
     [SerializeField] public float PEASANT_WEAPON_LOOKUP_RADIUS;
     [SerializeField] public float PEASANT_ANIMAL_LOOKUP_RADIUS;
@@ -36,6 +34,11 @@ public class Constants : MonoBehaviour {
     [SerializeField] public float PEASANT_PLAYER_DELIVER_PROXIMITY;
     [Tooltip("Attack range for hunter")]
     [SerializeField] public float PEASANT_ANIMAL_ATTACK_RANGE;
+
+    [Header("Animal settings")]
+    [SerializeField] public int MAX_ANIMALS;
+    [SerializeField] public float ANIMALS_SPAWN_INTERVAL;
+    [SerializeField] public float ANIMAL_SPEED;
     
     [Header("Keybinds")]
     [SerializeField] public KeyCode BM_KEY_CODE;

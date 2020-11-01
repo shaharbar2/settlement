@@ -8,7 +8,7 @@ public class PathfindController : MonoBehaviour {
     public Tilemap baseTilemap;
     public Tilemap wallsTilemap;
 
-    BoundsInt bounds;
+    private BoundsInt bounds;
 
     private Roy_T.AStar.Grids.Grid grid;
     private Roy_T.AStar.Paths.PathFinder pathFinder;
