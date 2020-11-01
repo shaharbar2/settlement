@@ -2,37 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Peasant : MonoBehaviour {
-    private PathfindController pathfindController;
-    private CoinController coinController;
-    private WeaponController weaponController;
+public class Peasant : NPC {
 
-    private CharacterMovement movement;
-    private PeasantAI ai;
     private PeasantTitle title;
 
-    void Awake() {
-        movement = GetComponent<CharacterMovement>();
-        ai = GetComponent<PeasantAI>();
-        ai.onTaskIssued += onTaskReceived;
+    override protected void Awake() {
         title = GetComponentInChildren<PeasantTitle>();
+        base.Awake();
     }
 
-    void Start() {
-        pathfindController = FindObjectOfType<PathfindController>();
-        coinController = FindObjectOfType<CoinController>();
-        weaponController = FindObjectOfType<WeaponController>();
+    override protected void Start() {
+       base.Start();
     }
 
-    void Update() {
+    override protected void Update() {
         movement.movementSpeed = Constants.instance.PEASANT_SPEED;
+
+        base.Update();
     }
 
     /// Public -- 
 
     /// Private -- 
 
-    private void onTaskReceived(AITask task) {
+    override protected void onTaskReceived(AITask task) {
         switch (task.type) {
             case AITaskType.Move:
                 task.begin();
@@ -76,27 +69,12 @@ public class Peasant : MonoBehaviour {
                 break;
             case AITaskType.TypeUpdate:
                 task.begin();
-                title.updateTitle(ai.type);
-                task.finish(reason: "type updated to " + ai.type);
+                title.updateTitle(task.peasantType);
+                task.finish(reason: "type updated to " + task.peasantType);
                 break;
             default:
-                Debug.Log("Undefined behavior for command: " + task.type);
+                Debug.Log("Undefined peasant behavior for command: " + task.peasantType);
                 break;
-        }
-    }
-
-    private void moveTo(Vector3 worldDest, System.Action<bool> onComplete = null) {
-        Vector2 worldPos = new Vector2(transform.position.x, transform.position.y);
-        List<Vector2> path = pathfindController.findPathWorld(worldPos, worldDest);
-
-        // remove point of current position from the path
-        if (path != null && path.Count > 0) {
-            path.RemoveAt(0);
-        }
-        if (path == null) {
-            onComplete?.Invoke(false);
-        } else {
-            movement.movePath(path, onComplete);
         }
     }
 }
