@@ -34,6 +34,9 @@ public class Constants : MonoBehaviour {
     [SerializeField] public float PEASANT_PLAYER_DELIVER_PROXIMITY;
     [Tooltip("Attack range for hunter")]
     [SerializeField] public float PEASANT_ANIMAL_ATTACK_RANGE;
+    [Tooltip("Chance to hit animal when attack. 1 = 100%")]
+    [SerializeField] public float PEASANT_HIT_CHANCE;
+    
 
     [Header("Animal settings")]
     [SerializeField] public int MAX_ANIMALS;

@@ -98,13 +98,21 @@ public class Peasant : NPC {
 
     private void performAttack(GameObject target, System.Action<bool> onComplete) {
         Animal animal = target.GetComponent<Animal>();
-        animal.hit(transform.position);
+        bool isHit = BabyUtils.chance(Constants.instance.PEASANT_HIT_CHANCE);
+
+        Vector3 targetPos = Vector3.zero;
+        if (isHit) {
+            animal.hit(transform.position);
+            targetPos = animal.getHitPosition();
+        } else {
+            targetPos = animal.getMissPosition();
+        }
         GameObject arrow = new GameObject();
         arrow.name = "Bow Arrow";
 
         float characterHeight = 0.3f;
         Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
-        Vector3 targetPos = animal.getHitPosition();
+        
         arrow.transform.position = arrowPos;
 
         SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
@@ -123,7 +131,9 @@ public class Peasant : NPC {
             Destroy(arrow);
             onComplete?.Invoke(!animal.isAlive);
         });
-        LeanTween.delayedCall(hitTime, animal.animateHit);
+        if (isHit) {
+            LeanTween.delayedCall(hitTime, animal.animateHit);
+        }
     }
 
     private void dropCoins(int amount, System.Action<bool> onComplete) {

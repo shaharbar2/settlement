@@ -25,6 +25,10 @@ public class Animal : NPC {
     public Vector3 getHitPosition() {
         return transform.position + new Vector3(0, 0.1f);
     }
+    public Vector3 getMissPosition() {
+        float xOffset = Random.Range(0.2f, 0.5f) * (BabyUtils.randomBool ? -1 : 1);
+        return transform.position + new Vector3(xOffset, 0f);
+    }
 
     public void hit(Vector3 from) {
         lastAttackFrom = from;
