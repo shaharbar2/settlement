@@ -22,7 +22,12 @@ public class PeasantAI : AIBase {
     [SerializeField] public NPCType type;
     [SerializeField] private PeasantAIState state;
 
+    private int trophyCoinsAmount = 0;
+
     /// timings
+    private float playerLookupInterval = 0.5f;
+    private float playerLookupElapsed = 0f;
+
     private float lookupInterval = 0.1f;
     private float lookupElapsed = 0f;
 
@@ -39,7 +44,7 @@ public class PeasantAI : AIBase {
 
     protected override void Update() {
         attackElapsed += Time.deltaTime;
-
+        dropTrophyCoinsForPlayerUpdate();
         base.Update();
     }
     /// Protected --
@@ -103,7 +108,7 @@ public class PeasantAI : AIBase {
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
-            Coin coin = coinController.lookForCoin(transform.position, 1000f);
+            Coin coin = coinController.lookForCoin(transform.position, 1000f, CoinDropType.ByPlayer);
             if (coin != null) {
                 coinController.reserveCoinForPickup(coin, gameObject);
                 var task = AITask.pickupCoinTask(coin);
@@ -169,7 +174,7 @@ public class PeasantAI : AIBase {
         } else {
             if (attackElapsed > attackInterval) {
                 attackElapsed = 0;
-                AITask attackTask = AITask.attackTask(animal.gameObject);
+                AITask attackTask = AITask.killTask(animal.gameObject);
                 attackTask.onComplete = () => {
                     if (attackTask.success) {
                         state = PeasantAIState.WaitingForTrophyCoin;
@@ -180,22 +185,41 @@ public class PeasantAI : AIBase {
         }
     }
 
-
     private void waitForTrophyUpdate() {
         lookupElapsed += Time.deltaTime;
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
-
-            Coin coin = coinController.lookForCoin(transform.position, Constants.instance.PEASANT_ANIMAL_ATTACK_RANGE + 1f);
+            float searchRange = Constants.instance.PEASANT_ANIMAL_ATTACK_RANGE + 1f;
+            Coin coin = coinController.lookForCoin(transform.position, searchRange, CoinDropType.ByAnimal);
             if (coin != null) {
                 coinController.reserveCoinForPickup(coin, gameObject);
                 var task = AITask.pickupCoinTask(coin);
                 task.onComplete = () => {
-                    // if (task.success) {
-                        state = PeasantAIState.LookingForAnimal;
-                    // }
+                    if (task.success) {
+                        trophyCoinsAmount++;
+                    }
+                    state = PeasantAIState.LookingForAnimal;
                 };
                 issueTask(task);
+            }
+        }
+    }
+
+    private void dropTrophyCoinsForPlayerUpdate() {
+        playerLookupElapsed += Time.deltaTime;
+        if (playerLookupElapsed >= playerLookupInterval) {
+            playerLookupElapsed = 0;
+            if (trophyCoinsAmount > 0) {
+                float range = Constants.instance.PEASANT_PLAYER_DELIVER_PROXIMITY;
+                if (Vector2.Distance(player.transform.position, transform.position) < range) {
+                    AITask task = AITask.dropCoinsTask(trophyCoinsAmount);
+                    task.onComplete = () => {
+                        if (task.success) {
+                            trophyCoinsAmount = 0;
+                        }
+                    };
+                    issueTask(task);
+                }
             }
         }
     }
@@ -219,7 +243,7 @@ public class PeasantAI : AIBase {
         Animal closest = null;
         float closestRange = float.MaxValue;
         foreach (Animal animal in allAnimals) {
-            if (!animal.isAlive) continue;
+            if (!animal.isAlive)continue;
             float r = Vector2.Distance(animal.transform.position, transform.position);
             if (r < radius) {
                 if (r < closestRange) {

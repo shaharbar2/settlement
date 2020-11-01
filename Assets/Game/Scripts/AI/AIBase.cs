@@ -8,6 +8,7 @@ public abstract class AIBase : MonoBehaviour {
 
     protected WeaponController weaponController;
     protected CoinController coinController;
+    protected Player player;
 
     protected AITask currentTask;
 
@@ -19,6 +20,7 @@ public abstract class AIBase : MonoBehaviour {
     protected virtual void Start() {
         coinController = FindObjectOfType<CoinController>();
         weaponController = FindObjectOfType<WeaponController>();
+        player = FindObjectOfType<Player>();
     }
 
     // Update is called once per frame
@@ -40,19 +42,23 @@ public abstract class AIBase : MonoBehaviour {
 
     private void onTaskFailed(AITask task) {
         Debug.Log($"Peasant failed: {task}");
-        currentTask = null;
+        if (task.scheduled) currentTask = null;
         task.onComplete?.Invoke();
     }
 
     private void onTaskFinished(AITask task) {
         Debug.Log($"Peasant finished: {task}");
-        currentTask = null;
+        if (task.scheduled) currentTask = null;
         task.onComplete?.Invoke();
     }
 
     protected void issueTask(AITask task) {
-        Debug.Log($"Issued peasant: {task}");
-        currentTask = task;
+        if (task.scheduled) {
+            currentTask = task;
+            Debug.Log($"Issued peasant: {task}");
+        } else {
+            Debug.Log($"Unscheduled task for peasant: {task}");
+        }
         onTaskIssued?.Invoke(task);
     }
 

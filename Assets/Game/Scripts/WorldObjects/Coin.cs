@@ -2,7 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CoinDropType {
+    ByPlayer,
+    ByAnimal,
+    ByPeasant
+}
 public class Coin : MonoBehaviour {
+    public CoinDropType dropType;
+    
     [SerializeField] private Animator coin;
     [SerializeField] private SpriteRenderer shadow;
     [SerializeField] private BoxCollider2D boxCollider;
@@ -20,6 +27,9 @@ public class Coin : MonoBehaviour {
 
     private LTDescr dropTween;
     private float dropLerp;
+
+    private LTDescr pickupTween;
+    private float pickupLerp;
 
     private LTDescr fadeTween;
     private float fadeLerp;
@@ -108,12 +118,12 @@ public class Coin : MonoBehaviour {
     public void pickup(Vector3 worldPosition, System.Action onComplete = null) {
         stopBounce();
         dropStartPos = worldPosition - transform.position;
-        if (dropTween == null) {
-            dropTween = LeanTween.value(gameObject, 1f, 0f, pickupTime);
-            dropTween.setEase(LeanTweenType.animationCurve);
-            dropTween.setOnUpdate(updateDropLerp);
-            dropTween.setOnComplete(() => {
-                dropTween = null;
+        if (pickupTween == null) {
+            pickupTween = LeanTween.value(gameObject, 1f, 0f, pickupTime);
+            pickupTween.setEase(LeanTweenType.animationCurve);
+            pickupTween.setOnUpdate(updateDropLerp);
+            pickupTween.setOnComplete(() => {
+                pickupTween = null;
                 onComplete?.Invoke();
             });
             coinRenderer.sortingOrder = 1;
