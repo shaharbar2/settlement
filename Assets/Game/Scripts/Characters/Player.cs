@@ -9,8 +9,8 @@ public class Player : MonoBehaviour {
     private WeaponController weaponController;
     private GameUI ui;
 
-    private float pathfindMouseInterval = 1.2f;
-    private float pathfindMouseElapsed = 1.2f;
+    private float pathfindMouseInterval = 0.2f;
+    private float pathfindMouseElapsed = 0.2f;
 
     [SerializeField] private BoxCollider2D feetCollider;
 
@@ -91,7 +91,7 @@ public class Player : MonoBehaviour {
     }
 
     private void handlePointAndClickMovement() {
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButton(0) && !ui.blockPlayerMouseMovement) {
             pathfindMouseElapsed += Time.deltaTime;
             if (pathfindMouseElapsed >= pathfindMouseInterval) {
                 pathfindMouseElapsed = 0;

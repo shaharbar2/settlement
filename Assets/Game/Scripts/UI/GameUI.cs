@@ -14,6 +14,8 @@ public class GameUI : MonoBehaviour {
 
     private bool isRadialMenuVisible = false;
 
+    public bool blockPlayerMouseMovement = false;
+    
     void Awake() {
         playerSettingsButton.onClick.AddListener(onPlayerSettingsButtonClick);
         playerSettingsMenu.onClose += onPlayerSettingsMenuClose;

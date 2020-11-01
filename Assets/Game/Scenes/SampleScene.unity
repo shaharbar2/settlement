@@ -14815,6 +14815,7 @@ MonoBehaviour:
   coinsText: {fileID: 2048925460}
   radialMenu: {fileID: 2119475727}
   playerSettingsMenu: {fileID: 23636121}
+  blockPlayerMouseMovement: 0
 --- !u!1 &760593770
 GameObject:
   m_ObjectHideFlags: 0
