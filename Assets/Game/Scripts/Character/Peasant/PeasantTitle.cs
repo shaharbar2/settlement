@@ -28,7 +28,7 @@ public class PeasantTitle : MonoBehaviour {
                 spriteRenderer.sprite = homelessSprite;
                 break;
             case PeasantType.Hunter:
-                spriteRenderer.sprite = homelessSprite;
+                spriteRenderer.sprite = hunterSprite;
                 break;
         }
     }

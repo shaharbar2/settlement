@@ -8,6 +8,7 @@ public enum AITaskType {
     Stop,
     DropCoin,
     PickupCoin,
+    PickupWeapon,
     Attack,
     TypeUpdate
 }
@@ -51,6 +52,11 @@ public class AITask {
         task.target = coin.gameObject;
         return task;
     }
+    public static AITask pickupWeaponTask(Weapon weapon) {
+        AITask task = new AITask(AITaskType.PickupWeapon);
+        task.target = weapon.gameObject;
+        return task;
+    }
     public static AITask typeUpdateTask() {
         AITask task = new AITask(AITaskType.TypeUpdate);
         return task;
@@ -58,6 +64,11 @@ public class AITask {
 
     /// Public -- 
     
+    public void begin(string reason = null) {
+        this.state = AITaskState.InProgress;
+        this.reason = reason;
+    }
+
     public void finish(string reason = null) {
         this.state = AITaskState.Finished;
         this.reason = reason;

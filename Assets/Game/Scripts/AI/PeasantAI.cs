@@ -22,6 +22,7 @@ public class PeasantAI : MonoBehaviour {
     [SerializeField] public PeasantType type;
     [SerializeField] private PeasantAIState state;
 
+    private WeaponController weaponController;
     private CoinController coinController;
     private AITask currentTask;
 
@@ -41,6 +42,7 @@ public class PeasantAI : MonoBehaviour {
 
     void Start() {
         coinController = FindObjectOfType<CoinController>();
+        weaponController = FindObjectOfType<WeaponController>();
     }
 
     void Update() {
@@ -125,7 +127,7 @@ public class PeasantAI : MonoBehaviour {
         if (lookForCoinElapsed > lookForCoinInterval) {
             lookForCoinElapsed = 0;
 
-            Coin coin = coinController.lookForCoin(transform.position, 10f);
+            Coin coin = coinController.lookForCoin(transform.position, 1000f);
             if (coin != null) {
                 coinController.reserveCoinForPickup(coin, gameObject);
                 var task = AITask.pickupCoinTask(coin);
@@ -146,24 +148,17 @@ public class PeasantAI : MonoBehaviour {
         if (lookForWeaponElapsed > lookForWeaponInterval) {
             lookForWeaponElapsed = 0;
 
-            // foreach (Coin coin in worldCoins) {
-            //     if (Vector2.Distance(pos, coin.transform.position) < distance) {
-            //         GameObject reserver = null;
-            //         if (!reservedCoins.TryGetValue(coin, out reserver))
-            //             return coin;
-            //     }
-            // }
-
-            // Coin coin = coinController.lookForCoin(transform.position, 10f);
-            // if (coin != null) {
-            //     var task = AITask.pickupCoinTask(coin);
-            //     task.onComplete = () => {
-            //         if (task.success) {
-            //             becomePeasant();
-            //         }
-            //     };
-            //     issueTask(task);
-            // }
+            Weapon weapon = weaponController.lookForWeapon(transform.position, 1000f);
+            
+            if (weapon != null) {
+                var task = AITask.pickupWeaponTask(weapon);
+                task.onComplete = () => {
+                    if (task.success) {
+                        becomeHunter();
+                    }
+                };
+                issueTask(task);
+            }
         }
     }
 
@@ -193,6 +188,11 @@ public class PeasantAI : MonoBehaviour {
 
     private void becomePeasant() {
         type = PeasantType.Peasant;
+        issueTask(AITask.typeUpdateTask());
+    }
+
+    private void becomeHunter() {
+        type = PeasantType.Hunter;
         issueTask(AITask.typeUpdateTask());
     }
 }

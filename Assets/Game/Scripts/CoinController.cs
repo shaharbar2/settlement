@@ -40,6 +40,7 @@ public class CoinController : MonoBehaviour {
                 amountBank++;
             }
             updateUI();
+            removeReservation(coin);
             Destroy(coin.gameObject);
             worldCoins.Remove(coin);
         });
@@ -91,6 +92,10 @@ public class CoinController : MonoBehaviour {
         }
         reservedCoins.Add(coin, reserver);
         return true;
+    }
+    
+    public void removeReservation(Coin coin) {
+        reservedCoins.Remove(coin);
     }
 
     /// Private -- 

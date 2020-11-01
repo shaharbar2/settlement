@@ -57,7 +57,7 @@ MonoBehaviour:
   bowPrefab: {fileID: 318635145142688354, guid: e1fa6015a9e09684184ef3bc7463a87b,
     type: 3}
   coinsAnchor: {fileID: 1643420907415241335}
-  dropAnchor: {fileID: 8508379627585934995}
+  weaponAnchor: {fileID: 8508379627585934995}
   spriteRenderer: {fileID: 6645057266062408214}
   shadowSpriteRenderer: {fileID: 5240819123502037663}
 --- !u!1 &4216335390297585067
@@ -181,7 +181,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8508379627585934995}
   m_Layer: 0
-  m_Name: Drop Anchor
+  m_Name: Weapon Anchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

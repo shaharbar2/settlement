@@ -10,7 +10,7 @@ public class BuildingSprite : MonoBehaviour {
     [SerializeField] private GameObject dustVFXPrefab;
     [SerializeField] private GameObject bowPrefab;
     [SerializeField] private Transform coinsAnchor;
-    [SerializeField] private Transform dropAnchor;
+    [SerializeField] private Transform weaponAnchor;
 
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
@@ -57,22 +57,9 @@ public class BuildingSprite : MonoBehaviour {
         return coinsAnchor.transform.position;
     }
 
-    public void dropBow() {
-        GameObject bow = Instantiate(bowPrefab);
-        SpriteRenderer spriteRenderer = bow.GetComponentInChildren<SpriteRenderer>();
-        spriteRenderer.sortingOrder = 1;
-        spriteRenderer.color = Color.white.setAlpha(0);
-        float dropDistance = 0.6f;
-        bow.transform.position = dropAnchor.transform.position + new Vector3(0, dropDistance);
-        LeanTween.value(bow, 0f, 1f, 1.2f).setOnUpdate((float lerp) => {
-            spriteRenderer.color = spriteRenderer.color.setAlpha(lerp);
-            Vector3 pos = bow.transform.position;
-            pos.y = dropAnchor.transform.position.y + dropDistance * (1f -lerp);
-            bow.transform.position = pos;
-        }).setOnComplete(() => {
-            spriteRenderer.sortingOrder = 0;
-        }
-        ).setEaseOutBounce();
+    public Vector3 getWeaponAnchor() {
+        return weaponAnchor.transform.position;
+        
     }
     /// Private --
 
