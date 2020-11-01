@@ -25,11 +25,21 @@ public class PeasantAI : AIBase {
     private float lookupInterval = 0.1f;
     private float lookupElapsed = 0f;
 
+    private float attackInterval = 2f;
+    private float attackElapsed = 2f;
+
     private Animal targetAnimal = null;
 
     protected override void Start() {
         base.Start();
         issueTask(AITask.typeUpdateTask(type));
+    }
+    /// Protected --
+
+    protected override void Update() {
+        attackElapsed += Time.deltaTime;
+
+        base.Update();
     }
     /// Protected --
 
@@ -125,14 +135,14 @@ public class PeasantAI : AIBase {
     }
 
     private void lookForAnimalUpdate() {
-        // idleRoamUpdate();
+        idleRoamUpdate();
 
         lookupElapsed += Time.deltaTime;
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
             float searchRadius = Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS;
-            targetAnimal = findClosestAnimal(searchRadius);
+            targetAnimal = findClosestAliveAnimal(searchRadius);
 
             if (targetAnimal != null) {
                 state = PeasantAIState.ChasingAnimal;
@@ -142,7 +152,7 @@ public class PeasantAI : AIBase {
 
     private void chaseAnimalUpdate() {
         Animal animal = targetAnimal;
-        if (animal == null) {
+        if (animal == null || !animal.isAlive) {
             state = PeasantAIState.LookingForAnimal;
             return;
         }
@@ -150,10 +160,13 @@ public class PeasantAI : AIBase {
         float attackRange = Constants.instance.PEASANT_ANIMAL_ATTACK_RANGE;
         float d = Vector2.Distance(animal.transform.position, transform.position);
         if (d > attackRange) {
-            Vector3 approach = Vector3.MoveTowards(transform.position, animal.transform.position, d - attackRange +1f);
+            Vector3 approach = Vector3.MoveTowards(transform.position, animal.transform.position, d - attackRange + 1f);
             issueTask(AITask.moveTask(approach));
         } else {
-            issueTask(AITask.attackTask(animal.gameObject));
+            if (attackElapsed > attackInterval) {
+                attackElapsed = 0;
+                issueTask(AITask.attackTask(animal.gameObject));
+            }
         }
     }
 
@@ -169,11 +182,12 @@ public class PeasantAI : AIBase {
         issueTask(AITask.typeUpdateTask(type));
     }
 
-    private Animal findClosestAnimal(float radius) {
+    private Animal findClosestAliveAnimal(float radius) {
         Animal[] allAnimals = FindObjectsOfType<Animal>();
         Animal closest = null;
         float closestRange = float.MaxValue;
         foreach (Animal animal in allAnimals) {
+            if (!animal.isAlive) continue;
             float r = Vector2.Distance(animal.transform.position, transform.position);
             if (r < radius) {
                 if (r < closestRange) {

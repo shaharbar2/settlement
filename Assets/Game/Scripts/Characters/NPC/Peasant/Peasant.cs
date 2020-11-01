@@ -88,27 +88,32 @@ public class Peasant : NPC {
     }
 
     private void performAttack(GameObject target, System.Action<bool> onComplete) {
+        Animal animal = target.GetComponent<Animal>();
+        animal.hit();
         GameObject arrow = new GameObject();
         arrow.name = "Bow Arrow";
 
         float characterHeight = 0.3f;
         Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
+        Vector3 targetPos = animal.getHitPosition();
         arrow.transform.position = arrowPos;
 
         SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "Objects";
         spriteRenderer.sprite = arrowSprite;
-        
-        float distance = Vector2.Distance(arrowPos, target.transform.position);
-        float angle = BabyUtils.VectorAngle(arrowPos, target.transform.position);
-        arrow.transform.Rotate(new Vector3(0,0,-angle - 180));
 
-        LTDescr tween = LeanTween.move(arrow, target.transform.position, distance/2f);
-        tween.setEaseInOutExpo();
-        tween.setOnComplete(() => {
+        float distance = Vector2.Distance(arrowPos, targetPos);
+        float angle = BabyUtils.VectorAngle(arrowPos, targetPos);
+        arrow.transform.Rotate(new Vector3(0, 0,-angle - 180));
+
+        float flightTime = distance/2f;
+        float hitTime = flightTime * 0.7f;
+        LTDescr flightTween = LeanTween.move(arrow, targetPos, flightTime);
+        flightTween.setEaseInOutExpo();
+        flightTween.setOnComplete(() => {
             Destroy(arrow);
             onComplete?.Invoke(true);
         });
-        
+        LeanTween.delayedCall(hitTime, animal.animateHit);
     }
 }
