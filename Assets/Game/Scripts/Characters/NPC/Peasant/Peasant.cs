@@ -77,8 +77,8 @@ public class Peasant : NPC {
             case AITaskType.Attack:
                 task.begin();
                 performAttack(task.target, onComplete: (bool finished) => {
-                    if (finished)task.finish(reason: "attack performed");
-                    else task.fail(reason: "attack failed");
+                    if (finished) task.finish(reason: "attack performed, animal killed");
+                    else task.fail(reason: "animal survived attack");
                 });
                 break;
             default:
@@ -112,7 +112,7 @@ public class Peasant : NPC {
         flightTween.setEaseInOutExpo();
         flightTween.setOnComplete(() => {
             Destroy(arrow);
-            onComplete?.Invoke(true);
+            onComplete?.Invoke(!animal.isAlive);
         });
         LeanTween.delayedCall(hitTime, animal.animateHit);
     }

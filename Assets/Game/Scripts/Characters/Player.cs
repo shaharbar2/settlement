@@ -57,7 +57,7 @@ public class Player : MonoBehaviour {
                     weaponController.drop(WeaponType.Bow, building.getWeaponAnchor());
                 });
             } else {
-                coinController.dropCoin(transform.position, transform.localScale.x);
+                coinController.dropCoin(transform.position, transform.localScale.x, byPlayer: true);
             }
         }
     }

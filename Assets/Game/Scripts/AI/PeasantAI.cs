@@ -15,7 +15,8 @@ public class PeasantAI : AIBase {
         WaitingForCoin,
         WaitingForWeapon,
         LookingForAnimal,
-        ChasingAnimal
+        ChasingAnimal,
+        WaitingForTrophyCoin
     }
 
     [SerializeField] public NPCType type;
@@ -86,6 +87,9 @@ public class PeasantAI : AIBase {
                 break;
             case PeasantAIState.ChasingAnimal:
                 chaseAnimalUpdate();
+                break;
+            case PeasantAIState.WaitingForTrophyCoin:
+                waitForTrophyUpdate();
                 break;
         }
     }
@@ -165,7 +169,33 @@ public class PeasantAI : AIBase {
         } else {
             if (attackElapsed > attackInterval) {
                 attackElapsed = 0;
-                issueTask(AITask.attackTask(animal.gameObject));
+                AITask attackTask = AITask.attackTask(animal.gameObject);
+                attackTask.onComplete = () => {
+                    if (attackTask.success) {
+                        state = PeasantAIState.WaitingForTrophyCoin;
+                    }
+                };
+                issueTask(attackTask);
+            }
+        }
+    }
+
+
+    private void waitForTrophyUpdate() {
+        lookupElapsed += Time.deltaTime;
+        if (lookupElapsed > lookupInterval) {
+            lookupElapsed = 0;
+
+            Coin coin = coinController.lookForCoin(transform.position, Constants.instance.PEASANT_ANIMAL_ATTACK_RANGE + 1f);
+            if (coin != null) {
+                coinController.reserveCoinForPickup(coin, gameObject);
+                var task = AITask.pickupCoinTask(coin);
+                task.onComplete = () => {
+                    // if (task.success) {
+                        state = PeasantAIState.LookingForAnimal;
+                    // }
+                };
+                issueTask(task);
             }
         }
     }
