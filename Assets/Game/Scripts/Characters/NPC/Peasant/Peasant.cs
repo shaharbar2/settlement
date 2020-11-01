@@ -6,13 +6,15 @@ public class Peasant : NPC {
 
     private PeasantTitle title;
 
+    [SerializeField] private Sprite arrowSprite;
+
     override protected void Awake() {
         title = GetComponentInChildren<PeasantTitle>();
         base.Awake();
     }
 
     override protected void Start() {
-       base.Start();
+        base.Start();
     }
 
     override protected void Update() {
@@ -72,9 +74,46 @@ public class Peasant : NPC {
                 title.updateTitle(task.peasantType);
                 task.finish(reason: "type updated to " + task.peasantType);
                 break;
+            case AITaskType.Attack:
+                task.begin();
+                performAttack(task.target, onComplete: (bool finished) => {
+                    if (finished) task.finish(reason: "attack performed, animal killed");
+                    else task.fail(reason: "animal survived attack");
+                });
+                break;
             default:
                 Debug.Log("Undefined peasant behavior for command: " + task.peasantType);
                 break;
         }
+    }
+
+    private void performAttack(GameObject target, System.Action<bool> onComplete) {
+        Animal animal = target.GetComponent<Animal>();
+        animal.hit();
+        GameObject arrow = new GameObject();
+        arrow.name = "Bow Arrow";
+
+        float characterHeight = 0.3f;
+        Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
+        Vector3 targetPos = animal.getHitPosition();
+        arrow.transform.position = arrowPos;
+
+        SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
+        spriteRenderer.sortingLayerName = "Objects";
+        spriteRenderer.sprite = arrowSprite;
+
+        float distance = Vector2.Distance(arrowPos, targetPos);
+        float angle = BabyUtils.VectorAngle(arrowPos, targetPos);
+        arrow.transform.Rotate(new Vector3(0, 0,-angle - 180));
+
+        float flightTime = distance/2f;
+        float hitTime = flightTime * 0.7f;
+        LTDescr flightTween = LeanTween.move(arrow, targetPos, flightTime);
+        flightTween.setEaseInOutExpo();
+        flightTween.setOnComplete(() => {
+            Destroy(arrow);
+            onComplete?.Invoke(!animal.isAlive);
+        });
+        LeanTween.delayedCall(hitTime, animal.animateHit);
     }
 }

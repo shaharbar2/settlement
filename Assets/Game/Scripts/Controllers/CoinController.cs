@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CoinController : MonoBehaviour {
 
-    public int amountBank;
+    [HideInInspector] public int amountBank;
 
     [SerializeField] private Coin coinPrefab;
     private GameUI ui;
@@ -12,26 +12,30 @@ public class CoinController : MonoBehaviour {
     private Dictionary<Coin, GameObject> reservedCoins = new Dictionary<Coin, GameObject>();
 
     void Start() {
+        amountBank = Constants.instance.INITIAL_COINS_AMOUNT;
         ui = FindObjectOfType<GameUI>();
         updateUI();
     }
 
     /// Public -- 
 
-    public void dropCoin(Vector3 playerPos, float direction) {
-        if (amountBank > 0) {
+    public Coin dropCoin(Vector3 playerPos, float direction, bool byPlayer) {
+        if (byPlayer && amountBank <= 0) {
+            return null;
+        } else {
             amountBank--;
-            updateUI();
-            Coin coin = Instantiate(coinPrefab);
-            Vector3 distance = randomCoinDistance();
-            worldCoins.Add(coin);
-
-            if (direction > 0) {
-                distance.x *= -1;
-            }
-            coin.gameObject.transform.position = playerPos + new Vector3(distance.x, distance.y);
-            coin.drop(distance.x, 0.5f - distance.y);
         }
+        updateUI();
+        Coin coin = Instantiate(coinPrefab);
+        Vector3 distance = randomCoinDistance();
+        worldCoins.Add(coin);
+
+        if (direction > 0) {
+            distance.x *= -1;
+        }
+        coin.gameObject.transform.position = playerPos + new Vector3(distance.x, distance.y);
+        coin.drop(distance.x, 0.5f - distance.y);
+        return coin;
     }
 
     public void pickup(Coin coin, Vector3 pos, bool byPlayer) {
@@ -57,11 +61,11 @@ public class CoinController : MonoBehaviour {
                     Vector3 distance = randomCoinDistance();
                     float spacing = 0.3f;
                     Vector3 dest = destPos;
-                    dest.x -= (spacing * (float)(amount -1 ))/2f;
-                    dest.x +=  spacing * (float)idx;
+                    dest.x -= (spacing * (float)(amount - 1)) / 2f;
+                    dest.x += spacing * (float)idx;
                     coin.gameObject.transform.position = dest;
                     // call complete after last coin only
-                    System.Action callback = idx == amount - 1 ? onComplete : null; 
+                    System.Action callback = idx == amount - 1 ? onComplete : null;
                     coin.spend(dest.x - playerPos.x, playerPos.y - dest.y + 0.5f, callback);
                 });
             }
@@ -93,7 +97,7 @@ public class CoinController : MonoBehaviour {
         reservedCoins.Add(coin, reserver);
         return true;
     }
-    
+
     public void removeReservation(Coin coin) {
         reservedCoins.Remove(coin);
     }
