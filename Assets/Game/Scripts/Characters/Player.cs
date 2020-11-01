@@ -6,6 +6,7 @@ public class Player : MonoBehaviour {
 
     private CoinController coinController;
     private PathfindController pathfindController;
+    private WeaponController weaponController;
     private GameUI ui;
 
     private float pathfindMouseInterval = 1.2f;
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour {
     
     void Start() {
         ui = FindObjectOfType<GameUI>();
+        weaponController = FindObjectOfType<WeaponController>();
         coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
     }
@@ -50,7 +52,10 @@ public class Player : MonoBehaviour {
                 int cost = Constants.instance.COST_BOW_SHOP;
                 Vector3 from = transform.position;
                 Vector3 to = collidedBuilding.getCoinsAnchor();
-                coinController.spend(cost, from, to, onComplete: collidedBuilding.dropBow);
+                BuildingSprite building = collidedBuilding;
+                coinController.spend(cost, from, to, onComplete: () => {
+                    weaponController.drop(WeaponType.Bow, building.getWeaponAnchor());
+                });
             } else {
                 coinController.dropCoin(transform.position, transform.localScale.x);
             }

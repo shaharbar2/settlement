@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PeasantType {
+public enum NPCType {
     Homeless,
     Peasant,
-    Hunter
+    Hunter,
+
+    Slime
 }
 
-public class PeasantAI : MonoBehaviour {
-    public delegate void PeasantAIEvent(AITask command);
-    public event PeasantAIEvent onTaskIssued;
-
+public class PeasantAI : AIBase {
     internal enum PeasantAIState {
         WaitingForCoin,
         WaitingForWeapon,
@@ -19,56 +18,29 @@ public class PeasantAI : MonoBehaviour {
         ChasingAnimal
     }
 
-    [SerializeField] public PeasantType type;
+    [SerializeField] public NPCType type;
     [SerializeField] private PeasantAIState state;
 
-    private CoinController coinController;
-    private AITask currentTask;
-
     /// timings
-    private float roamInterval = 5f;
-    private float roamElapsed = 0f;
-
     private float lookForCoinInterval = 0.1f;
     private float lookForCoinElapsed = 0f;
 
     private float lookForWeaponInterval = 0.1f;
     private float lookForWeaponElapsed = 0f;
 
-    void Awake() {
-
-    }
-
-    void Start() {
-        coinController = FindObjectOfType<CoinController>();
-    }
-
-    void Update() {
-        if (currentTask != null) {
-            if (currentTask.failed) {
-                onTaskFailed(currentTask);
-            } else if (currentTask.success) {
-                onTaskFinished(currentTask);
-            }
-        } else {
-            switch (type) {
-                case PeasantType.Homeless:
-                    homelessStateMachine();
-                    break;
-                case PeasantType.Peasant:
-                    peasantStateMachine();
-                    break;
-                case PeasantType.Hunter:
-                    hunterStateMachine();
-                    break;
-            }
+    /// Protected --
+    protected override void updateStateMachine() {
+        switch (type) {
+            case NPCType.Homeless:
+                homelessStateMachine();
+                break;
+            case NPCType.Peasant:
+                peasantStateMachine();
+                break;
+            case NPCType.Hunter:
+                hunterStateMachine();
+                break;
         }
-    }
-
-    /// Public -- 
-
-    public void setup() {
-
     }
 
     /// Private -- 
@@ -96,26 +68,6 @@ public class PeasantAI : MonoBehaviour {
 
     }
 
-    /// Task handlers
-
-    private void onTaskFailed(AITask task) {
-        Debug.Log($"Peasant failed: {task}");
-        currentTask = null;
-        task.onComplete?.Invoke();
-    }
-
-    private void onTaskFinished(AITask task) {
-        Debug.Log($"Peasant finished: {task}");
-        currentTask = null;
-        task.onComplete?.Invoke();
-    }
-
-    private void issueTask(AITask task) {
-        Debug.Log($"Issued peasant: {task}");
-        currentTask = task;
-        onTaskIssued?.Invoke(task);
-    }
-
     /// Updates
 
     private void waitForCoinUpdate() {
@@ -125,7 +77,7 @@ public class PeasantAI : MonoBehaviour {
         if (lookForCoinElapsed > lookForCoinInterval) {
             lookForCoinElapsed = 0;
 
-            Coin coin = coinController.lookForCoin(transform.position, 10f);
+            Coin coin = coinController.lookForCoin(transform.position, 1000f);
             if (coin != null) {
                 coinController.reserveCoinForPickup(coin, gameObject);
                 var task = AITask.pickupCoinTask(coin);
@@ -146,24 +98,17 @@ public class PeasantAI : MonoBehaviour {
         if (lookForWeaponElapsed > lookForWeaponInterval) {
             lookForWeaponElapsed = 0;
 
-            // foreach (Coin coin in worldCoins) {
-            //     if (Vector2.Distance(pos, coin.transform.position) < distance) {
-            //         GameObject reserver = null;
-            //         if (!reservedCoins.TryGetValue(coin, out reserver))
-            //             return coin;
-            //     }
-            // }
+            Weapon weapon = weaponController.lookForWeapon(transform.position, 1000f);
 
-            // Coin coin = coinController.lookForCoin(transform.position, 10f);
-            // if (coin != null) {
-            //     var task = AITask.pickupCoinTask(coin);
-            //     task.onComplete = () => {
-            //         if (task.success) {
-            //             becomePeasant();
-            //         }
-            //     };
-            //     issueTask(task);
-            // }
+            if (weapon != null) {
+                var task = AITask.pickupWeaponTask(weapon);
+                task.onComplete = () => {
+                    if (task.success) {
+                        becomeHunter();
+                    }
+                };
+                issueTask(task);
+            }
         }
     }
 
@@ -177,22 +122,13 @@ public class PeasantAI : MonoBehaviour {
 
     /// Internal methods
 
-    private void idleRoamUpdate() {
-        roamElapsed += Time.deltaTime;
-        if (roamElapsed > roamInterval) {
-            roamElapsed = 0;
-
-            Vector3 randomDelta = Vector3.zero;
-            float range = 2f;
-            randomDelta.x += Random.Range(-range, range);
-            randomDelta.y += Random.Range(-range / 2, range / 2);
-            var task = AITask.moveTask(transform.position + randomDelta);
-            issueTask(task);
-        }
+    private void becomePeasant() {
+        type = NPCType.Peasant;
+        issueTask(AITask.typeUpdateTask(type));
     }
 
-    private void becomePeasant() {
-        type = PeasantType.Peasant;
-        issueTask(AITask.typeUpdateTask());
+    private void becomeHunter() {
+        type = NPCType.Hunter;
+        issueTask(AITask.typeUpdateTask(type));
     }
 }

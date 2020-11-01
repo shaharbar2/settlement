@@ -96,7 +96,7 @@ public class Coin : MonoBehaviour {
                     fadeTween = LeanTween.value(gameObject, 0f, 1f, 0.4f);
                     fadeTween.setEaseInExpo();
                     fadeTween.setOnUpdate(updateFadeLerp);
-                    dropTween.setOnComplete(() => {
+                    fadeTween.setOnComplete(() => {
                         onComplete?.Invoke();
                         Destroy(gameObject);
                     });

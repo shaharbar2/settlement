@@ -8,6 +8,7 @@ public enum AITaskType {
     Stop,
     DropCoin,
     PickupCoin,
+    PickupWeapon,
     Attack,
     TypeUpdate
 }
@@ -24,9 +25,13 @@ public class AITask {
     public AITaskType type;
     public AITaskState state;
     public string reason;
+    public Action onComplete;   
+
+    // TODO: object for data
     public Vector3 position;
     public GameObject target;
-    public Action onComplete;
+    public NPCType peasantType;
+    
     public bool success {get{ return state == AITaskState.Finished; }}
     public bool failed {get{ return state == AITaskState.Failed; }}
 
@@ -51,13 +56,24 @@ public class AITask {
         task.target = coin.gameObject;
         return task;
     }
-    public static AITask typeUpdateTask() {
+    public static AITask pickupWeaponTask(Weapon weapon) {
+        AITask task = new AITask(AITaskType.PickupWeapon);
+        task.target = weapon.gameObject;
+        return task;
+    }
+    public static AITask typeUpdateTask(NPCType type) {
         AITask task = new AITask(AITaskType.TypeUpdate);
+        task.peasantType = type;
         return task;
     }
 
     /// Public -- 
     
+    public void begin(string reason = null) {
+        this.state = AITaskState.InProgress;
+        this.reason = reason;
+    }
+
     public void finish(string reason = null) {
         this.state = AITaskState.Finished;
         this.reason = reason;

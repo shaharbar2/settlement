@@ -19,16 +19,16 @@ public class PeasantTitle : MonoBehaviour {
     }
     /// Public -- 
     
-    public void updateTitle(PeasantType type) {
+    public void updateTitle(NPCType type) {
         switch(type) {
-            case PeasantType.Peasant:
+            case NPCType.Peasant:
                 spriteRenderer.sprite = peasantSprite;
                 break;
-            case PeasantType.Homeless:
+            case NPCType.Homeless:
                 spriteRenderer.sprite = homelessSprite;
                 break;
-            case PeasantType.Hunter:
-                spriteRenderer.sprite = homelessSprite;
+            case NPCType.Hunter:
+                spriteRenderer.sprite = hunterSprite;
                 break;
         }
     }

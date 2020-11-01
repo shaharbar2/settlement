@@ -23,6 +23,8 @@ public class Constants : MonoBehaviour {
     [SerializeField] public float CAMERA_SPEED;
     [SerializeField] public float PLAYER_SPEED;
     [SerializeField] public float PEASANT_SPEED;
+    [SerializeField] public float ANIMAL_SPEED;
+    
     
     [Header("Keybinds")]
     [SerializeField] public KeyCode BM_KEY_CODE;
