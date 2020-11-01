@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Animal : NPC {
 
+    public delegate void AnimalEvent(Animal animal);
+    public event AnimalEvent onDeath;
+
     public bool isAlive { get { return hp > 0; }}
 
     private int hp = 2;
@@ -72,6 +75,7 @@ public class Animal : NPC {
     private void animateDeath() {
         GetComponentInChildren<Animator>().SetBool("isHit", true);
         LeanTween.delayedCall(1.5f, () => {
+            onDeath?.Invoke(this);
             Destroy(gameObject);
         });
         LeanTween.delayedCall(1f, () => {
