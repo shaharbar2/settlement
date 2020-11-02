@@ -55,9 +55,9 @@ public abstract class AIBase : MonoBehaviour {
     protected void issueTask(AITask task) {
         if (task.scheduled) {
             currentTask = task;
-            Debug.Log($"Issued peasant: {task}");
+            Debug.Log($"{gameObject.name} issued : {task}");
         } else {
-            Debug.Log($"Unscheduled task for peasant: {task}");
+            Debug.Log($"{gameObject.name} unscheduled issued: {task}");
         }
         onTaskIssued?.Invoke(task);
     }
