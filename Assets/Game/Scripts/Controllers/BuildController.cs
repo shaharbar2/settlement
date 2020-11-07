@@ -113,11 +113,13 @@ public class BuildController : MonoBehaviour {
     }
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
+        Debug.Log("onBuildingHighlighted " + data);
         highlightedBuildingData = buildConfig.buildingDataFor(((BuildMenuSegmentData)data).buildingType);
         state = BuildControllerState.SELECTING_BUILDING;
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
+        Debug.Log("onBuildingSelected " + data);
         if (data != null) {
             highlightedBuildingData = buildConfig.buildingDataFor(((BuildMenuSegmentData)data).buildingType);
             if (Constants.instance.BUILDING_STYLE == BuildingStyle.AUTOMATIC) {
@@ -130,6 +132,7 @@ public class BuildController : MonoBehaviour {
             }
         } else {
             state = BuildControllerState.IDLE;
+            highlightedBuildingData = null;
         }
     }
 }
