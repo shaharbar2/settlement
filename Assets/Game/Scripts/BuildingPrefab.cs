@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingPrefab : MonoBehaviour {
-    [SerializeField] private Sprite spriteSite;
-    [SerializeField] private Sprite spriteBuilding;
+    [SerializeField] public BuildingType type;
+
     [SerializeField] private Sprite spriteShadow;
     [SerializeField] private GameObject collisionZone;
     [SerializeField] private GameObject dustVFXPrefab;
@@ -12,27 +12,61 @@ public class BuildingPrefab : MonoBehaviour {
     [SerializeField] private Transform coinsAnchor;
     [SerializeField] private Transform weaponAnchor;
 
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer groundSpriteRenderer;
+    [SerializeField] private SpriteRenderer buildingSpriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
+    [HideInInspector] public bool buildOnStart;
+    [HideInInspector] public bool instantBuild;
+
     void Awake() {
+        buildingSpriteRenderer.gameObject.SetActive(false);
         shadowSpriteRenderer.sprite = null;
         collisionZone.SetActive(false);
+    }
+
+    void Start() {
+        if (buildOnStart) { 
+            build();
+        }
     }
 
     /// Public --
 
     public void build() {
-        LeanTween.delayedCall(1.5f, () => {
-            spriteRenderer.sprite = spriteBuilding;
-            shadowSpriteRenderer.sprite = spriteShadow;
-            collisionZone.SetActive(true);
-            spriteRenderer.sortingLayerName = "Objects";
-        });
-        for (int i = 0; i < 10; i++) {
+        if (instantBuild) {
+            completeConstruction();
+        } else {
+            LeanTween.delayedCall(1.5f, completeConstruction);
+            animateDust(amount: 15, duration: 1.5f);
+        }
+    }
+
+    public Vector3 getCoinsAnchor() {
+        return coinsAnchor.transform.position;
+    }
+
+    public Vector3 getWeaponAnchor() {
+        return weaponAnchor.transform.position;
+    }
+
+    /// Private --
+
+    private void buildInstantly() {
+        completeConstruction();
+    }
+
+    private void completeConstruction() {
+        buildingSpriteRenderer.gameObject.SetActive(true);
+        shadowSpriteRenderer.sprite = spriteShadow;
+        collisionZone.SetActive(true);
+    }
+
+    private void animateDust(int amount, float duration) {
+        for (int i = 0; i < amount; i++) {
             float rMin = 0.1f;
             float rMax = 0.3f;
-            float t = Random.Range(0f, 1.5f);
+            float t = Random.Range(0f, duration);
             LeanTween.delayedCall(t, () => {
                 GameObject vfx = Instantiate(dustVFXPrefab);
 
@@ -50,17 +84,5 @@ public class BuildingPrefab : MonoBehaviour {
                 });
             });
         }
-        
     }
-
-    public Vector3 getCoinsAnchor() {
-        return coinsAnchor.transform.position;
-    }
-
-    public Vector3 getWeaponAnchor() {
-        return weaponAnchor.transform.position;
-        
-    }
-    /// Private --
-
 }
