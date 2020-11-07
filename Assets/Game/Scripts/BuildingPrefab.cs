@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingSprite : MonoBehaviour {
+public class BuildingPrefab : MonoBehaviour {
     [SerializeField] private Sprite spriteSite;
     [SerializeField] private Sprite spriteBuilding;
     [SerializeField] private Sprite spriteShadow;

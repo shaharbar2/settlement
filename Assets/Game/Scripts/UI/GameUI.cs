@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Settlement.UI.RadialMenu;
 
 public class GameUI : MonoBehaviour {
+    [SerializeField] public RadialMenu radialMenu;
 
     [SerializeField] private Button playerSettingsButton;
     [SerializeField] private TMP_Text hintText;
     [SerializeField] private TMP_Text coinsText;
-    [SerializeField] public RadialMenu radialMenu;
     [SerializeField] private PlayerSettingsMenu playerSettingsMenu;
 
     private bool isRadialMenuVisible = false;
