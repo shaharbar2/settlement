@@ -53,6 +53,15 @@ public class CoinController : MonoBehaviour {
         });
     }
 
+    public bool substract(int amount) {
+        if (amountBank >= amount) {
+            amountBank -= amount;
+            updateUI();
+            return true;
+        }
+        return false;
+    }
+    
     public void spend(int amount, Vector3 playerPos, Vector3 destPos, System.Action onComplete) {
         if (amountBank >= amount) {
             amountBank -= amount;

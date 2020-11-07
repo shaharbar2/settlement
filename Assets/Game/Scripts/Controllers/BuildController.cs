@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-
 using Settlement.UI.RadialMenu;
+using UnityEngine;
 
 public class BuildController : MonoBehaviour {
     internal enum BuildControllerState {
@@ -15,6 +14,7 @@ public class BuildController : MonoBehaviour {
 
     private GameUI ui;
 
+    private CoinController coinController;
     private TilemapController tilemapController;
     private Player player;
 
@@ -31,6 +31,7 @@ public class BuildController : MonoBehaviour {
         player = FindObjectOfType<Player>();
         buildConfig = FindObjectOfType<BuildingConfiguration>();
         tilemapController = FindObjectOfType<TilemapController>();
+        coinController = FindObjectOfType<CoinController>();
         ui.radialMenu.onClicked += onBuildingSelected;
         ui.radialMenu.onHighlighted += onBuildingHighlighted;
     }
@@ -95,17 +96,20 @@ public class BuildController : MonoBehaviour {
 
     private void buildAtSelectedSpot() {
         BuildingPrefab building = Instantiate(buildingPrefab);
-        building.transform.position = tilemapController.snap(selectedSpot);
-        building.build();
-        tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
-        tilemapController.removeHighlightForBuild();
+        bool enoughCoins = coinController.substract(highlightedBuildingData.costToConstruct);
+        if (enoughCoins) {
+            building.transform.position = tilemapController.snap(selectedSpot);
+            building.build();
+            tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
+            tilemapController.removeHighlightForBuild();
 
-        foreach (var movement in FindObjectsOfType<CharacterMovement>()) {
-            movement.leaveBuildArea();
+            foreach (var movement in FindObjectsOfType<CharacterMovement>()) {
+                movement.leaveBuildArea();
+            }
         }
-
         state = BuildControllerState.IDLE;
         highlightedBuildingData = null;
+
     }
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
