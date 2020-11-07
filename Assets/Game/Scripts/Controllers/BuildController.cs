@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Settlement.UI.RadialMenu;
+
 public class BuildController : MonoBehaviour {
     internal enum BuildControllerState {
         IDLE,
@@ -9,7 +11,7 @@ public class BuildController : MonoBehaviour {
         SELECTING_SPOT
     }
 
-    [SerializeField] private BuildingSprite buildingPrefab;
+    [SerializeField] private BuildingPrefab buildingPrefab;
 
     private GameUI ui;
 
@@ -19,12 +21,15 @@ public class BuildController : MonoBehaviour {
     private float radialMenuHoldElapsed = 0f;
     private BuildControllerState state = BuildControllerState.IDLE;
 
-    private RadialMenuSegmentData highlightedBuildingData;
+    private BuildingData highlightedBuildingData;
     private Vector3 selectedSpot;
+
+    private BuildingConfiguration buildConfig;
 
     void Start() {
         ui = FindObjectOfType<GameUI>();
         player = FindObjectOfType<Player>();
+        buildConfig = FindObjectOfType<BuildingConfiguration>();
         tilemapController = FindObjectOfType<TilemapController>();
         ui.radialMenu.onClicked += onBuildingSelected;
         ui.radialMenu.onHighlighted += onBuildingHighlighted;
@@ -89,7 +94,7 @@ public class BuildController : MonoBehaviour {
     }
 
     private void buildAtSelectedSpot() {
-        BuildingSprite building = Instantiate(buildingPrefab);
+        BuildingPrefab building = Instantiate(buildingPrefab);
         building.transform.position = tilemapController.snap(selectedSpot);
         building.build();
         tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
@@ -104,13 +109,13 @@ public class BuildController : MonoBehaviour {
     }
 
     private void onBuildingHighlighted(RadialMenuSegmentData data) {
-        highlightedBuildingData = data;
+        highlightedBuildingData = buildConfig.buildingDataFor(((BuildMenuSegmentData)data).buildingType);
         state = BuildControllerState.SELECTING_BUILDING;
     }
 
     private void onBuildingSelected(RadialMenuSegmentData data) {
-        highlightedBuildingData = data;
         if (data != null) {
+            highlightedBuildingData = buildConfig.buildingDataFor(((BuildMenuSegmentData)data).buildingType);
             if (Constants.instance.BUILDING_STYLE == BuildingStyle.AUTOMATIC) {
                 buildAtSelectedSpot();
                 state = BuildControllerState.IDLE;

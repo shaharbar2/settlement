@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
     private ContactFilter2D feetContactFilter = new ContactFilter2D();
     private Collider2D[] feetCollisions = new Collider2D[15];
 
-    private BuildingSprite collidedBuilding;
+    private BuildingPrefab collidedBuilding;
     private CharacterMovement movement;
 
     void Awake() {
@@ -52,7 +52,7 @@ public class Player : MonoBehaviour {
                 int cost = Constants.instance.COST_BOW_SHOP;
                 Vector3 from = transform.position;
                 Vector3 to = collidedBuilding.getCoinsAnchor();
-                BuildingSprite building = collidedBuilding;
+                BuildingPrefab building = collidedBuilding;
                 coinController.spend(cost, from, to, onComplete: () => {
                     weaponController.drop(WeaponType.Bow, building.getWeaponAnchor());
                 });
@@ -70,10 +70,10 @@ public class Player : MonoBehaviour {
         Coin coin = null;
         
         collidedBuilding = null;
-        BuildingSprite building = null;
+        BuildingPrefab building = null;
         for (int i = 0; i < count; i++) {
             coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
-            building = feetCollisions[i].transform.parent.GetComponent<BuildingSprite>();
+            building = feetCollisions[i].transform.parent.GetComponent<BuildingPrefab>();
             if (coin != null) {
                 coinController.pickup(coin, transform.position, byPlayer: true);
             }

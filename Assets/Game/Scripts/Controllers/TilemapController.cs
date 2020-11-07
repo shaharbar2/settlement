@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public enum TilemapAreaType {
+    S_1x1,
     S_2x2,
     S_3x3,
     S_4x3,
@@ -29,6 +30,8 @@ public class TilemapController : MonoBehaviour {
         public RectInt bounds {
             get {
                 switch (type) {
+                    case TilemapAreaType.S_1x1:
+                        return new RectInt(centerTile.x, centerTile.y, 1, 1);
                     case TilemapAreaType.S_2x2:
                         return new RectInt(centerTile.x - 1, centerTile.y - 1, 2, 2);
                     case TilemapAreaType.S_3x3:
