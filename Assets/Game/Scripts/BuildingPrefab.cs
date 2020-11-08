@@ -11,12 +11,20 @@ public class BuildingPrefab : MonoBehaviour {
     [SerializeField] private Transform coinsAnchor;
     [SerializeField] private Transform weaponAnchor;
 
+    [SerializeField] private HitpointsBar hitpointsBar;
+
     [SerializeField] private SpriteRenderer groundSpriteRenderer;
     [SerializeField] private SpriteRenderer buildingSpriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
     [HideInInspector] public bool buildOnStart;
     [HideInInspector] public bool instantBuild;
+
+    public delegate void BuildingEvent(BuildingPrefab building);
+    public event BuildingEvent onDestroyed;
+
+    private float hp;
+    private BuildingData data;
 
     void Awake() {
         buildingSpriteRenderer.gameObject.SetActive(false);
@@ -25,7 +33,10 @@ public class BuildingPrefab : MonoBehaviour {
     }
 
     void Start() {
-        if (buildOnStart) { 
+        data = BuildingConfiguration.instance.buildingDataFor(type);
+        hp = (float)data.hitpoints;
+        hitpointsBar.gameObject.SetActive(false);
+        if (buildOnStart) {
             build();
         }
     }
@@ -49,6 +60,17 @@ public class BuildingPrefab : MonoBehaviour {
         return weaponAnchor.transform.position;
     }
 
+    public void hit(float damage) {
+        hp -= damage;
+        hitpointsBar.update(hp, data.hitpoints);
+        hitpointsBar.gameObject.SetActive(hp < data.hitpoints);
+
+        if (hp <= 0) {
+            hp = 0;
+            onBuildingDestroyed();
+        }
+    }
+
     /// Private --
 
     private void buildInstantly() {
@@ -56,9 +78,14 @@ public class BuildingPrefab : MonoBehaviour {
     }
 
     private void completeConstruction() {
+        Debug.Log("constuction completed");
         buildingSpriteRenderer.gameObject.SetActive(true);
         shadowSpriteRenderer.gameObject.SetActive(true);
         collisionZone.SetActive(true);
+    }
+
+    private void onBuildingDestroyed() {
+        onDestroyed?.Invoke(this);
     }
 
     private void animateDust(int amount, float duration) {

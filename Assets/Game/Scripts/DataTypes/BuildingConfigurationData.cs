@@ -7,6 +7,7 @@ public class BuildingConfigurationData : MonoBehaviour {
     [SerializeField] private TilemapAreaType areaType;
     [SerializeField] private int costToConstruct;
     [SerializeField] private int costToUse;
+    [SerializeField] private int hitpoints;
     [SerializeField] private BuildingPrefab prefab;
 
     public BuildingData data { get{
@@ -17,6 +18,7 @@ public class BuildingConfigurationData : MonoBehaviour {
         data.costToUse = costToUse;
         data.prefab = prefab;
         data.name = name;
+        data.hitpoints = hitpoints;
         return data;
     }}
 }
