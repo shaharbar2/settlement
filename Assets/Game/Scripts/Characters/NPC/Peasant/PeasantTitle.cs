@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PeasantTitle : MonoBehaviour {
     [SerializeField] private Sprite peasantSprite;
-    [SerializeField] private Sprite homelessSprite;
+    [SerializeField] private Sprite vagabondSprite;
+    [SerializeField] private Sprite workerSprite;
     [SerializeField] private Sprite hunterSprite;
 
     private SpriteRenderer spriteRenderer;
@@ -24,11 +25,14 @@ public class PeasantTitle : MonoBehaviour {
             case NPCType.Peasant:
                 spriteRenderer.sprite = peasantSprite;
                 break;
-            case NPCType.Homeless:
-                spriteRenderer.sprite = homelessSprite;
+            case NPCType.Vagabond:
+                spriteRenderer.sprite = vagabondSprite;
                 break;
             case NPCType.Hunter:
                 spriteRenderer.sprite = hunterSprite;
+                break;
+            case NPCType.Worker:
+                spriteRenderer.sprite = workerSprite;
                 break;
         }
     }

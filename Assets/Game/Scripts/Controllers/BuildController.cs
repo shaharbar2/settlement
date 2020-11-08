@@ -10,7 +10,7 @@ public class BuildController : MonoBehaviour {
         SELECTING_SPOT
     }
 
-    [SerializeField] private BuildingPrefab buildingPrefab;
+    [SerializeField] private Building buildingPrefab;
 
     private GameUI ui;
 
@@ -95,11 +95,11 @@ public class BuildController : MonoBehaviour {
     }
 
     private void buildAtSelectedSpot() {
-        BuildingPrefab building = Instantiate(buildingPrefab);
+        Building building = Instantiate(buildingPrefab);
         bool enoughCoins = coinController.substract(highlightedBuildingData.costToConstruct);
         if (enoughCoins) {
             building.transform.position = tilemapController.snap(selectedSpot);
-            building.build();
+            // building.build(); // worker npc should do it
             tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
             tilemapController.removeHighlightForBuild();
 

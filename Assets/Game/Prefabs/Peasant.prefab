@@ -119,6 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c67f4d0f37e61a4aad29b1692b80ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  feetCollider: {fileID: 6453311408453277310}
   arrowSprite: {fileID: 21300000, guid: 9597bbf9e49325c43a48f54d648553e9, type: 3}
 --- !u!114 &6453311407605220608
 MonoBehaviour:
@@ -243,7 +244,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   peasantSprite: {fileID: 21300000, guid: 6d56be33d7e5c1349ad1b318f6cb236a, type: 3}
-  homelessSprite: {fileID: 21300000, guid: 92afd90bc64fcc944811affe1ba1ef96, type: 3}
+  vagabondSprite: {fileID: 21300000, guid: 92afd90bc64fcc944811affe1ba1ef96, type: 3}
+  workerSprite: {fileID: 21300000, guid: 7fb700e137362a64184a219607479276, type: 3}
   hunterSprite: {fileID: 21300000, guid: fd5e5cb51403bc44e8dd92c681629f11, type: 3}
 --- !u!1 &6453311408453277305
 GameObject:

@@ -2,8 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingPrefab : MonoBehaviour {
+public enum BuildingState {
+    AwaitingConstruction,
+    AwaitingRepairs,
+    UnderConstruction,
+    Constructed,
+    Destroyed
+}
+
+public class Building : MonoBehaviour {
+    
+    /// Public -- 
+    
     [SerializeField] public BuildingType type;
+    [SerializeField] public BuildingState state;
+
+    [HideInInspector] public bool buildOnStart;
+    [HideInInspector] public bool instantBuild;
+
+    public delegate void BuildingEvent(Building building);
+    public event BuildingEvent onDestroyed;
+
+    public bool isUsableState {
+        get {
+            return state == BuildingState.Constructed || state == BuildingState.AwaitingRepairs;
+        }
+    }
+
+    /// Private -- 
 
     [SerializeField] private GameObject collisionZone;
     [SerializeField] private GameObject dustVFXPrefab;
@@ -17,19 +43,12 @@ public class BuildingPrefab : MonoBehaviour {
     [SerializeField] private SpriteRenderer buildingSpriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
-    [HideInInspector] public bool buildOnStart;
-    [HideInInspector] public bool instantBuild;
-
-    public delegate void BuildingEvent(BuildingPrefab building);
-    public event BuildingEvent onDestroyed;
-
     private float hp;
     private BuildingData data;
 
     void Awake() {
         buildingSpriteRenderer.gameObject.SetActive(false);
         shadowSpriteRenderer.gameObject.SetActive(false);
-        collisionZone.SetActive(false);
     }
 
     void Start() {
@@ -41,14 +60,28 @@ public class BuildingPrefab : MonoBehaviour {
         }
     }
 
+    void Update() {
+        if (state == BuildingState.Constructed && hp < data.hitpoints) {
+            state = BuildingState.AwaitingRepairs;
+        }
+        if (state == BuildingState.AwaitingRepairs && hp >= data.hitpoints) {
+            state = BuildingState.Constructed;
+        }
+    }
+
     /// Public --
 
-    public void build() {
+    public void build(System.Action<bool> onComplete = null) {
         if (instantBuild) {
             completeConstruction();
+            onComplete?.Invoke(true);
         } else {
-            LeanTween.delayedCall(1.5f, completeConstruction);
+            state = BuildingState.UnderConstruction;
             animateDust(amount: 15, duration: 1.5f);
+            LeanTween.delayedCall(1.5f, () => {
+                completeConstruction();
+                onComplete?.Invoke(true);
+            });
         }
     }
 
@@ -58,6 +91,17 @@ public class BuildingPrefab : MonoBehaviour {
 
     public Vector3 getWeaponAnchor() {
         return weaponAnchor.transform.position;
+    }
+
+    public string getInteractHint() {
+        string keyCode = Constants.instance.COIN_KEY_CODE.ToString();
+        switch (type) {
+            case BuildingType.BowShop:
+                return $"Press {keyCode} to buy a {WeaponType.Bow}";
+            case BuildingType.HammerShop:
+                return $"Press {keyCode} to buy a {WeaponType.Hammer}";
+        }
+        return null;
     }
 
     public void hit(float damage) {
@@ -78,13 +122,13 @@ public class BuildingPrefab : MonoBehaviour {
     }
 
     private void completeConstruction() {
-        Debug.Log("constuction completed");
         buildingSpriteRenderer.gameObject.SetActive(true);
         shadowSpriteRenderer.gameObject.SetActive(true);
-        collisionZone.SetActive(true);
+        state = BuildingState.Constructed;
     }
 
     private void onBuildingDestroyed() {
+        state = BuildingState.Destroyed;
         onDestroyed?.Invoke(this);
     }
 
@@ -95,7 +139,6 @@ public class BuildingPrefab : MonoBehaviour {
             float t = Random.Range(0f, duration);
             LeanTween.delayedCall(t, () => {
                 GameObject vfx = Instantiate(dustVFXPrefab);
-
                 float yOffset = Random.Range(-rMin * 4f, rMin * 2f);
                 float xOffset = rMin + Random.Range(0f, rMax);
                 if (BabyUtils.randomBool) {

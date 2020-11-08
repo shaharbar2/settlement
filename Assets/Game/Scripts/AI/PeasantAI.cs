@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum NPCType {
-    Homeless,
+    // peasants:
+    Vagabond,
     Peasant,
     Hunter,
+    Worker,
 
+    // animals:
     Slime
 }
 
@@ -14,8 +17,19 @@ public class PeasantAI : AIBase {
     internal enum PeasantAIState {
         WaitingForCoin,
         WaitingForWeapon,
+
+        // hunter states
         LookingForAnimal,
         ChasingAnimal,
+
+        // worker states
+        LookingForConstruction,
+        LookingForRepairs,
+        LookingForTrees,
+        AssignedConstructionJob,
+        AssignedRepairJob,
+        AssignedTreeJob,
+
         WaitingForTrophyCoin
     }
 
@@ -34,6 +48,13 @@ public class PeasantAI : AIBase {
     private float attackElapsed = 2f;
 
     private Animal targetAnimal = null;
+    private Building targetBuilding = null;
+
+    private Peasant peasant;
+    protected override void Awake() {
+        base.Awake();
+        peasant = GetComponent<Peasant>();
+    }
 
     protected override void Start() {
         base.Start();
@@ -51,14 +72,17 @@ public class PeasantAI : AIBase {
     /// Protected --
     protected override void updateStateMachine() {
         switch (type) {
-            case NPCType.Homeless:
-                homelessStateMachine();
+            case NPCType.Vagabond:
+                vagabondStateMachine();
                 break;
             case NPCType.Peasant:
                 peasantStateMachine();
                 break;
             case NPCType.Hunter:
                 hunterStateMachine();
+                break;
+            case NPCType.Worker:
+                workerStateMachine();
                 break;
         }
     }
@@ -67,7 +91,7 @@ public class PeasantAI : AIBase {
 
     /// State machines
 
-    private void homelessStateMachine() {
+    private void vagabondStateMachine() {
         switch (state) {
             case PeasantAIState.WaitingForCoin:
                 waitForCoinUpdate();
@@ -91,6 +115,22 @@ public class PeasantAI : AIBase {
                 break;
             case PeasantAIState.ChasingAnimal:
                 chaseAnimalUpdate();
+                break;
+            case PeasantAIState.WaitingForTrophyCoin:
+                waitForTrophyUpdate();
+                break;
+        }
+    }
+
+    private void workerStateMachine() {
+        switch (state) {
+            case PeasantAIState.LookingForConstruction:
+            case PeasantAIState.LookingForRepairs:
+            case PeasantAIState.LookingForTrees:
+                lookForWorkerJobUpdate();
+                break;
+            case PeasantAIState.AssignedConstructionJob:
+                constructionJobUpdate();
                 break;
             case PeasantAIState.WaitingForTrophyCoin:
                 waitForTrophyUpdate();
@@ -132,13 +172,48 @@ public class PeasantAI : AIBase {
 
             if (weapon != null) {
                 weaponController.reserveWeaponForPickup(weapon, gameObject);
+                var weaponType = weapon.type;
                 var task = AITask.pickupWeaponTask(weapon);
                 task.onComplete = () => {
                     if (task.success) {
-                        becomeHunter();
+                        switch (weaponType) {
+                            case WeaponType.Bow:
+                                becomeHunter();
+                                return;
+                            case WeaponType.Hammer:
+                                becomeWorker();
+                                return;
+                            default:
+                                throw new System.Exception($"Peasant picked up unknown weapon type: {weaponType}");
+                        }
                     }
                 };
                 issueTask(task);
+            }
+        }
+    }
+
+    private void lookForWorkerJobUpdate() {
+        idleRoamUpdate();
+
+        lookupElapsed += Time.deltaTime;
+        if (lookupElapsed > lookupInterval) {
+            lookupElapsed = 0;
+
+            targetBuilding = finder.closestRepairJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+            if (targetBuilding == null) {
+                targetBuilding = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+                if (targetBuilding == null) {
+                    // ToDo: uncomment when trees are added
+                    // targetTree = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+                    // if (targetTree != null) {
+                    //     state = PeasantAIState.AssignedTreeJob;
+                    // }
+                } else {
+                    state = PeasantAIState.AssignedConstructionJob;
+                }
+            } else {
+                state = PeasantAIState.AssignedRepairJob;
             }
         }
     }
@@ -150,8 +225,7 @@ public class PeasantAI : AIBase {
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
-            float searchRadius = Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS;
-            targetAnimal = findClosestAliveAnimal(searchRadius);
+            targetAnimal = finder.closestAliveAnimal(radius: Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS);
 
             if (targetAnimal != null) {
                 state = PeasantAIState.ChasingAnimal;
@@ -159,9 +233,35 @@ public class PeasantAI : AIBase {
         }
     }
 
+    private void constructionJobUpdate() {
+        Building building = targetBuilding;
+        if (building == null || building.state != BuildingState.AwaitingConstruction) {
+            building = null;
+            state = PeasantAIState.LookingForConstruction;
+            return;
+        }
+
+        if (!peasant.collidesBuilding(building)) {
+            var moveTask = AITask.moveTask(building.transform.position);
+            moveTask.onComplete = () => {
+                if (building != null) {
+                    if (peasant.collidesBuilding(building)) {
+                        var constructionTask = AITask.constructionTask(building);
+                        constructionTask.onComplete = () => {
+                            state = PeasantAIState.LookingForConstruction;
+                        };
+                        issueTask(constructionTask);
+                    }
+                }
+            };
+            issueTask(moveTask);
+        }
+    }
+
     private void chaseAnimalUpdate() {
         Animal animal = targetAnimal;
         if (animal == null || !animal.isAlive) {
+            animal = null;
             state = PeasantAIState.LookingForAnimal;
             return;
         }
@@ -172,7 +272,7 @@ public class PeasantAI : AIBase {
             Vector3 approach = Vector3.MoveTowards(transform.position, animal.transform.position, d - attackRange + 1f);
             float r = Constants.instance.PEASANT_APPROACH_DEVIATION;
             approach.x += Random.Range(-r, r);
-            approach.y += Random.Range(-r/2, r/2);
+            approach.y += Random.Range(-r / 2, r / 2);
             issueTask(AITask.moveTask(approach));
         } else {
             if (attackElapsed > Constants.instance.PEASANT_ATTACK_INTERVAL) {
@@ -214,7 +314,8 @@ public class PeasantAI : AIBase {
             playerLookupElapsed = 0;
             if (trophyCoinsAmount > 0) {
                 float range = Constants.instance.PEASANT_PLAYER_DELIVER_PROXIMITY;
-                if (Vector2.Distance(player.transform.position, transform.position) < range) {
+                Vector3 playerPosition = finder.player().transform.position;
+                if (Vector2.Distance(playerPosition, transform.position) < range) {
                     AITask task = AITask.dropCoinsTask(trophyCoinsAmount);
                     task.onComplete = () => {
                         if (task.success) {
@@ -237,24 +338,13 @@ public class PeasantAI : AIBase {
 
     private void becomeHunter() {
         type = NPCType.Hunter;
-        state = PeasantAIState.LookingForAnimal;
+        state = PeasantAIState.LookingForAnimal & PeasantAIState.WaitingForCoin;
         issueTask(AITask.typeUpdateTask(type));
     }
 
-    private Animal findClosestAliveAnimal(float radius) {
-        Animal[] allAnimals = FindObjectsOfType<Animal>();
-        Animal closest = null;
-        float closestRange = float.MaxValue;
-        foreach (Animal animal in allAnimals) {
-            if (!animal.isAlive)continue;
-            float r = Vector2.Distance(animal.transform.position, transform.position);
-            if (r < radius) {
-                if (r < closestRange) {
-                    closestRange = r;
-                    closest = animal;
-                }
-            }
-        }
-        return closest;
+    private void becomeWorker() {
+        type = NPCType.Worker;
+        state = PeasantAIState.LookingForConstruction;
+        issueTask(AITask.typeUpdateTask(type));
     }
 }
