@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour {
     [SerializeField] private Weapon bowPrefab;
+    [SerializeField] private Weapon hammerPrefab;
 
     private List<Weapon> worldWeapons = new List<Weapon>();
     private Dictionary<Weapon, GameObject> reservedWeapons = new Dictionary<Weapon, GameObject>();
@@ -56,12 +57,23 @@ public class WeaponController : MonoBehaviour {
         reservedWeapons.Remove(weapon);
     }
 
+    public static WeaponType weaponTypeForBuilding(BuildingType buildingType) {
+        switch (buildingType) {
+            case BuildingType.BowShop: return WeaponType.Bow;
+            case BuildingType.HammerShop: return WeaponType.Hammer;
+            default:
+                throw new System.Exception($"Weapon type not set to drop by {buildingType}");
+        }
+    }
+
     /// Private -- 
 
     private Weapon prefabByType(WeaponType type) {
         switch (type) {
             case WeaponType.Bow:
                 return bowPrefab;
+            case WeaponType.Hammer:
+                return hammerPrefab;
             default:
                 throw new System.Exception($"Unknown weapon {type}");
         }
