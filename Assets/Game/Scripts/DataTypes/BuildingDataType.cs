@@ -11,7 +11,6 @@ public enum BuildingType {
     // Fortifications
     Fence,
     GuardTower
-
 }
 
 public class BuildingData {
@@ -22,6 +21,8 @@ public class BuildingData {
     
     public int costToConstruct;
     public int costToUse;
+
+    public int hitpoints;
 
     public BuildingPrefab prefab;
 }

@@ -2,13 +2,19 @@
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour {
+    public GameObject objectToFollow1;
+    public GameObject objectToFollow2;
 
-    public GameObject objectToFollow;
+    private bool toggle = true;
 
     public float speed = 0;
 
     void Update() {
+        handleInput();
+
         speed = Constants.instance.CAMERA_SPEED;
+
+        GameObject objectToFollow = toggle ? objectToFollow1 : objectToFollow2;
 
         if (Constants.instance.CAMERA_CONTROL_STYLE == CameraControlStyle.FOLLOW) {
             float interpolation = speed * Time.deltaTime;
@@ -28,4 +34,10 @@ public class CameraFollow : MonoBehaviour {
             transform.position += direction;
         }
     }
+
+    public void handleInput() {
+        if (Input.GetKeyDown(Constants.instance.TOGGLE_CAMERA_FOCUS_KEY_CODE)) {
+            toggle = !toggle;
+        }
+    }    
 }

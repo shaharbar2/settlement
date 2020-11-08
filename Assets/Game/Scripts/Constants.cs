@@ -55,9 +55,7 @@ public class Constants : MonoBehaviour {
     [Header("Keybinds")]
     [SerializeField] public KeyCode BM_KEY_CODE;
     [SerializeField] public KeyCode COIN_KEY_CODE;
-
-    [Header("Real Estate prices (in coins)")]
-    [SerializeField] public int COST_BOW_SHOP; 
+    [SerializeField] public KeyCode TOGGLE_CAMERA_FOCUS_KEY_CODE;
 
     [Header("Build Menu")]
     [SerializeField] public float BM_KEY_HOLD;
