@@ -99,7 +99,7 @@ public class BuildController : MonoBehaviour {
         bool enoughCoins = coinController.substract(highlightedBuildingData.costToConstruct);
         if (enoughCoins) {
             building.transform.position = tilemapController.snap(selectedSpot);
-            building.build();
+            // building.build(); // worker npc should do it
             tilemapController.markUnwalkable(building.transform.position, highlightedBuildingData.areaType);
             tilemapController.removeHighlightForBuild();
 

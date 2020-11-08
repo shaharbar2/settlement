@@ -6,6 +6,7 @@ public class Peasant : NPC {
 
     private PeasantTitle title;
 
+    [SerializeField] private BoxCollider2D feetCollider;
     [SerializeField] private Sprite arrowSprite;
 
     override protected void Awake() {
@@ -24,6 +25,25 @@ public class Peasant : NPC {
     }
 
     /// Public -- 
+
+    public bool collidesBuilding(Building building) {
+        var contactFilter = new ContactFilter2D();
+        contactFilter.useTriggers = true;
+        Collider2D[] feetCollisions = new Collider2D[15];
+        float count = feetCollider.OverlapCollider(contactFilter, feetCollisions);
+
+        List<Building> buildings = new List<Building>();
+        Building tmpBuilding = null;
+        for (int i = 0; i < count; i++) {
+            tmpBuilding = feetCollisions[i].transform.parent.GetComponent<Building>();
+            if (tmpBuilding != null) {
+                if (building == tmpBuilding) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /// Protected -- 
 
@@ -76,7 +96,8 @@ public class Peasant : NPC {
                 break;
             case AITaskType.Kill:
                 task.begin();
-                performAttack(task.target, onComplete: (bool finished) => {
+                Animal animal = task.target.GetComponent<Animal>();
+                performAttack(animal, onComplete: (bool finished) => {
                     if (finished)task.finish(reason: "attack performed, animal killed");
                     else task.fail(reason: "animal survived attack");
                 });
@@ -88,16 +109,32 @@ public class Peasant : NPC {
                     else task.fail(reason: "could not drop coins");
                 });
                 break;
+            case AITaskType.Construct:
+                task.begin();
+                Building building = task.target.GetComponent<Building>();
+                build(building, onComplete: (finished) => {
+                    if (finished) task.finish(reason: $"finished constructing {building.type}");
+                    else task.fail(reason: "unable to finish construction");
+                });
+                dropCoins(task.amountToDrop, onComplete: (bool finished) => {
+                    if (finished)task.finish(reason: $"dropped {task.amountToDrop} coins");
+                    else task.fail(reason: "could not drop coins");
+                });
+                break;
             default:
-                Debug.Log("Undefined peasant behavior for command: " + task.peasantType);
+                Debug.Log("Undefined peasant behavior for command: " + task.type);
                 break;
         }
     }
 
     /// Private -- 
 
-    private void performAttack(GameObject target, System.Action<bool> onComplete) {
-        Animal animal = target.GetComponent<Animal>();
+    private void build(Building building, System.Action<bool> onComplete) {
+        building.build(onComplete);
+        movement.lookAt(transform.position + Vector3.down);
+    }
+
+    private void performAttack(Animal animal, System.Action<bool> onComplete) {
         bool isHit = BabyUtils.chance(Constants.instance.PEASANT_HIT_CHANCE);
         bool didHit = false;
         Vector3 targetPos = Vector3.zero;
@@ -107,7 +144,7 @@ public class Peasant : NPC {
         } else {
             targetPos = animal.getMissPosition();
         }
-        Debug.Log($"{gameObject.name} didHit: {didHit}, animalAlive: {animal.isAlive}" );
+        Debug.Log($"{gameObject.name} didHit: {didHit}, animalAlive: {animal.isAlive}");
         movement.lookAt(targetPos);
 
         GameObject arrow = new GameObject();
@@ -115,7 +152,7 @@ public class Peasant : NPC {
 
         float characterHeight = 0.3f;
         Vector3 arrowPos = transform.position + new Vector3(0, characterHeight);
-        
+
         arrow.transform.position = arrowPos;
 
         SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();

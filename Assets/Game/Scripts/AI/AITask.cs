@@ -10,6 +10,9 @@ public enum AITaskType {
     PickupCoin,
     PickupWeapon,
     Kill,
+    Construct,
+    Repair,
+    ChopDown,
     TypeUpdate
 }
 
@@ -29,10 +32,10 @@ public class AITask {
     public bool scheduled;
 
     // TODO: object for data
-    public Vector3 position;
+    public Vector3 position; 
     public GameObject target;
-    public NPCType peasantType;
-    public int amountToDrop;
+    public NPCType peasantType; // for type update
+    public int amountToDrop; // for droping coins
     
     public bool success {get{ return state == AITaskState.Finished; }}
     public bool failed {get{ return state == AITaskState.Failed; }}
@@ -78,6 +81,21 @@ public class AITask {
         AITask task = new AITask(AITaskType.DropCoins);
         task.amountToDrop = amount;
         task.scheduled = false;
+        return task;
+    }
+    public static AITask constructionTask(Building building) {
+        AITask task = new AITask(AITaskType.Construct);
+        task.target = building.gameObject;
+        return task;
+    }
+    public static AITask repairTask(Building building) {
+        AITask task = new AITask(AITaskType.Repair);
+        task.target = building.gameObject;
+        return task;
+    }
+    public static AITask chopDownTask(GameObject tree) {
+        AITask task = new AITask(AITaskType.Repair);
+        task.target = tree;
         return task;
     }
     /// Public -- 

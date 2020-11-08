@@ -11,8 +11,25 @@ public enum BuildingState {
 }
 
 public class Building : MonoBehaviour {
+    
+    /// Public -- 
+    
     [SerializeField] public BuildingType type;
-    public BuildingState state;
+    [SerializeField] public BuildingState state;
+
+    [HideInInspector] public bool buildOnStart;
+    [HideInInspector] public bool instantBuild;
+
+    public delegate void BuildingEvent(Building building);
+    public event BuildingEvent onDestroyed;
+
+    public bool isUsableState {
+        get {
+            return state == BuildingState.Constructed || state == BuildingState.AwaitingRepairs;
+        }
+    }
+
+    /// Private -- 
 
     [SerializeField] private GameObject collisionZone;
     [SerializeField] private GameObject dustVFXPrefab;
@@ -26,20 +43,12 @@ public class Building : MonoBehaviour {
     [SerializeField] private SpriteRenderer buildingSpriteRenderer;
     [SerializeField] private SpriteRenderer shadowSpriteRenderer;
 
-    [HideInInspector] public bool buildOnStart;
-    [HideInInspector] public bool instantBuild;
-
-    public delegate void BuildingEvent(Building building);
-    public event BuildingEvent onDestroyed;
-
     private float hp;
     private BuildingData data;
-
 
     void Awake() {
         buildingSpriteRenderer.gameObject.SetActive(false);
         shadowSpriteRenderer.gameObject.SetActive(false);
-        collisionZone.SetActive(false);
     }
 
     void Start() {
@@ -56,19 +65,23 @@ public class Building : MonoBehaviour {
             state = BuildingState.AwaitingRepairs;
         }
         if (state == BuildingState.AwaitingRepairs && hp >= data.hitpoints) {
-            state = BuildingState.Constructed; 
+            state = BuildingState.Constructed;
         }
     }
 
     /// Public --
 
-    public void build() {
+    public void build(System.Action<bool> onComplete = null) {
         if (instantBuild) {
             completeConstruction();
+            onComplete?.Invoke(true);
         } else {
             state = BuildingState.UnderConstruction;
-            LeanTween.delayedCall(1.5f, completeConstruction);
             animateDust(amount: 15, duration: 1.5f);
+            LeanTween.delayedCall(1.5f, () => {
+                completeConstruction();
+                onComplete?.Invoke(true);
+            });
         }
     }
 
@@ -82,9 +95,11 @@ public class Building : MonoBehaviour {
 
     public string getInteractHint() {
         string keyCode = Constants.instance.COIN_KEY_CODE.ToString();
-        switch(type) {
-            case BuildingType.BowShop: return $"Press {keyCode} to buy a {WeaponType.Bow}";
-            case BuildingType.HammerShop: return $"Press {keyCode} to buy a {WeaponType.Hammer}";
+        switch (type) {
+            case BuildingType.BowShop:
+                return $"Press {keyCode} to buy a {WeaponType.Bow}";
+            case BuildingType.HammerShop:
+                return $"Press {keyCode} to buy a {WeaponType.Hammer}";
         }
         return null;
     }
@@ -109,7 +124,6 @@ public class Building : MonoBehaviour {
     private void completeConstruction() {
         buildingSpriteRenderer.gameObject.SetActive(true);
         shadowSpriteRenderer.gameObject.SetActive(true);
-        collisionZone.SetActive(true);
         state = BuildingState.Constructed;
     }
 

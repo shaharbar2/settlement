@@ -26,6 +26,9 @@ public class PeasantAI : AIBase {
         LookingForConstruction,
         LookingForRepairs,
         LookingForTrees,
+        AssignedConstructionJob,
+        AssignedRepairJob,
+        AssignedTreeJob,
 
         WaitingForTrophyCoin
     }
@@ -47,7 +50,12 @@ public class PeasantAI : AIBase {
     private Animal targetAnimal = null;
     private Building targetBuilding = null;
 
-    
+    private Peasant peasant;
+    protected override void Awake() {
+        base.Awake();
+        peasant = GetComponent<Peasant>();
+    }
+
     protected override void Start() {
         base.Start();
         issueTask(AITask.typeUpdateTask(type));
@@ -119,7 +127,10 @@ public class PeasantAI : AIBase {
             case PeasantAIState.LookingForConstruction:
             case PeasantAIState.LookingForRepairs:
             case PeasantAIState.LookingForTrees:
-                lookForConstructionUpdate();
+                lookForWorkerJobUpdate();
+                break;
+            case PeasantAIState.AssignedConstructionJob:
+                constructionJobUpdate();
                 break;
             case PeasantAIState.WaitingForTrophyCoin:
                 waitForTrophyUpdate();
@@ -182,17 +193,27 @@ public class PeasantAI : AIBase {
         }
     }
 
-    private void lookForConstructionUpdate() {
+    private void lookForWorkerJobUpdate() {
         idleRoamUpdate();
 
         lookupElapsed += Time.deltaTime;
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
-            targetBuilding = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
-
-            if (targetAnimal != null) {
-                state = PeasantAIState.ChasingAnimal;
+            targetBuilding = finder.closestRepairJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+            if (targetBuilding == null) {
+                targetBuilding = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+                if (targetBuilding == null) {
+                    // ToDo: uncomment when trees are added
+                    // targetTree = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
+                    // if (targetTree != null) {
+                    //     state = PeasantAIState.AssignedTreeJob;
+                    // }
+                } else {
+                    state = PeasantAIState.AssignedConstructionJob;
+                }
+            } else {
+                state = PeasantAIState.AssignedRepairJob;
             }
         }
     }
@@ -212,9 +233,35 @@ public class PeasantAI : AIBase {
         }
     }
 
+    private void constructionJobUpdate() {
+        Building building = targetBuilding;
+        if (building == null || building.state != BuildingState.AwaitingConstruction) {
+            building = null;
+            state = PeasantAIState.LookingForConstruction;
+            return;
+        }
+
+        if (!peasant.collidesBuilding(building)) {
+            var moveTask = AITask.moveTask(building.transform.position);
+            moveTask.onComplete = () => {
+                if (building != null) {
+                    if (peasant.collidesBuilding(building)) {
+                        var constructionTask = AITask.constructionTask(building);
+                        constructionTask.onComplete = () => {
+                            state = PeasantAIState.LookingForConstruction;
+                        };
+                        issueTask(constructionTask);
+                    }
+                }
+            };
+            issueTask(moveTask);
+        }
+    }
+
     private void chaseAnimalUpdate() {
         Animal animal = targetAnimal;
         if (animal == null || !animal.isAlive) {
+            animal = null;
             state = PeasantAIState.LookingForAnimal;
             return;
         }
