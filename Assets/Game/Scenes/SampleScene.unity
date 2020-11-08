@@ -17352,7 +17352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1535087457}
   m_Layer: 0
-  m_Name: Non-grid
+  m_Name: Biome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18429,7 +18429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   treePrefab: {fileID: 7246178093970910232, guid: f162fb86041140a449738acbf9eeee01,
     type: 3}
-  environmentParent: {fileID: 1535087456}
+  biomeContainer: {fileID: 1535087456}
   mosses:
   - {fileID: 21300000, guid: 3ee22e4ef5d46d340bfbf7409b27699a, type: 3}
   - {fileID: 21300000, guid: e5e3f5a8ef368c742a63dff12f255b46, type: 3}
@@ -18437,6 +18437,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dc6dcffc7630f844ebf9d3bb7fc696fc, type: 3}
   - {fileID: 21300000, guid: dc6dcffc7630f844ebf9d3bb7fc696fc, type: 3}
   - {fileID: 21300000, guid: dc6dcffc7630f844ebf9d3bb7fc696fc, type: 3}
+  - {fileID: 21300000, guid: e5e3f5a8ef368c742a63dff12f255b46, type: 3}
   dirts:
   - {fileID: 21300000, guid: d7e2ac5d63428de428be49c4803c5007, type: 3}
   - {fileID: 21300000, guid: f2776e12a09b99a44aaaa0ab682186e1, type: 3}
@@ -18456,10 +18457,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 96626d0051ae2c34388a802e3afe5ff3, type: 3}
   - {fileID: 21300000, guid: 37ba90cee8799e14d8d0171976684fcc, type: 3}
   - {fileID: 21300000, guid: 550b654c7fc032c42a11f8a9af787846, type: 3}
-  mossDensity: 485
-  dirtDensity: 178
-  grassDensity: 416
-  rocksDensity: 40
+  mossDensity: 112
+  dirtDensity: 754
+  grassDensity: 92
+  rocksDensity: 134
 --- !u!1 &1890230047
 GameObject:
   m_ObjectHideFlags: 0
@@ -19065,11 +19066,11 @@ MonoBehaviour:
   PEASANT_ARROW_FLIGHT_SPEED: 2
   PEASANT_HIT_CHANCE: 0.2
   PEASANT_APPROACH_DEVIATION: 1.2
-  MIN_TREES: 101
-  MAX_TREES: 119
+  MIN_TREES: 6
+  MAX_TREES: 8
   TREE_SPAWN_INTERVAL: 0.4
-  MAX_ANIMALS: 0
-  ANIMALS_SPAWN_INTERVAL: 5
+  MAX_ANIMALS: 20
+  ANIMALS_SPAWN_INTERVAL: 0.1
   ANIMAL_SPEED: 0.7
   BM_KEY_CODE: 32
   COIN_KEY_CODE: 102
