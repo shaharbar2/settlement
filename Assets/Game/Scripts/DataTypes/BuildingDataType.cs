@@ -24,5 +24,5 @@ public class BuildingData {
 
     public int hitpoints;
 
-    public BuildingPrefab prefab;
+    public Building prefab;
 }

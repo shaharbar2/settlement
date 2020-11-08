@@ -48,19 +48,19 @@ public class WorldObjectFinder {
         return closest;
     }
 
-    public BuildingPrefab closestConstructionJob(float radius) {
+    public Building closestConstructionJob(float radius) {
         return closestBuilding(radius, BuildingState.AwaitingConstruction);
     }
 
-    public BuildingPrefab closestRepairJob(float radius) {
+    public Building closestRepairJob(float radius) {
         return closestBuilding(radius, BuildingState.AwaitingRepairs);
     }
 
-    private BuildingPrefab closestBuilding(float radius, BuildingState state) {
-        BuildingPrefab[] allBuildings = GameObject.FindObjectsOfType<BuildingPrefab>();
-        BuildingPrefab closest = null;
+    private Building closestBuilding(float radius, BuildingState state) {
+        Building[] allBuildings = GameObject.FindObjectsOfType<Building>();
+        Building closest = null;
         float closestRange = float.MaxValue;
-        foreach (BuildingPrefab building in allBuildings) {
+        foreach (Building building in allBuildings) {
             if (building.state != state) continue;
             float r = Vector2.Distance(building.transform.position, gameObject.transform.position);
             if (r < radius) {

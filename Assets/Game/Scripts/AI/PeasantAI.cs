@@ -45,7 +45,7 @@ public class PeasantAI : AIBase {
     private float attackElapsed = 2f;
 
     private Animal targetAnimal = null;
-    private BuildingPrefab targetBuilding = null;
+    private Building targetBuilding = null;
 
     
     protected override void Start() {

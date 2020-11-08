@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameWorld : MonoBehaviour {
-    [SerializeField] public BuildingPrefab tent;
+    [SerializeField] public Building tent;
 
     void Start() {
         tent.onDestroyed += onTentDestroyed;
@@ -14,7 +14,7 @@ public class GameWorld : MonoBehaviour {
 
     }
 
-    private void onTentDestroyed(BuildingPrefab building) {
+    private void onTentDestroyed(Building building) {
         Scene scene = SceneManager.GetActiveScene(); 
         SceneManager.LoadScene(scene.name);
     }

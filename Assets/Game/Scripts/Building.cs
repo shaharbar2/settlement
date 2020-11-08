@@ -10,7 +10,7 @@ public enum BuildingState {
     Destroyed
 }
 
-public class BuildingPrefab : MonoBehaviour {
+public class Building : MonoBehaviour {
     [SerializeField] public BuildingType type;
     public BuildingState state;
 
@@ -29,7 +29,7 @@ public class BuildingPrefab : MonoBehaviour {
     [HideInInspector] public bool buildOnStart;
     [HideInInspector] public bool instantBuild;
 
-    public delegate void BuildingEvent(BuildingPrefab building);
+    public delegate void BuildingEvent(Building building);
     public event BuildingEvent onDestroyed;
 
     private float hp;

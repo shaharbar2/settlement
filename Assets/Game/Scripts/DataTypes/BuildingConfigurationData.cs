@@ -8,7 +8,7 @@ public class BuildingConfigurationData : MonoBehaviour {
     [SerializeField] private int costToConstruct;
     [SerializeField] private int costToUse;
     [SerializeField] private int hitpoints;
-    [SerializeField] private BuildingPrefab prefab;
+    [SerializeField] private Building prefab;
 
     public BuildingData data { get{
         var data = new BuildingData();

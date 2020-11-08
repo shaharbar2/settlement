@@ -5,7 +5,7 @@ using UnityEngine;
 public class OnSceneLoad : MonoBehaviour {
 
     private TilemapController tilemapController;
-    private BuildingPrefab[] defaultBuildings;
+    private Building[] defaultBuildings;
 
     void Awake() {
         tilemapController = FindObjectOfType<TilemapController>();
@@ -20,7 +20,7 @@ public class OnSceneLoad : MonoBehaviour {
     /// Private -- 
     
     private void manageDefaultBuildingsAwake() {
-        defaultBuildings = FindObjectsOfType<BuildingPrefab>();
+        defaultBuildings = FindObjectsOfType<Building>();
         foreach(var building in defaultBuildings) {
             building.buildOnStart = true;
             building.instantBuild = true;
