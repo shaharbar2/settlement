@@ -61,9 +61,10 @@ public class BuildingPrefab : MonoBehaviour {
     }
 
     public string getInteractHint() {
+        string keyCode = Constants.instance.COIN_KEY_CODE.ToString();
         switch(type) {
-            case BuildingType.BowShop: return $"Press {Constants.instance.COIN_KEY_CODE} to buy a {WeaponType.Bow}";
-            case BuildingType.HammerShop: return $"Press {Constants.instance.COIN_KEY_CODE} to buy a {WeaponType.Hammer}";
+            case BuildingType.BowShop: return $"Press {keyCode} to buy a {WeaponType.Bow}";
+            case BuildingType.HammerShop: return $"Press {keyCode} to buy a {WeaponType.Hammer}";
         }
         return null;
     }
@@ -85,7 +86,6 @@ public class BuildingPrefab : MonoBehaviour {
     }
 
     private void completeConstruction() {
-        Debug.Log("constuction completed");
         buildingSpriteRenderer.gameObject.SetActive(true);
         shadowSpriteRenderer.gameObject.SetActive(true);
         collisionZone.SetActive(true);
@@ -102,7 +102,6 @@ public class BuildingPrefab : MonoBehaviour {
             float t = Random.Range(0f, duration);
             LeanTween.delayedCall(t, () => {
                 GameObject vfx = Instantiate(dustVFXPrefab);
-
                 float yOffset = Random.Range(-rMin * 4f, rMin * 2f);
                 float xOffset = rMin + Random.Range(0f, rMax);
                 if (BabyUtils.randomBool) {
