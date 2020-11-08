@@ -54,7 +54,8 @@ public class Player : MonoBehaviour {
                 Vector3 to = collidedBuilding.getCoinsAnchor();
                 BuildingPrefab building = collidedBuilding;
                 coinController.spend(cost, from, to, onComplete: () => {
-                    weaponController.drop(WeaponType.Bow, building.getWeaponAnchor());
+                    WeaponType weaponType = WeaponController.weaponTypeForBuilding(building.type);
+                    weaponController.drop(weaponType, building.getWeaponAnchor());
                 });
             } else {
                 coinController.dropCoin(transform.position, transform.localScale.x, CoinDropType.ByPlayer);

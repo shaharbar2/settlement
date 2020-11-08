@@ -1277,6 +1277,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bowPrefab: {fileID: 5092882483973331203, guid: e1fa6015a9e09684184ef3bc7463a87b,
     type: 3}
+  hammerPrefab: {fileID: 5092882483973331203, guid: 6eb0539ec1d76844c8a518207581d316,
+    type: 3}
 --- !u!1 &257159813
 GameObject:
   m_ObjectHideFlags: 0
