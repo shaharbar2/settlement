@@ -47,7 +47,7 @@ public class Player : MonoBehaviour {
             if (interactHint != null) {
                 ui.showHint(interactHint);
             }
-        } else if (collidedTree != null){
+        } else if (collidedTree != null && collidedTree.state == TreeState.Ready){
             string interactHint = collidedTree.getInteractHint();
             if (interactHint != null) {
                 ui.showHint(interactHint);

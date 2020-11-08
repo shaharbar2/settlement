@@ -1,6 +1,16 @@
 # Settlement by Eyal Stern
   ## Patchnotes:
 
+  ### build 0.0.4
+  - [#35](/../../issues/35) Being able to place buildings in Editor
+  - [#32](/../../issues/32) Added build cost information in build menu and building usage cost information
+  - [#34](/../../issues/34) Added Hammer Shop
+  - [#15](/../../issues/15) Added Town Tent (hall). Added hotkey to toggle camera between tent and player (R default)
+  - [#33](/../../issues/33) Added worker NPC
+  - [#38](/../../issues/38) Added trees, spawn infinitely and can be marked for lumbering
+  - [#46](/../../issues/46) Peasants will now spawn until max amount at given interals (default 30 seconds, 40 peasants max)
+  - Added biome generation
+
   ### build 0.0.3
   - [#10](/../../issues/10) Added peasant 
   - [#11](/../../issues/11) Added peasant AI 
