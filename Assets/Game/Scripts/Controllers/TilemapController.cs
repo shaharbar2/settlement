@@ -82,6 +82,11 @@ public class TilemapController : MonoBehaviour {
         fillAreaWithTile(area, buildHighlightTile);
     }
 
+    public void markWalkable(Vector3 worldPosition, TilemapAreaType type) {
+        TilemapAreaData area = new TilemapAreaData(wallsTilemap, worldPosition, type);
+        fillAreaWithTile(area, null);
+    }
+
     public Vector3 nearestWalkablePosition(Vector3 worldPosition) {
         Vector3Int tilePos = baseTilemap.WorldToCell(worldPosition);
         if (isWalkable(worldPosition)) {

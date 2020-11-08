@@ -278,7 +278,7 @@ PrefabInstance:
     - target: {fileID: 3526949671308238164, guid: 10b97031df1d5e64d83a1a9510fbfc83,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3526949671308238164, guid: 10b97031df1d5e64d83a1a9510fbfc83,
         type: 3}
@@ -518,6 +518,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1375425171}
     m_Modifications:
+    - target: {fileID: 6453311407605220609, guid: 140988bf6421e25498f62a81df0e579f,
+        type: 3}
+      propertyPath: type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6453311407605220609, guid: 140988bf6421e25498f62a81df0e579f,
+        type: 3}
+      propertyPath: state
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -933,12 +943,6 @@ MonoBehaviour:
   cost: {fileID: 1973138141}
   costIcon: {fileID: 1946434070}
   costText: {fileID: 536115441}
---- !u!4 &186234906 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-    type: 3}
-  m_PrefabInstance: {fileID: 881237786}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &203029168
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,7 +975,7 @@ Transform:
   - {fileID: 516158713}
   - {fileID: 1890230048}
   m_Father: {fileID: 1375425171}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &203029172
 MonoBehaviour:
@@ -15364,85 +15368,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 862173999}
   m_CullTransparentMesh: 0
---- !u!1001 &881237786
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1375425171}
-    m_Modifications:
-    - target: {fileID: 6453311407605220609, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220609, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: state
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.887
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.452
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6453311407605220623, guid: 140988bf6421e25498f62a81df0e579f,
-        type: 3}
-      propertyPath: m_Name
-      value: Peasant2
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 140988bf6421e25498f62a81df0e579f, type: 3}
 --- !u!1 &881703434
 GameObject:
   m_ObjectHideFlags: 0
@@ -16716,24 +16641,24 @@ Tilemap:
   - m_RefCount: 0
     m_Data:
       e00: NaN
-      e01: -3.322956e+23
-      e02: -0.52846813
+      e01: -0.20127988
+      e02: 1019045
       e03: NaN
       e10: NaN
       e11: 6.68e-43
-      e12: 6.68e-43
+      e12: 6.7e-43
       e13: NaN
       e20: 17.935898
-      e21: -0.52846813
+      e21: 1019045
       e22: 1e-45
       e23: -8.282898e-30
       e30: 4.5907e-41
-      e31: 6.68e-43
+      e31: 6.7e-43
       e32: 0
       e33: 5.6352e-41
   m_TileColorArray:
   - m_RefCount: 0
-    m_Data: {r: 7.424408, g: 7.424408, b: 7.424408, a: 7.424408}
+    m_Data: {r: 7.5173798, g: 7.5173798, b: 7.5173798, a: 7.5173798}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 0, b: 0, a: 0.5803922}
@@ -16970,7 +16895,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 813896766}
-  - {fileID: 186234906}
   - {fileID: 608312492}
   - {fileID: 203029171}
   - {fileID: 1899492882}
@@ -18460,7 +18384,7 @@ MonoBehaviour:
   mossDensity: 112
   dirtDensity: 754
   grassDensity: 92
-  rocksDensity: 134
+  rocksDensity: 20
 --- !u!1 &1890230047
 GameObject:
   m_ObjectHideFlags: 0
@@ -19060,6 +18984,7 @@ MonoBehaviour:
   PEASANT_WEAPON_LOOKUP_RADIUS: 10
   PEASANT_ANIMAL_LOOKUP_RADIUS: 10
   PEASANT_BUILDING_LOOKUP_RADIUS: 10
+  PEASANT_TREE_LOOKUP_RADIUS: 10
   PEASANT_PLAYER_DELIVER_PROXIMITY: 0.3
   PEASANT_ANIMAL_ATTACK_RANGE: 2.5
   PEASANT_ATTACK_INTERVAL: 2
@@ -19069,7 +18994,7 @@ MonoBehaviour:
   MIN_TREES: 6
   MAX_TREES: 8
   TREE_SPAWN_INTERVAL: 0.4
-  MAX_ANIMALS: 20
+  MAX_ANIMALS: 10
   ANIMALS_SPAWN_INTERVAL: 0.1
   ANIMAL_SPEED: 0.7
   BM_KEY_CODE: 32
@@ -20039,7 +19964,7 @@ PrefabInstance:
     - target: {fileID: 3526949671308238164, guid: 205d78397f89662439208bd34fa9fa9c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3526949671308238164, guid: 205d78397f89662439208bd34fa9fa9c,
         type: 3}

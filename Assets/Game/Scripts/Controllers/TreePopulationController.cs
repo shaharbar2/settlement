@@ -29,7 +29,7 @@ public class TreePopulationController : MonoBehaviour {
     }
 
     void Start() {
-        
+        spawnTreeAt(new Vector3(2.54f, 0.01f, 0f));
     }
 
     void Update() {
@@ -41,20 +41,28 @@ public class TreePopulationController : MonoBehaviour {
         }
     }
 
+    private void spawnTreeAt(Vector3 pos) {
+        Tree tree = Instantiate(treePrefab);
+        tree.transform.position = pos;
+        worldTrees.Add(tree);
+        tree.onChoppedDown += onTreeChoppedDown;
+        tilemapController.markUnwalkable(tree.transform.position, TilemapAreaType.S_1x1);
+    }
+
     /// Private -- 
 
     private void controlPopulation() {
         if (worldTrees.Count < Constants.instance.MAX_TREES) {
             if (spawnInterval > Constants.instance.TREE_SPAWN_INTERVAL) {
                 while (worldTrees.Count < Constants.instance.MIN_TREES) {
-                    spawnTree();
+                    spawnRandomTree();
                     spawnInterval = 0;
                 }
             }
         }
     }
 
-    private void spawnTree() {
+    private void spawnRandomTree() {
         Tree tree = Instantiate(treePrefab);
         tree.transform.position = randomTreePosition();
         worldTrees.Add(tree);
@@ -63,6 +71,7 @@ public class TreePopulationController : MonoBehaviour {
     }
 
     private void onTreeChoppedDown(Tree tree) {
+        tilemapController.markWalkable(tree.transform.position, TilemapAreaType.S_1x1);
         worldTrees.Remove(tree);
         spawnInterval = 0;
     }

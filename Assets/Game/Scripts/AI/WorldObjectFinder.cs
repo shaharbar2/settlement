@@ -55,7 +55,13 @@ public class WorldObjectFinder {
     public Building closestRepairJob(float radius) {
         return closestBuilding(radius, BuildingState.AwaitingRepairs);
     }
+    
+    public Tree closestLumberingJob(float radius) {
+        return closestTree(radius, TreeState.MarkedForChop);
+    }
 
+    /// Private -- 
+    
     private Building closestBuilding(float radius, BuildingState state) {
         Building[] allBuildings = GameObject.FindObjectsOfType<Building>();
         Building closest = null;
@@ -67,6 +73,23 @@ public class WorldObjectFinder {
                 if (r < closestRange) {
                     closestRange = r;
                     closest = building;
+                }
+            }
+        }
+        return closest;
+    }
+
+    private Tree closestTree(float radius, TreeState state) {
+        Tree[] allTrees = GameObject.FindObjectsOfType<Tree>();
+        Tree closest = null;
+        float closestRange = float.MaxValue;
+        foreach (Tree tree in allTrees) {
+            if (tree.state != state) continue;
+            float r = Vector2.Distance(tree.transform.position, gameObject.transform.position);
+            if (r < radius) {
+                if (r < closestRange) {
+                    closestRange = r;
+                    closest = tree;
                 }
             }
         }

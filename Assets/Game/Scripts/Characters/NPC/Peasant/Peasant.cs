@@ -26,20 +26,15 @@ public class Peasant : NPC {
 
     /// Public -- 
 
-    public bool collidesBuilding(Building building) {
+    public bool feetCollidesZone(GameObject gameObject) {
         var contactFilter = new ContactFilter2D();
         contactFilter.useTriggers = true;
         Collider2D[] feetCollisions = new Collider2D[15];
         float count = feetCollider.OverlapCollider(contactFilter, feetCollisions);
 
-        List<Building> buildings = new List<Building>();
-        Building tmpBuilding = null;
         for (int i = 0; i < count; i++) {
-            tmpBuilding = feetCollisions[i].transform.parent.GetComponent<Building>();
-            if (tmpBuilding != null) {
-                if (building == tmpBuilding) {
-                    return true;
-                }
+            if (gameObject == feetCollisions[i].gameObject) {
+                return true;
             }
         }
         return false;
@@ -113,12 +108,20 @@ public class Peasant : NPC {
                 task.begin();
                 Building building = task.target.GetComponent<Building>();
                 build(building, onComplete: (finished) => {
-                    if (finished) task.finish(reason: $"finished constructing {building.type}");
+                    if (finished)task.finish(reason: $"finished constructing {building.type}");
                     else task.fail(reason: "unable to finish construction");
                 });
                 dropCoins(task.amountToDrop, onComplete: (bool finished) => {
                     if (finished)task.finish(reason: $"dropped {task.amountToDrop} coins");
                     else task.fail(reason: "could not drop coins");
+                });
+                break;
+            case AITaskType.ChopDown:
+                task.begin();
+                Tree tree = task.target.GetComponent<Tree>();
+                performChop(tree, onComplete: (finished) => {
+                    if (finished)task.finish(reason: $"tree was chopped down {tree}");
+                    else task.fail(reason: "tree chopped, but it still stands");
                 });
                 break;
             default:
@@ -132,6 +135,12 @@ public class Peasant : NPC {
     private void build(Building building, System.Action<bool> onComplete) {
         building.build(onComplete);
         movement.lookAt(transform.position + Vector3.down);
+    }
+
+    private void performChop(Tree tree, System.Action<bool> onComplete) {
+        tree.chop(onComplete: (treeIsDown) => {
+            onComplete(treeIsDown);
+        });
     }
 
     private void performAttack(Animal animal, System.Action<bool> onComplete) {

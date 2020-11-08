@@ -93,9 +93,9 @@ public class AITask {
         task.target = building.gameObject;
         return task;
     }
-    public static AITask chopDownTask(GameObject tree) {
-        AITask task = new AITask(AITaskType.Repair);
-        task.target = tree;
+    public static AITask chopDownTask(Tree tree) {
+        AITask task = new AITask(AITaskType.ChopDown);
+        task.target = tree.gameObject;
         return task;
     }
     /// Public -- 

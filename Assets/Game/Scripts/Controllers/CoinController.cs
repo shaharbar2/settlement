@@ -84,16 +84,17 @@ public class CoinController : MonoBehaviour {
         }
     }
 
-    public Coin lookForCoin(Vector3 pos, float distance, CoinDropType dropType) {
+    public Coin[] lookForCoins(Vector3 pos, float distance, CoinDropType dropType) {
+        List<Coin> coins = new List<Coin>();
         foreach (Coin coin in worldCoins) {
             if (coin.dropType != dropType)continue;
             if (Vector2.Distance(pos, coin.transform.position) < distance) {
                 GameObject reserver = null;
                 if (!reservedCoins.TryGetValue(coin, out reserver))
-                    return coin;
+                    coins.Add(coin);
             }
         }
-        return null;
+        return coins.ToArray();
     }
 
     public bool reserveCoinForPickup(Coin coin, GameObject reserver) {
