@@ -42,7 +42,10 @@ public class Player : MonoBehaviour {
         detectFeetCollisions();
         
         if (collidedBuilding != null) {
-            ui.showHint($"Press {Constants.instance.COIN_KEY_CODE} to buy a bow");
+            string interactHint = collidedBuilding.getInteractHint();
+            if (interactHint != null) {
+                ui.showHint(interactHint);
+            }
         } else {
             ui.hideHint();
         }

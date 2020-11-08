@@ -60,6 +60,13 @@ public class BuildingPrefab : MonoBehaviour {
         return weaponAnchor.transform.position;
     }
 
+    public string getInteractHint() {
+        switch(type) {
+            case BuildingType.BowShop: return $"Press {Constants.instance.COIN_KEY_CODE} to buy a {WeaponType.Bow}";
+            case BuildingType.HammerShop: return $"Press {Constants.instance.COIN_KEY_CODE} to buy a {WeaponType.Hammer}";
+        }
+        return null;
+    }
     public void hit(float damage) {
         hp -= damage;
         hitpointsBar.update(hp, data.hitpoints);
