@@ -57,7 +57,7 @@ public class Player : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(Constants.instance.COIN_KEY_CODE)) {
-            if (collidedBuilding != null && collidedBuilding.isUsableState) {
+            if (collidedBuilding != null && collidedBuilding.isUsableState && collidedBuilding.isUsableType) {
                 Building building = collidedBuilding;
                 BuildingData buildingData = BuildingConfiguration.instance.buildingDataFor(building.type);
                 Vector3 from = transform.position;

@@ -28,6 +28,11 @@ public class Building : MonoBehaviour {
             return state == BuildingState.Constructed || state == BuildingState.AwaitingRepairs;
         }
     }
+    public bool isUsableType {
+        get {
+            return type == BuildingType.BowShop || type == BuildingType.HammerShop;
+        }
+    }
     public GameObject collisionZoneGameObject { get {
         return collisionZone.gameObject;
     }}
