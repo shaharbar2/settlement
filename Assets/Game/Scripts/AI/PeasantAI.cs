@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum NPCType {
-    Homeless,
+    // peasants:
+    Vagabond,
     Peasant,
     Hunter,
+    Worker, 
 
+    // animals:
     Slime
 }
 
@@ -51,8 +54,8 @@ public class PeasantAI : AIBase {
     /// Protected --
     protected override void updateStateMachine() {
         switch (type) {
-            case NPCType.Homeless:
-                homelessStateMachine();
+            case NPCType.Vagabond:
+                vagabondStateMachine();
                 break;
             case NPCType.Peasant:
                 peasantStateMachine();
@@ -67,7 +70,7 @@ public class PeasantAI : AIBase {
 
     /// State machines
 
-    private void homelessStateMachine() {
+    private void vagabondStateMachine() {
         switch (state) {
             case PeasantAIState.WaitingForCoin:
                 waitForCoinUpdate();
