@@ -60,7 +60,7 @@ public class AnimalPopulationController : MonoBehaviour {
                 return pos;
             }
             pos = tilemapController.randomPosition(walkable: true);
-            isOutsideCenter = Mathf.Abs(pos.x) > R && Mathf.Abs(pos.y/2f) > R;
+            isOutsideCenter = Mathf.Abs(pos.x) > R || Mathf.Abs(pos.y) > R;
         }
         return pos;
     }

@@ -17,6 +17,8 @@ public abstract class AIBase : MonoBehaviour {
     private float roamInterval = 5f;
     private float roamElapsed = 0f;
 
+    private Queue<AITask> queue = new Queue<AITask>();
+
     protected virtual void Awake() {
     
     }
@@ -34,6 +36,9 @@ public abstract class AIBase : MonoBehaviour {
             } else if (currentTask.success) {
                 onTaskFinished(currentTask);
             }
+        } else if (queue.Count > 0) {
+            currentTask = queue.Dequeue();
+            onTaskIssued?.Invoke(currentTask);
         } else {
            updateStateMachine();
         }
@@ -65,6 +70,10 @@ public abstract class AIBase : MonoBehaviour {
         onTaskIssued?.Invoke(task);
     }
 
+    protected void enqueueTask(AITask task) {
+        Debug.Log($"{gameObject.name} enqueued : {task}");
+        queue.Enqueue(task);
+    }
 
     protected void idleRoamUpdate() {
         roamElapsed += Time.deltaTime;

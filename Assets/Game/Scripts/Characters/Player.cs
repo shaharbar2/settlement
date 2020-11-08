@@ -18,6 +18,7 @@ public class Player : MonoBehaviour {
     private Collider2D[] feetCollisions = new Collider2D[15];
 
     private Building collidedBuilding;
+    private Tree collidedTree;
     private CharacterMovement movement;
 
     void Awake() {
@@ -46,6 +47,11 @@ public class Player : MonoBehaviour {
             if (interactHint != null) {
                 ui.showHint(interactHint);
             }
+        } else if (collidedTree != null){
+            string interactHint = collidedTree.getInteractHint();
+            if (interactHint != null) {
+                ui.showHint(interactHint);
+            }
         } else {
             ui.hideHint();
         }
@@ -55,10 +61,17 @@ public class Player : MonoBehaviour {
                 Building building = collidedBuilding;
                 BuildingData buildingData = BuildingConfiguration.instance.buildingDataFor(building.type);
                 Vector3 from = transform.position;
-                Vector3 to = collidedBuilding.getCoinsAnchor();
+                Vector3 to = building.getCoinsAnchor();
                 coinController.spend(buildingData.costToUse, from, to, onComplete: () => {
                     WeaponType weaponType = WeaponController.weaponTypeForBuilding(building.type);
                     weaponController.drop(weaponType, building.getWeaponAnchor());
+                });
+            } else if (collidedTree != null && collidedTree.state == TreeState.Ready) {
+                Tree tree = collidedTree;
+                Vector3 to = tree.getCoinsAnchor();
+                Vector3 from = transform.position;
+                coinController.spend(1, from, to, onComplete: () => {
+                    tree.mark();
                 });
             } else {
                 coinController.dropCoin(transform.position, transform.localScale.x, CoinDropType.ByPlayer);
@@ -73,16 +86,22 @@ public class Player : MonoBehaviour {
         float count = feetCollider.OverlapCollider(feetContactFilter, feetCollisions);
         Coin coin = null;
         
+        collidedTree = null;
         collidedBuilding = null;
         Building building = null;
+        Tree tree = null;
         for (int i = 0; i < count; i++) {
             coin = feetCollisions[i].transform.parent.GetComponent<Coin>();
             building = feetCollisions[i].transform.parent.GetComponent<Building>();
+            tree = feetCollisions[i].transform.parent.GetComponent<Tree>();
             if (coin != null) {
                 coinController.pickup(coin, transform.position, byPlayer: true);
             }
             if (building != null) {
                 collidedBuilding = building;
+            }
+            if (tree != null) {
+                collidedTree = tree;
             }
         }
     }

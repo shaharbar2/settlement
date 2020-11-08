@@ -28,6 +28,9 @@ public class Building : MonoBehaviour {
             return state == BuildingState.Constructed || state == BuildingState.AwaitingRepairs;
         }
     }
+    public GameObject collisionZoneGameObject { get {
+        return collisionZone.gameObject;
+    }}
 
     /// Private -- 
 
