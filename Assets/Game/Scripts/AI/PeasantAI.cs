@@ -146,8 +146,8 @@ public class PeasantAI : AIBase {
         lookupElapsed += Time.deltaTime;
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
-
-            Coin[] coins = coinController.lookForCoins(transform.position, 1000f, CoinDropType.ByPlayer);
+            float radius = Constants.instance.PEASANT_COIN_LOOKUP_RADIUS;
+            Coin[] coins = coinController.lookForCoins(transform.position, radius, CoinDropType.ByPlayer);
             if (coins.Length > 0) {
                 coinController.reserveCoinForPickup(coins[0], gameObject);
                 var task = AITask.pickupCoinTask(coins[0]);

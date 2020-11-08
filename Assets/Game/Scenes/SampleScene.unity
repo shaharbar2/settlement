@@ -845,6 +845,7 @@ Transform:
   - {fileID: 254278980}
   - {fileID: 1444176636}
   - {fileID: 1874908323}
+  - {fileID: 642267817}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14134,6 +14135,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 635922370}
   m_CullTransparentMesh: 0
+--- !u!1 &642267816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 642267817}
+  - component: {fileID: 642267818}
+  m_Layer: 0
+  m_Name: Peasant Population Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &642267817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642267816}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 170917518}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &642267818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642267816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e81a02317766647b378abc04d9daa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  peasantPrefab: {fileID: 6453311407605220620, guid: 140988bf6421e25498f62a81df0e579f,
+    type: 3}
 --- !u!1 &658957657
 GameObject:
   m_ObjectHideFlags: 0
@@ -19065,8 +19111,10 @@ MonoBehaviour:
   CAMERA_SPEED: 1
   PLAYER_SPEED: 1.2
   INITIAL_COINS_AMOUNT: 10
+  MAX_PEASANTS: 40
+  PEASANT_SPAWN_INTERVAL: 20
   PEASANT_SPEED: 0.7
-  PEASANT_COIN_LOOKUP_RADIUS: 10
+  PEASANT_COIN_LOOKUP_RADIUS: 1.5
   PEASANT_WEAPON_LOOKUP_RADIUS: 10
   PEASANT_ANIMAL_LOOKUP_RADIUS: 10
   PEASANT_BUILDING_LOOKUP_RADIUS: 10

@@ -25,6 +25,10 @@ public class Constants : MonoBehaviour {
     [SerializeField] public int INITIAL_COINS_AMOUNT;
     
     [Header("Peasant settings")]
+    [Tooltip("Max amount of peasants spawn")]
+    [SerializeField] public int MAX_PEASANTS;
+    [Tooltip("Peasant spawn interval")]
+    [SerializeField] public float PEASANT_SPAWN_INTERVAL;
     [Tooltip("Amount of coins at start")]
     [SerializeField] public float PEASANT_SPEED;
     [Tooltip("Radius of coin visibility for vagabond")]
