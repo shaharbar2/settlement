@@ -338,7 +338,7 @@ public class PeasantAI : AIBase {
 
     private void becomeHunter() {
         type = NPCType.Hunter;
-        state = PeasantAIState.LookingForAnimal & PeasantAIState.WaitingForCoin;
+        state = PeasantAIState.LookingForAnimal;
         issueTask(AITask.typeUpdateTask(type));
     }
 

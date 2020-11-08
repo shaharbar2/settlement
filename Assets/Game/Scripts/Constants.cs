@@ -48,6 +48,10 @@ public class Constants : MonoBehaviour {
     [Tooltip("When peasant approaches animal he will randomly deviate to from optimal attack position")]
     [SerializeField] public float PEASANT_APPROACH_DEVIATION;
 
+    [Header("Tree settings")]
+    [SerializeField] public int MIN_TREES;
+    [SerializeField] public int MAX_TREES;
+    [SerializeField] public float TREE_SPAWN_INTERVAL;
 
     [Header("Animal settings")]
     [SerializeField] public int MAX_ANIMALS;
