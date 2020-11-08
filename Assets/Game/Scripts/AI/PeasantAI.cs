@@ -45,7 +45,9 @@ public class PeasantAI : AIBase {
     private float attackElapsed = 2f;
 
     private Animal targetAnimal = null;
+    private BuildingPrefab targetBuilding = null;
 
+    
     protected override void Start() {
         base.Start();
         issueTask(AITask.typeUpdateTask(type));
@@ -187,8 +189,7 @@ public class PeasantAI : AIBase {
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
-            float searchRadius = Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS;
-            targetAnimal = findClosestAliveAnimal(searchRadius);
+            targetBuilding = finder.closestConstructionJob(radius: Constants.instance.PEASANT_BUILDING_LOOKUP_RADIUS);
 
             if (targetAnimal != null) {
                 state = PeasantAIState.ChasingAnimal;
@@ -203,8 +204,7 @@ public class PeasantAI : AIBase {
         if (lookupElapsed > lookupInterval) {
             lookupElapsed = 0;
 
-            float searchRadius = Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS;
-            targetAnimal = findClosestAliveAnimal(searchRadius);
+            targetAnimal = finder.closestAliveAnimal(radius: Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS);
 
             if (targetAnimal != null) {
                 state = PeasantAIState.ChasingAnimal;
@@ -267,7 +267,8 @@ public class PeasantAI : AIBase {
             playerLookupElapsed = 0;
             if (trophyCoinsAmount > 0) {
                 float range = Constants.instance.PEASANT_PLAYER_DELIVER_PROXIMITY;
-                if (Vector2.Distance(player.transform.position, transform.position) < range) {
+                Vector3 playerPosition = finder.player().transform.position;
+                if (Vector2.Distance(playerPosition, transform.position) < range) {
                     AITask task = AITask.dropCoinsTask(trophyCoinsAmount);
                     task.onComplete = () => {
                         if (task.success) {
@@ -298,22 +299,5 @@ public class PeasantAI : AIBase {
         type = NPCType.Worker;
         state = PeasantAIState.LookingForConstruction;
         issueTask(AITask.typeUpdateTask(type));
-    }
-
-    private Animal findClosestAliveAnimal(float radius) {
-        Animal[] allAnimals = FindObjectsOfType<Animal>();
-        Animal closest = null;
-        float closestRange = float.MaxValue;
-        foreach (Animal animal in allAnimals) {
-            if (!animal.isAlive)continue;
-            float r = Vector2.Distance(animal.transform.position, transform.position);
-            if (r < radius) {
-                if (r < closestRange) {
-                    closestRange = r;
-                    closest = animal;
-                }
-            }
-        }
-        return closest;
     }
 }

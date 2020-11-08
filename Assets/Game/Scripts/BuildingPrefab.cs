@@ -2,8 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BuildingState {
+    AwaitingConstruction,
+    AwaitingRepairs,
+    UnderConstruction,
+    Constructed,
+    Destroyed
+}
+
 public class BuildingPrefab : MonoBehaviour {
     [SerializeField] public BuildingType type;
+    public BuildingState state;
 
     [SerializeField] private GameObject collisionZone;
     [SerializeField] private GameObject dustVFXPrefab;
@@ -26,6 +35,7 @@ public class BuildingPrefab : MonoBehaviour {
     private float hp;
     private BuildingData data;
 
+
     void Awake() {
         buildingSpriteRenderer.gameObject.SetActive(false);
         shadowSpriteRenderer.gameObject.SetActive(false);
@@ -41,12 +51,22 @@ public class BuildingPrefab : MonoBehaviour {
         }
     }
 
+    void Update() {
+        if (state == BuildingState.Constructed && hp < data.hitpoints) {
+            state = BuildingState.AwaitingRepairs;
+        }
+        if (state == BuildingState.AwaitingRepairs && hp >= data.hitpoints) {
+            state = BuildingState.Constructed; 
+        }
+    }
+
     /// Public --
 
     public void build() {
         if (instantBuild) {
             completeConstruction();
         } else {
+            state = BuildingState.UnderConstruction;
             LeanTween.delayedCall(1.5f, completeConstruction);
             animateDust(amount: 15, duration: 1.5f);
         }
@@ -68,6 +88,7 @@ public class BuildingPrefab : MonoBehaviour {
         }
         return null;
     }
+
     public void hit(float damage) {
         hp -= damage;
         hitpointsBar.update(hp, data.hitpoints);
@@ -89,9 +110,11 @@ public class BuildingPrefab : MonoBehaviour {
         buildingSpriteRenderer.gameObject.SetActive(true);
         shadowSpriteRenderer.gameObject.SetActive(true);
         collisionZone.SetActive(true);
+        state = BuildingState.Constructed;
     }
 
     private void onBuildingDestroyed() {
+        state = BuildingState.Destroyed;
         onDestroyed?.Invoke(this);
     }
 

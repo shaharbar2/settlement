@@ -6,6 +6,7 @@ public abstract class AIBase : MonoBehaviour {
     public delegate void AIEvent(AITask command);
     public event AIEvent onTaskIssued;
 
+    protected WorldObjectFinder finder;
     protected WeaponController weaponController;
     protected CoinController coinController;
     protected Player player;
@@ -16,14 +17,16 @@ public abstract class AIBase : MonoBehaviour {
     private float roamInterval = 5f;
     private float roamElapsed = 0f;
 
-    // Start is called before the first frame update
+    protected virtual void Awake() {
+    
+    }
+
     protected virtual void Start() {
         coinController = FindObjectOfType<CoinController>();
         weaponController = FindObjectOfType<WeaponController>();
-        player = FindObjectOfType<Player>();
+        finder = new WorldObjectFinder(gameObject);
     }
 
-    // Update is called once per frame
     protected virtual void Update() {
         if (currentTask != null) {
             if (currentTask.failed) {

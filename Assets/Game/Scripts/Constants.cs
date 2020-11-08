@@ -27,12 +27,14 @@ public class Constants : MonoBehaviour {
     [Header("Peasant settings")]
     [Tooltip("Amount of coins at start")]
     [SerializeField] public float PEASANT_SPEED;
-    [Tooltip("Radius of coin visibility")]
+    [Tooltip("Radius of coin visibility for vagabond")]
     [SerializeField] public float PEASANT_COIN_LOOKUP_RADIUS;
-    [Tooltip("Radius of weapon visibility")]
+    [Tooltip("Radius of weapon visibility for peasant")]
     [SerializeField] public float PEASANT_WEAPON_LOOKUP_RADIUS;
-    [Tooltip("Radius of animals visibility")]
+    [Tooltip("Radius of animals visibility for hunter")]
     [SerializeField] public float PEASANT_ANIMAL_LOOKUP_RADIUS;
+    [Tooltip("Radius of building visibility for worker")]
+    [SerializeField] public float PEASANT_BUILDING_LOOKUP_RADIUS;    
     [Tooltip("If player is in this range, peasant will drop his trophy coins")]
     [SerializeField] public float PEASANT_PLAYER_DELIVER_PROXIMITY;
     [Tooltip("Attack range for hunter")]
