@@ -5,7 +5,6 @@ using UnityEngine;
 public class BuildingPrefab : MonoBehaviour {
     [SerializeField] public BuildingType type;
 
-    [SerializeField] private Sprite spriteShadow;
     [SerializeField] private GameObject collisionZone;
     [SerializeField] private GameObject dustVFXPrefab;
     [SerializeField] private GameObject bowPrefab;
@@ -21,7 +20,7 @@ public class BuildingPrefab : MonoBehaviour {
 
     void Awake() {
         buildingSpriteRenderer.gameObject.SetActive(false);
-        shadowSpriteRenderer.sprite = null;
+        shadowSpriteRenderer.gameObject.SetActive(false);
         collisionZone.SetActive(false);
     }
 
@@ -58,7 +57,7 @@ public class BuildingPrefab : MonoBehaviour {
 
     private void completeConstruction() {
         buildingSpriteRenderer.gameObject.SetActive(true);
-        shadowSpriteRenderer.sprite = spriteShadow;
+        shadowSpriteRenderer.gameObject.SetActive(true);
         collisionZone.SetActive(true);
     }
 
