@@ -49,11 +49,11 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKeyDown(Constants.instance.COIN_KEY_CODE)) {
             if (collidedBuilding != null) {
-                int cost = Constants.instance.COST_BOW_SHOP;
+                BuildingPrefab building = collidedBuilding;
+                BuildingData buildingData = BuildingConfiguration.instance.buildingDataFor(building.type);
                 Vector3 from = transform.position;
                 Vector3 to = collidedBuilding.getCoinsAnchor();
-                BuildingPrefab building = collidedBuilding;
-                coinController.spend(cost, from, to, onComplete: () => {
+                coinController.spend(buildingData.costToUse, from, to, onComplete: () => {
                     WeaponType weaponType = WeaponController.weaponTypeForBuilding(building.type);
                     weaponController.drop(weaponType, building.getWeaponAnchor());
                 });

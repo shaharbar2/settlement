@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 3526949671308238164}
   - component: {fileID: 3526949671308238153}
   m_Layer: 0
-  m_Name: Building
+  m_Name: bowShop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,7 +131,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
-  spriteShadow: {fileID: 21300000, guid: 92d917d25f009ee4f99755fde7764f24, type: 3}
   collisionZone: {fileID: 9111548146875154458}
   dustVFXPrefab: {fileID: 1425489062003835752, guid: f99d8f50cb569cc4382cb9d1c93b1cf5,
     type: 3}
@@ -243,7 +242,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2101983051
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 92d917d25f009ee4f99755fde7764f24, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
