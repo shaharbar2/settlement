@@ -516,6 +516,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HitpointsBar
       objectReference: {fileID: 0}
+    - target: {fileID: 7629168832260389449, guid: f86718203c035714c966b8aacaea4d15,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f86718203c035714c966b8aacaea4d15, type: 3}
 --- !u!4 &213929815470714171 stripped

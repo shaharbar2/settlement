@@ -7,7 +7,7 @@ public enum NPCType {
     Vagabond,
     Peasant,
     Hunter,
-    Worker, 
+    Worker,
 
     // animals:
     Slime
@@ -17,8 +17,16 @@ public class PeasantAI : AIBase {
     internal enum PeasantAIState {
         WaitingForCoin,
         WaitingForWeapon,
+
+        // hunter states
         LookingForAnimal,
         ChasingAnimal,
+
+        // worker states
+        LookingForConstruction,
+        LookingForRepairs,
+        LookingForTrees,
+
         WaitingForTrophyCoin
     }
 
@@ -63,6 +71,9 @@ public class PeasantAI : AIBase {
             case NPCType.Hunter:
                 hunterStateMachine();
                 break;
+            case NPCType.Worker:
+                workerStateMachine();
+                break;
         }
     }
 
@@ -94,6 +105,19 @@ public class PeasantAI : AIBase {
                 break;
             case PeasantAIState.ChasingAnimal:
                 chaseAnimalUpdate();
+                break;
+            case PeasantAIState.WaitingForTrophyCoin:
+                waitForTrophyUpdate();
+                break;
+        }
+    }
+
+    private void workerStateMachine() {
+        switch (state) {
+            case PeasantAIState.LookingForConstruction:
+            case PeasantAIState.LookingForRepairs:
+            case PeasantAIState.LookingForTrees:
+                lookForConstructionUpdate();
                 break;
             case PeasantAIState.WaitingForTrophyCoin:
                 waitForTrophyUpdate();
@@ -135,13 +159,39 @@ public class PeasantAI : AIBase {
 
             if (weapon != null) {
                 weaponController.reserveWeaponForPickup(weapon, gameObject);
+                var weaponType = weapon.type;
                 var task = AITask.pickupWeaponTask(weapon);
                 task.onComplete = () => {
                     if (task.success) {
-                        becomeHunter();
+                        switch (weaponType) {
+                            case WeaponType.Bow:
+                                becomeHunter();
+                                return;
+                            case WeaponType.Hammer:
+                                becomeWorker();
+                                return;
+                            default:
+                                throw new System.Exception($"Peasant picked up unknown weapon type: {weaponType}");
+                        }
                     }
                 };
                 issueTask(task);
+            }
+        }
+    }
+
+    private void lookForConstructionUpdate() {
+        idleRoamUpdate();
+
+        lookupElapsed += Time.deltaTime;
+        if (lookupElapsed > lookupInterval) {
+            lookupElapsed = 0;
+
+            float searchRadius = Constants.instance.PEASANT_ANIMAL_LOOKUP_RADIUS;
+            targetAnimal = findClosestAliveAnimal(searchRadius);
+
+            if (targetAnimal != null) {
+                state = PeasantAIState.ChasingAnimal;
             }
         }
     }
@@ -175,7 +225,7 @@ public class PeasantAI : AIBase {
             Vector3 approach = Vector3.MoveTowards(transform.position, animal.transform.position, d - attackRange + 1f);
             float r = Constants.instance.PEASANT_APPROACH_DEVIATION;
             approach.x += Random.Range(-r, r);
-            approach.y += Random.Range(-r/2, r/2);
+            approach.y += Random.Range(-r / 2, r / 2);
             issueTask(AITask.moveTask(approach));
         } else {
             if (attackElapsed > Constants.instance.PEASANT_ATTACK_INTERVAL) {
@@ -240,7 +290,13 @@ public class PeasantAI : AIBase {
 
     private void becomeHunter() {
         type = NPCType.Hunter;
-        state = PeasantAIState.LookingForAnimal;
+        state = PeasantAIState.LookingForAnimal & PeasantAIState.WaitingForCoin;
+        issueTask(AITask.typeUpdateTask(type));
+    }
+
+    private void becomeWorker() {
+        type = NPCType.Worker;
+        state = PeasantAIState.LookingForConstruction;
         issueTask(AITask.typeUpdateTask(type));
     }
 
