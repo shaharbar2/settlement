@@ -6,8 +6,9 @@ public enum NPCType {
     // peasants:
     Vagabond,
     Peasant,
-    Hunter,
+    Archer,
     Worker,
+    Swordman,
 
     // animals:
     Slime
@@ -77,7 +78,7 @@ public class PeasantAI : AIBase {
             case NPCType.Peasant:
                 peasantStateMachine();
                 break;
-            case NPCType.Hunter:
+            case NPCType.Archer:
                 hunterStateMachine();
                 break;
             case NPCType.Worker:
@@ -344,7 +345,7 @@ public class PeasantAI : AIBase {
 
     private void returnToIdleState() {
         switch (type) {
-            case NPCType.Hunter:
+            case NPCType.Archer:
                 state = PeasantAIState.LookingForAnimal;
                 break;
             case NPCType.Worker:
@@ -384,7 +385,7 @@ public class PeasantAI : AIBase {
     }
 
     private void becomeHunter() {
-        type = NPCType.Hunter;
+        type = NPCType.Archer;
         state = PeasantAIState.LookingForAnimal;
         issueTask(AITask.typeUpdateTask(type));
     }
