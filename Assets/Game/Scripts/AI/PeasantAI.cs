@@ -19,7 +19,7 @@ public class PeasantAI : AIBase {
         WaitingForCoin,
         WaitingForWeapon,
 
-        // hunter states
+        // archer states
         LookingForAnimal,
         ChasingAnimal,
 
@@ -79,7 +79,7 @@ public class PeasantAI : AIBase {
                 peasantStateMachine();
                 break;
             case NPCType.Archer:
-                hunterStateMachine();
+                archerStateMachine();
                 break;
             case NPCType.Worker:
                 workerStateMachine();
@@ -108,7 +108,7 @@ public class PeasantAI : AIBase {
         }
     }
 
-    private void hunterStateMachine() {
+    private void archerStateMachine() {
         switch (state) {
             case PeasantAIState.LookingForAnimal:
                 lookForAnimalUpdate();
@@ -179,7 +179,7 @@ public class PeasantAI : AIBase {
                     if (task.success) {
                         switch (weaponType) {
                             case WeaponType.Bow:
-                                becomeHunter();
+                                becomeArcher();
                                 return;
                             case WeaponType.Hammer:
                                 becomeWorker();
@@ -384,7 +384,7 @@ public class PeasantAI : AIBase {
         issueTask(AITask.typeUpdateTask(type));
     }
 
-    private void becomeHunter() {
+    private void becomeArcher() {
         type = NPCType.Archer;
         state = PeasantAIState.LookingForAnimal;
         issueTask(AITask.typeUpdateTask(type));
