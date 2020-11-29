@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6453311407605220611}
+  - component: {fileID: 6453311407605220609}
   - component: {fileID: 6453311407605220610}
   - component: {fileID: 6453311407605220621}
   - component: {fileID: 6453311407605220620}
   - component: {fileID: 6453311407605220608}
-  - component: {fileID: 6453311407605220609}
   m_Layer: 0
   m_Name: Peasant
   m_TagString: Untagged
@@ -37,6 +37,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6453311407605220609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6453311407605220623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e62809c69fc213a4cbba380cf509647c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  state: 0
 --- !u!212 &6453311407605220610
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -135,20 +149,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 1
   direction: {x: 0, y: 0, z: 0}
---- !u!114 &6453311407605220609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6453311407605220623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e62809c69fc213a4cbba380cf509647c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  state: 0
 --- !u!1 &6453311408256919637
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +246,8 @@ MonoBehaviour:
   peasantSprite: {fileID: 21300000, guid: 6d56be33d7e5c1349ad1b318f6cb236a, type: 3}
   vagabondSprite: {fileID: 21300000, guid: 92afd90bc64fcc944811affe1ba1ef96, type: 3}
   workerSprite: {fileID: 21300000, guid: 7fb700e137362a64184a219607479276, type: 3}
-  hunterSprite: {fileID: 21300000, guid: fd5e5cb51403bc44e8dd92c681629f11, type: 3}
+  archerSprite: {fileID: 21300000, guid: fd5e5cb51403bc44e8dd92c681629f11, type: 3}
+  swordmanSprite: {fileID: 21300000, guid: de876f80628676a4caf6694aa15a6522, type: 3}
 --- !u!1 &6453311408453277305
 GameObject:
   m_ObjectHideFlags: 0

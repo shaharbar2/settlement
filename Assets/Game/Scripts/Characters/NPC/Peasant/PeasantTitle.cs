@@ -6,7 +6,8 @@ public class PeasantTitle : MonoBehaviour {
     [SerializeField] private Sprite peasantSprite;
     [SerializeField] private Sprite vagabondSprite;
     [SerializeField] private Sprite workerSprite;
-    [SerializeField] private Sprite hunterSprite;
+    [SerializeField] private Sprite archerSprite;
+    [SerializeField] private Sprite swordmanSprite;
 
     private SpriteRenderer spriteRenderer;
 
@@ -28,11 +29,14 @@ public class PeasantTitle : MonoBehaviour {
             case NPCType.Vagabond:
                 spriteRenderer.sprite = vagabondSprite;
                 break;
-            case NPCType.Hunter:
-                spriteRenderer.sprite = hunterSprite;
+            case NPCType.Archer:
+                spriteRenderer.sprite = archerSprite;
                 break;
             case NPCType.Worker:
                 spriteRenderer.sprite = workerSprite;
+                break;
+            case NPCType.Swordman:
+                spriteRenderer.sprite = swordmanSprite;
                 break;
         }
     }
