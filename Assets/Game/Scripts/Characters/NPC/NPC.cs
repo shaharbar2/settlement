@@ -10,7 +10,7 @@ public abstract class NPC : MonoBehaviour {
     protected WeaponController weaponController;
     protected CharacterMovement movement;
 
-    private AIBase ai;
+    public AIBase ai {get; private set; }
 
     /// Protected -- 
     

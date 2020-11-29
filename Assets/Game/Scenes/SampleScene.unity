@@ -526,7 +526,7 @@ PrefabInstance:
     - target: {fileID: 6453311407605220609, guid: 140988bf6421e25498f62a81df0e579f,
         type: 3}
       propertyPath: state
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6453311407605220611, guid: 140988bf6421e25498f62a81df0e579f,
         type: 3}
@@ -17131,7 +17131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1444176636
 Transform:
   m_ObjectHideFlags: 0
@@ -18121,6 +18121,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Swordman
+      objectReference: {fileID: 0}
+    - target: {fileID: 6453311407605220623, guid: 140988bf6421e25498f62a81df0e579f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 140988bf6421e25498f62a81df0e579f, type: 3}

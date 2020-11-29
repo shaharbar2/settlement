@@ -21,8 +21,11 @@ public class Player : MonoBehaviour {
     private Tree collidedTree;
     private CharacterMovement movement;
 
+    private Squad squad;
+
     void Awake() {
         movement = GetComponent<CharacterMovement>();
+        squad = Squad.create(leader: this);
     }
     
     void Start() {
@@ -30,6 +33,12 @@ public class Player : MonoBehaviour {
         weaponController = FindObjectOfType<WeaponController>();
         coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
+        
+        Peasant[] peasants = FindObjectsOfType<Peasant>();
+        foreach (Peasant peasant in peasants) {
+            squad.addUnit(peasant);
+        }
+        squad.setMode(SquadMode.Enroute);
     }
 
     void Update() {

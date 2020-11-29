@@ -52,6 +52,31 @@ public class PeasantAI : AIBase {
 
     private Peasant peasant;
 
+    private Squad squad;
+
+    /// Public -- 
+
+    public void onSquadUpdate(SquadUpdate update) {
+        switch (update.type) {
+            case SquadUpdateType.UnitAdded:
+                if (update.unit == peasant) {
+                    squad = update.squad;
+                }
+                break;
+            case SquadUpdateType.UnitRemoved:
+                if (update.unit == peasant) {
+                    squad = null;
+                }
+                break;
+            case SquadUpdateType.ModeUpdate:
+                // squad mode update
+                break;
+            case SquadUpdateType.LeaderUpdate:
+                // squad assigned new leader
+                break;
+        }
+    }
+
     /// Protected --
 
     protected override void Awake() {
@@ -71,19 +96,23 @@ public class PeasantAI : AIBase {
     }
 
     protected override void updateStateMachine() {
-        switch (type) {
-            case NPCType.Vagabond:
-                vagabondStateMachine();
-                break;
-            case NPCType.Peasant:
-                peasantStateMachine();
-                break;
-            case NPCType.Archer:
-                archerStateMachine();
-                break;
-            case NPCType.Worker:
-                workerStateMachine();
-                break;
+        if (squad != null) {
+            squadStateMachine();
+        } else {
+            switch (type) {
+                case NPCType.Vagabond:
+                    vagabondStateMachine();
+                    break;
+                case NPCType.Peasant:
+                    peasantStateMachine();
+                    break;
+                case NPCType.Archer:
+                    archerStateMachine();
+                    break;
+                case NPCType.Worker:
+                    workerStateMachine();
+                    break;
+            }
         }
     }
 
@@ -135,6 +164,24 @@ public class PeasantAI : AIBase {
                 break;
             case PeasantAIState.WaitingForTrophyCoin:
                 waitForTrophyUpdate();
+                break;
+        }
+    }
+
+    private void squadStateMachine() {
+        switch (squad.mode) {
+            case SquadMode.Forming:
+                // formation around the leader
+                break;
+            case SquadMode.Enroute:
+                // follow leader
+                squadEnrouteUpdate();
+                break;
+            case SquadMode.InCombat:
+                // position using combat rules and attack enemy squad
+                break;
+            case SquadMode.Regroup:
+                // stack randomly around the leader
                 break;
         }
     }
@@ -314,6 +361,27 @@ public class PeasantAI : AIBase {
                 };
                 issueTask(attackTask);
             }
+        }
+    }
+
+    private void squadEnrouteUpdate() {
+        GameObject leader = squad.leader.gameObject;
+        if (leader == null) {
+            leader = null;
+            // state = PeasantAIState.LookingForAnimal;
+            return;
+        }
+
+        float attackRange = 0.1f;
+        float d = Vector2.Distance(leader.transform.position, transform.position);
+        if (d > attackRange) {
+            Vector3 approach = Vector3.MoveTowards(transform.position, leader.transform.position, d - attackRange + 1f);
+            float r = Constants.instance.PEASANT_APPROACH_DEVIATION;
+            approach.x += Random.Range(-r, r);
+            approach.y += Random.Range(-r / 2, r / 2);
+            issueTask(AITask.moveTask(approach));
+        } else {
+            
         }
     }
 
