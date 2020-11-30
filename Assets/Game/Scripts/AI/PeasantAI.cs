@@ -172,6 +172,7 @@ public class PeasantAI : AIBase {
         switch (squad.mode) {
             case SquadMode.Forming:
                 // formation around the leader
+                squadFormingUpdate();
                 break;
             case SquadMode.Enroute:
                 // follow leader
@@ -361,6 +362,27 @@ public class PeasantAI : AIBase {
                 };
                 issueTask(attackTask);
             }
+        }
+    }
+
+    private void squadFormingUpdate() {
+        GameObject leader = squad.leader.gameObject;
+        if (leader == null) {
+            leader = null;
+            // state = PeasantAIState.LookingForAnimal;
+            return;
+        }
+
+        float attackRange = 0.8f;
+        float d = Vector2.Distance(leader.transform.position, transform.position);
+        if (d > attackRange) {
+            Vector3 approach = Vector3.MoveTowards(transform.position, leader.transform.position, 1000f);
+            float r = 0.5f;
+            approach.x += Random.Range(-r, r);
+            approach.y += Random.Range(-r / 2, r / 2);
+            issueTask(AITask.moveTask(approach));
+        } else {
+            
         }
     }
 

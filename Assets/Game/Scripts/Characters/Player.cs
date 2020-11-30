@@ -21,11 +21,12 @@ public class Player : MonoBehaviour {
     private Tree collidedTree;
     private CharacterMovement movement;
 
+    [SerializeField] private Banner bannerPrefab;
+    private Banner banner;
     private Squad squad;
 
     void Awake() {
         movement = GetComponent<CharacterMovement>();
-        squad = Squad.create(leader: this);
     }
     
     void Start() {
@@ -33,12 +34,6 @@ public class Player : MonoBehaviour {
         weaponController = FindObjectOfType<WeaponController>();
         coinController = FindObjectOfType<CoinController>();
         pathfindController = FindObjectOfType<PathfindController>();
-        
-        Peasant[] peasants = FindObjectsOfType<Peasant>();
-        foreach (Peasant peasant in peasants) {
-            squad.addUnit(peasant);
-        }
-        squad.setMode(SquadMode.Enroute);
     }
 
     void Update() {
@@ -84,6 +79,19 @@ public class Player : MonoBehaviour {
                 });
             } else {
                 coinController.dropCoin(transform.position, transform.localScale.x, CoinDropType.ByPlayer);
+            }
+        }
+
+        if (Input.GetKeyDown(Constants.instance.BANNER_KEY_CODE)) {
+            if (banner == null) {
+                banner = Instantiate(bannerPrefab);
+                banner.transform.position = transform.position;
+            } else {
+                squad = banner.takeOverSquad();
+                squad.transferLeadership(this);
+                squad.setMode(SquadMode.Enroute);
+                Destroy(banner.gameObject);
+                banner = null;
             }
         }
     }
