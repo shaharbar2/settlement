@@ -1,4 +1,8 @@
 # Settlement by Eyal Stern
+
+  ## As of 01.01.2021 project has been moved to github.com/nka1024/settlement 
+  
+  
   ## Patchnotes:
 
   ### build 0.0.4
