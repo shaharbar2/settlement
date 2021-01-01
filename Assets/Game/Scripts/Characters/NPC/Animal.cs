@@ -74,10 +74,19 @@ public class Animal : NPC {
                 });
                 break;
             default:
-                Debug.Log("Undefined animal behavior for command: " + task.type);
+                Debug.LogWarning("Undefined animal behavior for command: " + task.type);
                 break;
         }
     }
+
+  protected override void onTaskCancelled(AITask task)
+  {
+    throw new System.NotImplementedException();
+  }
+
+  /// Private -- 
+
+
 
     /// Private -- 
 

@@ -5,11 +5,11 @@ using UnityEngine;
 public abstract class AIBase : MonoBehaviour {
     public delegate void AIEvent(AITask command);
     public event AIEvent onTaskIssued;
+    public event AIEvent onTaskCancelled;
 
     protected WorldObjectFinder finder;
     protected WeaponController weaponController;
     protected CoinController coinController;
-    protected Player player;
 
     protected AITask currentTask;
 
@@ -35,6 +35,8 @@ public abstract class AIBase : MonoBehaviour {
                 onTaskFailed(currentTask);
             } else if (currentTask.success) {
                 onTaskFinished(currentTask);
+            } else if(currentTask.cancelled) {
+                onTaskCancelled?.Invoke(currentTask);    
             }
         } else if (queue.Count > 0) {
             currentTask = queue.Dequeue();

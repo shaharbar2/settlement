@@ -15,7 +15,7 @@ public class CharacterMovement : MonoBehaviour {
     private List<Vector2> currentPath;
     // true - finished, false - interrupted
     private System.Action<bool> onPathComplete;
-    private bool isMoving { get {
+    public bool isMoving { get {
         return currentPath != null || direction.x != 0 || direction.y != 0;
     }}
 

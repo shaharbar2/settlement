@@ -29,7 +29,9 @@ public class PeasantAI : AIBase {
         AssignedRepairJob,
         AssignedLumberingJob,
 
-        WaitingForTrophyCoin
+        WaitingForTrophyCoin,
+
+        Squad
     }
 
     [SerializeField] public NPCType type;
@@ -57,19 +59,26 @@ public class PeasantAI : AIBase {
     /// Public -- 
 
     public void onSquadUpdate(SquadUpdate update) {
+        Debug.Log("onSquadUpdate: " + update);
         switch (update.type) {
             case SquadUpdateType.UnitAdded:
                 if (update.unit == peasant) {
                     squad = update.squad;
+                    state = PeasantAIState.Squad;
+                    squadModeTask(squad.mode);
                 }
                 break;
             case SquadUpdateType.UnitRemoved:
                 if (update.unit == peasant) {
                     squad = null;
+                    state = PeasantAIState.LookingForAnimal; // this needs to be a special state for when squad is disbanded
                 }
                 break;
             case SquadUpdateType.ModeUpdate:
-                // squad mode update
+                if (currentTask.cancellable) {
+                    currentTask.cancel(reason: "squad mode update");
+                    squadModeTask(squad.mode);
+                }
                 break;
             case SquadUpdateType.LeaderUpdate:
                 // squad assigned new leader
@@ -97,7 +106,7 @@ public class PeasantAI : AIBase {
 
     protected override void updateStateMachine() {
         if (squad != null) {
-            squadStateMachine();
+            // squadStateMachine();
         } else {
             switch (type) {
                 case NPCType.Vagabond:
@@ -119,6 +128,23 @@ public class PeasantAI : AIBase {
     /// Private -- 
 
     /// State machines
+
+    private void squadModeTask(SquadMode mode) {
+        switch (mode) {
+            case SquadMode.Forming:
+                issueTask(AITask.squadFollowTask(squad));
+                break;
+            case SquadMode.Idle:
+                issueTask(AITask.squadIdleTask(squad));
+                break;
+            case SquadMode.Enroute:
+                issueTask(AITask.squadFollowTask(squad));
+                break;
+            default:
+                Debug.Log("unkwnown squad mode: " + mode);
+                break;
+        }
+    }
 
     private void vagabondStateMachine() {
         switch (state) {
@@ -164,25 +190,6 @@ public class PeasantAI : AIBase {
                 break;
             case PeasantAIState.WaitingForTrophyCoin:
                 waitForTrophyUpdate();
-                break;
-        }
-    }
-
-    private void squadStateMachine() {
-        switch (squad.mode) {
-            case SquadMode.Forming:
-                // formation around the leader
-                squadFormingUpdate();
-                break;
-            case SquadMode.Enroute:
-                // follow leader
-                squadEnrouteUpdate();
-                break;
-            case SquadMode.InCombat:
-                // position using combat rules and attack enemy squad
-                break;
-            case SquadMode.Regroup:
-                // stack randomly around the leader
                 break;
         }
     }
@@ -363,49 +370,8 @@ public class PeasantAI : AIBase {
                 issueTask(attackTask);
             }
         }
-    }
+    } 
 
-    private void squadFormingUpdate() {
-        GameObject leader = squad.leader.gameObject;
-        if (leader == null) {
-            leader = null;
-            // state = PeasantAIState.LookingForAnimal;
-            return;
-        }
-
-        float attackRange = 0.8f;
-        float d = Vector2.Distance(leader.transform.position, transform.position);
-        if (d > attackRange) {
-            Vector3 approach = Vector3.MoveTowards(transform.position, leader.transform.position, 1000f);
-            float r = 0.5f;
-            approach.x += Random.Range(-r, r);
-            approach.y += Random.Range(-r / 2, r / 2);
-            issueTask(AITask.moveTask(approach));
-        } else {
-            
-        }
-    }
-
-    private void squadEnrouteUpdate() {
-        GameObject leader = squad.leader.gameObject;
-        if (leader == null) {
-            leader = null;
-            // state = PeasantAIState.LookingForAnimal;
-            return;
-        }
-
-        float attackRange = 0.1f;
-        float d = Vector2.Distance(leader.transform.position, transform.position);
-        if (d > attackRange) {
-            Vector3 approach = Vector3.MoveTowards(transform.position, leader.transform.position, d - attackRange + 1f);
-            float r = Constants.instance.PEASANT_APPROACH_DEVIATION;
-            approach.x += Random.Range(-r, r);
-            approach.y += Random.Range(-r / 2, r / 2);
-            issueTask(AITask.moveTask(approach));
-        } else {
-            
-        }
-    }
 
     private void waitForTrophyUpdate() {
         lookupElapsed += Time.deltaTime;

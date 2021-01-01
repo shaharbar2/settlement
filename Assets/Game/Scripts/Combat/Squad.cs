@@ -13,6 +13,7 @@ public enum SquadMode {
     Forming,
     Enroute,
     InCombat,
+    Idle,
     Regroup
 }
 
@@ -34,6 +35,11 @@ public class SquadUpdate {
     }
     public static SquadUpdate unitRemoved(Squad squad, NPC unit) {
         return new SquadUpdate() { squad = squad, type = SquadUpdateType.UnitRemoved, unit = unit };
+    }
+
+    override public string ToString() {
+        string s = $"SquadUpdate {type} Type: {type}, mode: {squad.mode}";
+        return s;
     }
 }
 
@@ -68,8 +74,10 @@ public class Squad {
     }
 
     public void setMode(SquadMode mode) {
-        this.mode = mode;
-        updateAllUnits(SquadUpdate.modeUpdate(this));
+        if (this.mode != mode) {
+            this.mode = mode;
+            updateAllUnits(SquadUpdate.modeUpdate(this));
+        }
     }
 
     /// Private -- 

@@ -68,6 +68,7 @@ public class Constants : MonoBehaviour {
     [SerializeField] public KeyCode BM_KEY_CODE;
     [SerializeField] public KeyCode COIN_KEY_CODE;
     [SerializeField] public KeyCode BANNER_KEY_CODE;
+    [SerializeField] public KeyCode SQUAD_REGROUP_KEY_CODE;
     [SerializeField] public KeyCode TOGGLE_CAMERA_FOCUS_KEY_CODE;
 
     [Header("Build Menu")]

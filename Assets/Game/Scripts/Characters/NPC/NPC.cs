@@ -19,6 +19,7 @@ public abstract class NPC : MonoBehaviour {
         movement = GetComponent<CharacterMovement>();
         ai = GetComponent<AIBase>();
         ai.onTaskIssued += onTaskReceived;
+        ai.onTaskCancelled += onTaskCancelled;
     }
 
     virtual protected void Start() {
@@ -32,6 +33,7 @@ public abstract class NPC : MonoBehaviour {
     }
 
     protected abstract void onTaskReceived(AITask task);
+    protected abstract void onTaskCancelled(AITask task);
 
     protected void moveTo(Vector3 worldDest, System.Action<bool> onComplete = null) {
         Vector2 worldPos = new Vector2(transform.position.x, transform.position.y);
