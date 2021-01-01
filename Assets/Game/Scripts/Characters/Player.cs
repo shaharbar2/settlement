@@ -21,10 +21,14 @@ public class Player : MonoBehaviour {
     private Tree collidedTree;
     private CharacterMovement movement;
 
+    [SerializeField] private Banner bannerPrefab;
+    private Banner banner;
+    private Squad squad;
+
     void Awake() {
         movement = GetComponent<CharacterMovement>();
     }
-    
+
     void Start() {
         ui = FindObjectOfType<GameUI>();
         weaponController = FindObjectOfType<WeaponController>();
@@ -41,13 +45,13 @@ public class Player : MonoBehaviour {
         }
 
         detectFeetCollisions();
-        
+
         if (collidedBuilding != null) {
             string interactHint = collidedBuilding.getInteractHint();
             if (interactHint != null) {
                 ui.showHint(interactHint);
             }
-        } else if (collidedTree != null && collidedTree.state == TreeState.Ready){
+        } else if (collidedTree != null && collidedTree.state == TreeState.Ready) {
             string interactHint = collidedTree.getInteractHint();
             if (interactHint != null) {
                 ui.showHint(interactHint);
@@ -77,6 +81,31 @@ public class Player : MonoBehaviour {
                 coinController.dropCoin(transform.position, transform.localScale.x, CoinDropType.ByPlayer);
             }
         }
+
+        if (Input.GetKeyDown(Constants.instance.BANNER_KEY_CODE)) {
+            if (banner == null) {
+                banner = Instantiate(bannerPrefab);
+                banner.transform.position = transform.position;
+            } else {
+                squad = banner.takeOverSquad();
+                squad.transferLeadership(this);
+                squad.setMode(SquadMode.Enroute);
+                Destroy(banner.gameObject);
+                banner = null;
+            }
+        }
+
+        if (squad != null) {
+            if (Input.GetKey(Constants.instance.SQUAD_REGROUP_KEY_CODE)) {
+                squad.setMode(SquadMode.Regroup);
+            } else {
+                if (movement.isMoving) {
+                    squad.setMode(SquadMode.Enroute);
+                } else {
+                    squad.setMode(SquadMode.Idle);
+                }
+            }
+        }
     }
 
     /// Private -- 
@@ -85,7 +114,7 @@ public class Player : MonoBehaviour {
         feetContactFilter.useTriggers = true;
         float count = feetCollider.OverlapCollider(feetContactFilter, feetCollisions);
         Coin coin = null;
-        
+
         collidedTree = null;
         collidedBuilding = null;
         Building building = null;
@@ -95,7 +124,7 @@ public class Player : MonoBehaviour {
             building = feetCollisions[i].transform.parent.GetComponent<Building>();
             tree = feetCollisions[i].transform.parent.GetComponent<Tree>();
             if (coin != null) {
-                coinController.pickup(coin, transform.position, byPlayer: true);
+                coinController.pickup(coin, transform.position, byPlayer : true);
             }
             if (building != null) {
                 collidedBuilding = building;
@@ -106,10 +135,9 @@ public class Player : MonoBehaviour {
         }
     }
 
-  
     private void updateWASDMovement() {
         float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float v = Input.GetAxis("Vertical") * 0.5f;
         movement.direction = new Vector3(h, v, 0).normalized;
     }
 
@@ -133,5 +161,4 @@ public class Player : MonoBehaviour {
             pathfindMouseElapsed = pathfindMouseInterval;
         }
     }
-
 }

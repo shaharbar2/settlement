@@ -5,7 +5,9 @@ using System;
 
 public enum AITaskType {
     Move,
-    Stop,
+    SquadFollow,
+    SquadIdle,
+    // Idle,
     DropCoins,
     PickupCoin,
     PickupWeapon,
@@ -20,7 +22,8 @@ public enum AITaskState {
     Issued,
     InProgress,
     Finished,
-    Failed
+    Failed,
+    Cancelled
 }
 
 public class AITask {
@@ -30,15 +33,21 @@ public class AITask {
     public string reason;
     public Action onComplete;   
     public bool scheduled;
+    public float executeDelay;
+    public bool cancellable;
 
     // TODO: object for data
     public Vector3 position; 
     public GameObject target;
+    public Squad squad; // for squad tasks
     public NPCType peasantType; // for type update
     public int amountToDrop; // for droping coins
-    
+    public float duration; // for idle
+    public float disctance; // for follow
+
     public bool success {get{ return state == AITaskState.Finished; }}
     public bool failed {get{ return state == AITaskState.Failed; }}
+    public bool cancelled {get{ return state == AITaskState.Cancelled; }}
 
     private static long idCounter = 0;
     
@@ -54,6 +63,18 @@ public class AITask {
     public static AITask moveTask(Vector3 position) {
         AITask task = new AITask(AITaskType.Move);
         task.position = position;
+        return task;
+    }
+    public static AITask squadIdleTask(Squad squad) {
+        AITask task = new AITask(AITaskType.SquadIdle);
+        task.squad = squad;
+        task.cancellable = true;
+        return task;
+    }
+    public static AITask squadFollowTask(Squad squad) {
+        AITask task = new AITask(AITaskType.SquadFollow);
+        task.squad = squad;
+        task.cancellable = true;
         return task;
     }
     public static AITask pickupCoinTask(Coin coin) {
@@ -115,6 +136,11 @@ public class AITask {
         this.state = AITaskState.Failed;
         this.reason = reason;
         if (!scheduled) onComplete?.Invoke();
+    }
+
+    public void cancel(string reason = null) {
+        this.state = AITaskState.Cancelled;
+        this.reason = reason;
     }
 
     override public string ToString() {

@@ -29,7 +29,9 @@ public class PeasantAI : AIBase {
         AssignedRepairJob,
         AssignedLumberingJob,
 
-        WaitingForTrophyCoin
+        WaitingForTrophyCoin,
+
+        Squad
     }
 
     [SerializeField] public NPCType type;
@@ -52,6 +54,38 @@ public class PeasantAI : AIBase {
 
     private Peasant peasant;
 
+    private Squad squad;
+
+    /// Public -- 
+
+    public void onSquadUpdate(SquadUpdate update) {
+        Debug.Log("onSquadUpdate: " + update);
+        switch (update.type) {
+            case SquadUpdateType.UnitAdded:
+                if (update.unit == peasant) {
+                    squad = update.squad;
+                    state = PeasantAIState.Squad;
+                    squadModeTask(squad.mode);
+                }
+                break;
+            case SquadUpdateType.UnitRemoved:
+                if (update.unit == peasant) {
+                    squad = null;
+                    state = PeasantAIState.LookingForAnimal; // this needs to be a special state for when squad is disbanded
+                }
+                break;
+            case SquadUpdateType.ModeUpdate:
+                if (currentTask.cancellable) {
+                    currentTask.cancel(reason: "squad mode update");
+                    squadModeTask(squad.mode);
+                }
+                break;
+            case SquadUpdateType.LeaderUpdate:
+                // squad assigned new leader
+                break;
+        }
+    }
+
     /// Protected --
 
     protected override void Awake() {
@@ -71,25 +105,46 @@ public class PeasantAI : AIBase {
     }
 
     protected override void updateStateMachine() {
-        switch (type) {
-            case NPCType.Vagabond:
-                vagabondStateMachine();
-                break;
-            case NPCType.Peasant:
-                peasantStateMachine();
-                break;
-            case NPCType.Archer:
-                archerStateMachine();
-                break;
-            case NPCType.Worker:
-                workerStateMachine();
-                break;
+        if (squad != null) {
+            // squadStateMachine();
+        } else {
+            switch (type) {
+                case NPCType.Vagabond:
+                    vagabondStateMachine();
+                    break;
+                case NPCType.Peasant:
+                    peasantStateMachine();
+                    break;
+                case NPCType.Archer:
+                    archerStateMachine();
+                    break;
+                case NPCType.Worker:
+                    workerStateMachine();
+                    break;
+            }
         }
     }
 
     /// Private -- 
 
     /// State machines
+
+    private void squadModeTask(SquadMode mode) {
+        switch (mode) {
+            case SquadMode.Forming:
+                issueTask(AITask.squadFollowTask(squad));
+                break;
+            case SquadMode.Idle:
+                issueTask(AITask.squadIdleTask(squad));
+                break;
+            case SquadMode.Enroute:
+                issueTask(AITask.squadFollowTask(squad));
+                break;
+            default:
+                Debug.Log("unkwnown squad mode: " + mode);
+                break;
+        }
+    }
 
     private void vagabondStateMachine() {
         switch (state) {
@@ -315,7 +370,8 @@ public class PeasantAI : AIBase {
                 issueTask(attackTask);
             }
         }
-    }
+    } 
+
 
     private void waitForTrophyUpdate() {
         lookupElapsed += Time.deltaTime;

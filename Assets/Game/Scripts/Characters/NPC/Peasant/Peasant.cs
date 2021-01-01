@@ -4,13 +4,29 @@ using UnityEngine;
 
 public class Peasant : NPC {
 
+    public PeasantAIParams aiParams { get; private set; }
+
     private PeasantTitle title;
 
     [SerializeField] private BoxCollider2D feetCollider;
     [SerializeField] private Sprite arrowSprite;
 
+    private GameObject followTarget;
+    private Vector3 ongoingMovementDestination;
+    private float ongoingMovementElapsed;
+    private float ongoingMovementInterval = 1f; // TODO: this must not be const
+    private bool isOngoingMovement;
+
     override protected void Awake() {
         title = GetComponentInChildren<PeasantTitle>();
+        aiParams = new PeasantAIParams() {
+            squadIdleMinDelay = 0.5f,
+            squadIdleMaxDelay = 1f,
+
+            startMoveMinDelay = 0.2f,
+            startMoveMaxDelay = 0.3f
+        };
+
         base.Awake();
     }
 
@@ -20,6 +36,8 @@ public class Peasant : NPC {
 
     override protected void Update() {
         movement.movementSpeed = Constants.instance.PEASANT_SPEED;
+
+        handleOngoingMovement();
 
         base.Update();
     }
@@ -43,6 +61,34 @@ public class Peasant : NPC {
     /// Protected -- 
 
     override protected void onTaskReceived(AITask task) {
+        if (task.executeDelay > 0) {
+            LeanTween.delayedCall(task.executeDelay, () => {
+                executeTask(task);
+            });
+        } else {
+            executeTask(task);
+        }
+    }
+
+    protected override void onTaskCancelled(AITask task) {
+        switch (task.type) {
+            case AITaskType.SquadIdle:
+                isOngoingMovement = false;
+                task.finish(reason: "cancelled");
+                break;
+            case AITaskType.SquadFollow:
+                isOngoingMovement = false;
+                task.finish(reason: "cancelled");
+                break;
+            default:
+                Debug.LogWarning("Dont't know how to cancel: " + task.type);
+                break;
+        }
+    }
+
+    /// Private -- 
+
+    private void executeTask(AITask task) {
         switch (task.type) {
             case AITaskType.Move:
                 task.begin();
@@ -51,6 +97,19 @@ public class Peasant : NPC {
                     else task.fail(reason: "movement was interrupted");
                 });
                 break;
+                // case AITaskType.Idle:
+                //     task.begin(reason: "will idle for " + task.duration + "ms");
+                //     LeanTween.delayedCall(task.duration, () => {
+                //         task.finish(reason: "idle complete");
+                //     });
+                //     break;
+
+            case AITaskType.SquadIdle:
+            case AITaskType.SquadFollow:
+                isOngoingMovement = true;
+                followTarget = task.squad.leader.gameObject;
+                break;
+
             case AITaskType.PickupCoin:
                 task.begin();
                 Coin coin = task.target.GetComponent<Coin>();
@@ -125,12 +184,31 @@ public class Peasant : NPC {
                 });
                 break;
             default:
-                Debug.Log("Undefined peasant behavior for command: " + task.type);
+                Debug.LogWarning("Undefined peasant behavior for command: " + task.type);
                 break;
         }
     }
 
-    /// Private -- 
+    private void handleOngoingMovement() {
+        if (isOngoingMovement) {
+            ongoingMovementElapsed += Time.deltaTime;
+            if (ongoingMovementElapsed >= ongoingMovementInterval) {
+                ongoingMovementElapsed = 0;
+                Vector2 worldPosition = new Vector2(transform.position.x, transform.position.y);
+                Vector2 worldDestination = followTarget.transform.position;
+
+                List<Vector2> path = pathfindController.findPathWorld(worldPosition, worldDestination);
+
+                // remove point of current position from the path
+                if (path != null && path.Count > 0) {
+                    path.RemoveAt(0);
+                }
+                movement.movePath(path);
+            }
+        } else {
+            ongoingMovementElapsed = ongoingMovementInterval;
+        }
+    }
 
     private void build(Building building, System.Action<bool> onComplete) {
         building.build(onComplete);
